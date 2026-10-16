@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ЭкоТрек</title>
+<style>
+:root{--bg:#f4f8f5;--card:#fff;--text:#1d2b24;--muted:#66756d;--pri:#1f9d55;--pri2:#d9f2e3;--line:#e2ebe5;--err:#c0392b;--r:18px}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e1612;--card:#17231d;--text:#e8f1ec;--muted:#8fa399;--pri:#3ecf7b;--pri2:#1d3a2b;--line:#243229;--err:#ff7b6b}}
+:root[data-theme=dark]{--bg:#0e1612;--card:#17231d;--text:#e8f1ec;--muted:#8fa399;--pri:#3ecf7b;--pri2:#1d3a2b;--line:#243229;--err:#ff7b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,sans-serif;overflow-wrap:anywhere;word-break:break-word}
+#app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px 16px 100px}
+h1{font-size:clamp(22px,6vw,28px);margin:.3em 0}h2{font-size:clamp(18px,5vw,22px);margin:.2em 0}
+.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:12px 0}
+input,textarea,select{width:100%;max-width:100%;padding:13px;margin:6px 0;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+button{font:inherit;border:0;border-radius:14px;padding:13px 18px;min-height:44px;background:var(--pri);color:#fff;font-weight:600;cursor:pointer;max-width:100%}
+button.ghost{background:var(--pri2);color:var(--pri)}button:disabled{opacity:.5}
+.err{color:var(--err);min-height:1.4em}.row{display:flex;gap:12px;align-items:center}.grow{flex:1;min-width:0}
+.ava{flex:none;width:64px;height:64px;border-radius:50%;background:var(--pri2);display:grid;place-items:center;font-size:24px;font-weight:700;color:var(--pri)}
+.bar{height:10px;border-radius:9px;background:var(--pri2);overflow:hidden}.bar i{display:block;height:100%;background:var(--pri);transition:width .5s}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav div{display:flex;max-width:520px;margin:0 auto}nav button{flex:1;min-width:0;background:none;color:var(--muted);border-radius:0;font-size:11px;font-weight:500;padding:8px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav button b{display:block;font-size:22px}nav button.on{color:var(--pri)}
+.task{display:flex;gap:12px;align-items:center}.task .ic{font-size:28px;flex:none}.done{opacity:.55}
+.tabs{display:flex;gap:8px;margin-bottom:8px}.tabs button{flex:1;padding:13px 6px}
+</style>
+</head>
+<body>
+<div id="app">Загрузка…</div>
+<script type="module">
+import {API_URL,BRAND} from "./config.js";
+const $=s=>document.querySelector(s), app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let token=localStorage.getItem("tk"), me=null, tab="profile", mode="login";
+async function api(action,d={}){
+  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,token,...d})});return await r.json()}
+  catch{return{ok:false,error:"Нет соединения с сервером. Проверьте интернет."}}
+}
+const level=xp=>({lv:Math.floor(xp/100)+1,pct:xp%100});
+function theme(t){const r=document.documentElement;t==="auto"?r.removeAttribute("data-theme"):r.setAttribute("data-theme",t);localStorage.setItem("theme",t)}
+theme(localStorage.getItem("theme")||"auto");
+const setSession=r=>{token=r.token;me=r.user;localStorage.setItem("tk",token);theme(me.theme)};
+
+function authView(msg=""){
+  const reg=mode==="register";
+  app.innerHTML=`<div style="text-align:center;margin-top:32px"><div style="font-size:56px">${BRAND.emoji}</div><h1>${BRAND.name}</h1>
+  <p class="muted">Заботиться о планете — просто и интересно</p></div>
+  <div class="card"><div class="tabs"><button class="${reg?"ghost":""}" id="m1">Вход</button><button class="${reg?"":"ghost"}" id="m2">Регистрация</button></div>
+  ${reg?`<input id="fn" placeholder="Имя" maxlength=40 autocomplete="given-name"><input id="ln" placeholder="Фамилия" maxlength=40 autocomplete="family-name">`:""}
+  <input id="un" placeholder="Юзернейм (a-z, 0-9, _)" maxlength=20 autocomplete="username" autocapitalize="none">
+  <input id="pw" type="password" placeholder="Пароль (от 8 символов)" autocomplete="${reg?"new-password":"current-password"}">
+  ${reg?`<input id="pw2" type="password" placeholder="Повторите пароль" autocomplete="new-password">`:""}
+  <div class="err" id="er">${esc(msg)}</div><button id="go" style="width:100%">${reg?"Зарегистрироваться":"Войти"}</button></div>`;
+  $("#m1").onclick=()=>{mode="login";authView()};$("#m2").onclick=()=>{mode="register";authView()};
+  $("#go").onclick=async()=>{
+    const er=$("#er"),b=$("#go"),username=$("#un").value.trim().toLowerCase().replace(/^@/,""),password=$("#pw").value;
+    er.textContent="";
+    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Юзернейм: 3–20 символов, a-z, 0-9 и _";
+    let body={username,password};
+    if(reg){
+      if(!$("#fn").value.trim()||!$("#ln").value.trim())return er.textContent="Укажите имя и фамилию";
+      if(password.length<8)return er.textContent="Пароль должен быть не короче 8 символов";
+      if(password!==$("#pw2").value)return er.textContent="Пароли не совпадают";
+      body={...body,firstName:$("#fn").value.trim(),lastName:$("#ln").value.trim()};
+    }
+    b.disabled=true;b.textContent="Подождите…";
+    const r=await api(reg?"register":"login",body);
+    if(!r.ok){b.disabled=false;b.textContent=reg?"Зарегистрироваться":"Войти";return er.textContent=r.error}
+    setSession(r);shell();
+  };
+}
+
+function shell(){
+  const T=[["feed","📰","Лента"],["friends","👥","Друзья"],["games","🎮","Игры"],["settings","⚙️","Настройки"],["profile","👤","Профиль"]];
+  app.innerHTML=`<div id="view"></div><nav><div>${T.map(([k,i,n])=>`<button data-t="${k}" class="${k===tab?"on":""}"><b>${i}</b>${n}</button>`).join("")}</div></nav>`;
+  app.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;shell()});
+  ({feed:feedV,friends:friendsV,games:gamesV,settings:settingsV,profile:profileV})[tab]();
+}
+const soon=(t,txt)=>$("#view").innerHTML=`<h1>${t}</h1><div class="card"><h2>🚧 Скоро</h2><p class="muted">${txt}</p></div>`;
+const feedV=()=>soon("Лента","Здесь появятся экологические новости из проверенных источников. Выдуманных новостей не будет, раздел включится после подключения источников.");
+const friendsV=()=>soon("Друзья","Поиск по юзернейму, друзья и чаты — следующий этап.");
+const logout=async()=>{await api("logout");localStorage.removeItem("tk");token=me=null;tab="profile";authView()};
+const dead=r=>{if(r.error&&r.error.includes("Сессия")){localStorage.removeItem("tk");token=me=null;authView(r.error);return true}};
+
+function profileV(){
+  const {lv,pct}=level(me.xp);
+  $("#view").innerHTML=`<div class="card row"><div class="ava">${esc((me.firstName[0]||"")+(me.lastName[0]||""))}</div><div class="grow"><h2>${esc(me.firstName)} ${esc(me.lastName)}</h2>
+  <div class="muted">@${esc(me.username)}${me.role!=="student"?" · "+(me.role==="teacher"?"Учитель":"Администратор"):""}</div></div></div>
+  <div class="card"><div class="row"><b class="grow">Уровень ${lv}</b><span class="muted">${me.xp} XP</span></div><div class="bar" style="margin-top:8px"><i style="width:${pct}%"></i></div>
+  <div class="muted" style="margin-top:6px">До следующего уровня: ${100-pct} XP</div></div>
+  <div class="card"><b>Редактировать профиль</b><input id="fn" value="${esc(me.firstName)}" maxlength=40 placeholder="Имя"><input id="ln" value="${esc(me.lastName)}" maxlength=40 placeholder="Фамилия">
+  <textarea id="bio" rows=3 maxlength=200 placeholder="О себе">${esc(me.bio)}</textarea><div class="err" id="er"></div><button id="sv">Сохранить</button></div>`;
+  $("#sv").onclick=async()=>{
+    const r=await api("update",{firstName:$("#fn").value,lastName:$("#ln").value,bio:$("#bio").value});
+    if(dead(r))return;if(r.ok){me=r.user;profileV();$("#er").textContent="Сохранено ✓"}else $("#er").textContent=r.error;
+  };
+}
+
+async function gamesV(){
+  $("#view").innerHTML=`<h1>Игры и задания</h1><h2>Задания на сегодня</h2><div id="tk" class="muted">Загрузка…</div>
+  <div class="card"><b>🎮 Мини-игры</b><p class="muted">Сортировка мусора, викторина и эко-память появятся в следующем этапе.</p></div>`;
+  const r=await api("tasks");if(dead(r))return;
+  if(!r.ok)return $("#tk").textContent=r.error;
+  $("#tk").innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b>
+  <div class="muted">${esc(t.description)}</div><div class="muted">+${t.xp} XP</div></div>${t.done?"✅":`<button data-s="${t.slot}">Готово</button>`}</div>`).join("")+
+  `<p class="muted" style="font-size:13px">Это самоотчёт. Новые задания — каждый день.</p>`;
+  $("#tk").querySelectorAll("button").forEach(b=>b.onclick=async()=>{
+    b.disabled=true;await api("complete",{slot:+b.dataset.s});const m=await api("me");if(m.ok)me=m.user;gamesV();
+  });
+}
+
+function settingsV(){
+  $("#view").innerHTML=`<h1>Настройки</h1>
+  <div class="card"><b>Тема</b><select id="th"><option value="auto">Как в системе</option><option value="light">Светлая</option><option value="dark">Тёмная</option></select></div>
+  <div class="card"><b>Сменить юзернейм</b><input id="nu" placeholder="Новый юзернейм" maxlength=20 autocapitalize="none"><input id="up" type="password" placeholder="Текущий пароль">
+  <div class="err" id="e1"></div><button id="b1">Сменить юзернейм</button></div>
+  <div class="card"><b>Сменить пароль</b><input id="op" type="password" placeholder="Текущий пароль"><input id="np" type="password" placeholder="Новый пароль (от 8 символов)"><input id="np2" type="password" placeholder="Повторите новый пароль">
+  <div class="err" id="e2"></div><button id="b2">Сменить пароль</button></div>
+  <div class="card"><button class="ghost" id="out" style="width:100%">Выйти из аккаунта</button></div>`;
+  $("#th").value=me.theme;
+  $("#th").onchange=async e=>{theme(e.target.value);const r=await api("update",{theme:e.target.value});if(r.ok)me=r.user};
+  $("#b1").onclick=async()=>{const r=await api("changeUsername",{username:$("#nu").value.trim().toLowerCase().replace(/^@/,""),password:$("#up").value});
+    if(dead(r))return;if(r.ok){me=r.user;$("#e1").textContent="Юзернейм изменён ✓";$("#nu").value=$("#up").value=""}else $("#e1").textContent=r.error};
+  $("#b2").onclick=async()=>{if($("#np").value!==$("#np2").value)return $("#e2").textContent="Пароли не совпадают";
+    const r=await api("changePassword",{oldPassword:$("#op").value,newPassword:$("#np").value});
+    if(dead(r))return;$("#e2").textContent=r.ok?"Пароль изменён ✓":r.error;if(r.ok)$("#op").value=$("#np").value=$("#np2").value=""};
+  $("#out").onclick=logout;
+}
+
+(async()=>{
+  if(!API_URL){app.innerHTML=`<div class="card"><h2>⚙️ Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js. Инструкция — в README.md.</p></div>`;return}
+  if(token){const r=await api("me");if(r.ok){me=r.user;theme(me.theme)}else{if(!/Сессия/.test(r.error||""))return app.innerHTML=`<div class="card"><h2>Нет соединения</h2><p class="muted">${esc(r.error)}</p></div>`;localStorage.removeItem("tk");token=null}}
+  me?shell():authView();
+})();
+</script>
+</body>
+</html>
