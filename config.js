@@ -1,2 +1,2 @@
-export const API_URL = "https://script.google.com/macros/s/AKfycbzYGApmBD81_rsIRua1zOKS8N_8q2hkmo1iN8a8dmztoKB22AT56MG7PIlUVhTrr7KQpQ/exec";
+export const API_URL = "https://script.google.com/macros/s/AKfycbz0PEDZad6yQNGY-DxB11VAdYfkquZwOTXEUMzfAdIdFzYr2Du3_Sd7tihWZeM-OPqcSg/exec";
 export const BRAND = { name: "ЭкоТрек", emoji: "🌿" };
