@@ -28,7 +28,7 @@ nav button b{display:block;font-size:22px}nav button.on{color:var(--pri)}
 <body>
 <div id="app">Загрузка…</div>
 <script type="module">
-import {API_URL,BRAND} from "./config.js";
+import {API_URL,BRAND} from "./config.js?v=5";
 const $=s=>document.querySelector(s), app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let token=localStorage.getItem("tk"), me=null, tab="profile", mode="login";
