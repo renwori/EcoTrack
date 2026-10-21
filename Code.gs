@@ -62,6 +62,6 @@ complete(d){const u=who(d),date=Utilities.formatDate(new Date(),"Europe/Moscow",
 function doPost(e){const lock=LockService.getScriptLock();lock.waitLock(20000);
  try{const d=JSON.parse(e.postData.contents);if(!A[d.action])throw"Неизвестное действие";
   return out(Object.assign({ok:true},A[d.action](d)))}
- catch(err){if(typeof err!=="string")console.error(err);return out({ok:false,error:typeof err==="string"?err:"Ошибка сервера"})}
+ catch(err){if(typeof err!=="string")console.error(err);return out({ok:false,error:typeof err==="string"?err:"Ошибка сервера: "+err})
  finally{lock.releaseLock()}}
 function out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON)}
