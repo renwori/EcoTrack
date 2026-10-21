@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ЭкоТрек</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
 <style>
 :root{--bg:#f4f8f5;--card:#fff;--text:#1d2b24;--muted:#66756d;--pri:#1f9d55;--pri2:#d9f2e3;--line:#e2ebe5;--err:#c0392b;--r:18px}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e1612;--card:#17231d;--text:#e8f1ec;--muted:#8fa399;--pri:#3ecf7b;--pri2:#1d3a2b;--line:#243229;--err:#ff7b6b}}
@@ -28,7 +29,7 @@ nav button b{display:block;font-size:22px}nav button.on{color:var(--pri)}
 <body>
 <div id="app">Загрузка…</div>
 <script type="module">
-import {API_URL,BRAND} from "./config.js?v=5";
+import {API_URL,BRAND} from "./config.js?v=6";
 const $=s=>document.querySelector(s), app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let token=localStorage.getItem("tk"), me=null, tab="profile", mode="login";
@@ -77,10 +78,41 @@ function shell(){
   ({feed:feedV,friends:friendsV,games:gamesV,settings:settingsV,profile:profileV})[tab]();
 }
 const soon=(t,txt)=>$("#view").innerHTML=`<h1>${t}</h1><div class="card"><h2>🚧 Скоро</h2><p class="muted">${txt}</p></div>`;
-const feedV=()=>soon("Лента","Здесь появятся экологические новости из проверенных источников. Выдуманных новостей не будет, раздел включится после подключения источников.");
-const friendsV=()=>soon("Друзья","Поиск по юзернейму, друзья и чаты — следующий этап.");
 const logout=async()=>{await api("logout");localStorage.removeItem("tk");token=me=null;tab="profile";authView()};
 const dead=r=>{if(r.error&&r.error.includes("Сессия")){localStorage.removeItem("tk");token=me=null;authView(r.error);return true}};
+
+
+async function feedV(){
+  $("#view").innerHTML=`<h1>Лента</h1><div id="nw" class="muted">Загрузка…</div>`;
+  const r=await api("news");if(dead(r))return;if(!r.ok)return $("#nw").textContent=r.error;
+  $("#nw").innerHTML=r.news.length?r.news.map(n=>`<div class="card"><b>${esc(n.title)}</b><div class="muted" style="font-size:13px">${esc(n.source)} · ${new Date(n.published).toLocaleDateString("ru-RU")}</div><a href="${esc(n.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--pri)">Читать оригинал →</a></div>`).join(""):`<div class="card"><h2>Пока пусто</h2><p class="muted">Новости подтягиваются из источников, которые добавляет администратор. Выдуманных новостей здесь не будет.</p></div>`;
+}
+const ppl=(u,btns)=>`<div class="row" style="margin:8px 0"><div class="ava" style="width:44px;height:44px;font-size:16px">${esc(u.firstName[0]+u.lastName[0])}</div><div class="grow"><b>${esc(u.firstName)} ${esc(u.lastName)}</b><div class="muted">@${esc(u.username)} · ур. ${level(u.xp).lv}</div></div>${btns}</div>`;
+const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
+async function friendsV(){
+  $("#view").innerHTML=`<h1>Друзья</h1><div class="card"><b>Найти по юзернейму</b><input id="q" placeholder="@username (от 3 символов)" autocapitalize="none"><button id="sq">Найти</button><div id="sr"></div></div><div id="fl" class="muted">Загрузка…</div>`;
+  $("#view").onclick=async e=>{const b=e.target.closest("button[data-a]");if(!b)return;b.disabled=true;
+    const m={add:["friendAdd",{}],ok:["friendRespond",{accept:true}],no:["friendRespond",{accept:false}],rm:["friendRemove",{}]}[b.dataset.a];
+    const r=await api(m[0],{username:b.dataset.u,...m[1]});if(dead(r))return;if(!r.ok)alert(r.error);friendsV()};
+  $("#sq").onclick=async()=>{const b=$("#sq");b.disabled=true;b.textContent="Подождите…";const r=await api("search",{q:$("#q").value});b.disabled=false;b.textContent="Найти";if(dead(r))return;
+    $("#sr").innerHTML=!r.ok?`<div class="err">${esc(r.error)}</div>`:r.users.length?r.users.map(u=>ppl(u,{none:fb("add",u,"Добавить"),sent:"<span class=muted>Отправлено</span>",received:fb("ok",u,"Принять"),friend:"<span class=muted>Друг ✓</span>"}[u.rel])).join(""):`<div class="muted">Никого не найдено</div>`};
+  const r=await api("friends");if(dead(r))return;if(!r.ok)return $("#fl").textContent=r.error;
+  const sec=(t,a,f)=>a.length?`<div class="card"><b>${t}</b>${a.map(f).join("")}</div>`:"";
+  $("#fl").innerHTML=sec("Запросы в друзья",r.incoming,u=>ppl(u,fb("ok",u,"Принять")+fb("no",u,"✕",1)))+sec("Мои друзья ("+r.friends.length+")",r.friends,u=>ppl(u,fb("rm",u,"Удалить",1)))+sec("Отправленные запросы",r.outgoing,u=>ppl(u,fb("rm",u,"Отменить",1)))||`<div class="card muted">Пока нет друзей. Найдите кого-нибудь по юзернейму.</div>`;
+}
+async function play(g){
+  const v=$("#view");v.innerHTML=`<p class="muted">Загрузка…</p>`;
+  const r=await api("gameStart",{game:g});if(dead(r))return;if(!r.ok){v.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+  const items=r.items,ans=[];let i=0;
+  const step=()=>{if(i>=items.length)return finish();const it=items[i];
+    v.innerHTML=`<h1>${g==="sort"?"♻️ Сортировка":"❓ Викторина"}</h1><p class="muted">Вопрос ${i+1} из ${items.length}</p><div class="card"><h2>${esc(it.q)}</h2>${it.o.map((o,k)=>`<button class="ghost" data-k="${k}" style="width:100%;margin:5px 0">${esc(o)}</button>`).join("")}</div>${r.played?`<p class="muted">Награда за эту игру сегодня уже получена, играйте для тренировки.</p>`:""}`;
+    v.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ans.push({id:it.id,a:+b.dataset.k});i++;step()})};
+  const finish=async()=>{v.innerHTML=`<p class="muted">Подождите…</p>`;const s=await api("gameSubmit",{game:g,answers:ans});if(dead(s))return;
+    if(!s.ok){v.innerHTML=`<div class="card err">${esc(s.error)}</div><button id="bk">Назад</button>`;$("#bk").onclick=gamesV;return}
+    const m=await api("me");if(m.ok)me=m.user;
+    v.innerHTML=`<h1>Результат: ${s.score} из ${s.total}</h1><div class="card"><b>${s.xp?`+${s.xp} XP 🎉`:"XP за эту игру сегодня уже получены"}</b></div>`+s.results.filter(x=>!x.ok).map(x=>{const it=items.find(t=>t.id===x.id);return`<div class="card"><b>${esc(it.q)}</b><div>Правильно: ${esc(it.o[x.right])}</div><div class="muted">${esc(x.e)}</div></div>`}).join("")+`<button id="bk" style="width:100%">К играм</button>`;$("#bk").onclick=gamesV};
+  step();
+}
 
 function profileV(){
   const {lv,pct}=level(me.xp);
@@ -98,7 +130,8 @@ function profileV(){
 
 async function gamesV(){
   $("#view").innerHTML=`<h1>Игры и задания</h1><h2>Задания на сегодня</h2><div id="tk" class="muted">Загрузка…</div>
-  <div class="card"><b>🎮 Мини-игры</b><p class="muted">Сортировка мусора, викторина и эко-память появятся в следующем этапе.</p></div>`;
+  <h2>Мини-игры</h2><div class="card"><b>♻️ Сортировка мусора</b><p class="muted">Куда выбросить? 5 предметов. Правила приёма могут отличаться в вашем городе.</p><button data-g="sort">Играть</button></div><div class="card"><b>❓ Эко-викторина</b><p class="muted">5 вопросов об экологии.</p><button data-g="quiz">Играть</button></div><p class="muted" style="font-size:13px">XP даётся за первое прохождение каждой игры в день.</p>`;
+  $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));
   const r=await api("tasks");if(dead(r))return;
   if(!r.ok)return $("#tk").textContent=r.error;
   $("#tk").innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b>
@@ -125,6 +158,7 @@ function settingsV(){
     const r=await api("changePassword",{oldPassword:$("#op").value,newPassword:$("#np").value});
     if(dead(r))return;$("#e2").textContent=r.ok?"Пароль изменён ✓":r.error;if(r.ok)$("#op").value=$("#np").value=$("#np2").value=""};
   $("#out").onclick=logout;
+  for(const id of ["b1","b2"]){const b=$("#"+id),f=b.onclick;b.onclick=async()=>{const t=b.textContent;b.disabled=true;b.textContent="Подождите…";try{await f()}finally{b.disabled=false;b.textContent=t}}}
 }
 
 (async()=>{
