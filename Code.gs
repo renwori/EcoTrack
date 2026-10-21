@@ -59,9 +59,18 @@ complete(d){const u=who(d),date=Utilities.formatDate(new Date(),"Europe/Moscow",
  const t=rows("Tasks").find(x=>x.userId===u.id&&x.date===date&&x.slot==String(d.slot)&&x.done!=="1");
  if(!t)return{gained:0};const xp=CAT.find(c=>c.id==t.taskId).xp;
  upd("Tasks",t._row,"done","1");upd("Users",u._row,"xp",Number(u.xp)+xp);return{gained:xp}}};
-function doPost(e){const lock=LockService.getScriptLock();lock.waitLock(20000);
- try{const d=JSON.parse(e.postData.contents);if(!A[d.action])throw"Неизвестное действие";
-  return out(Object.assign({ok:true},A[d.action](d)))}
- catch(err){if(typeof err!=="string")console.error(err);return out({ok:false,error:typeof err==="string"?err:"Ошибка сервера: "+err})
- finally{lock.releaseLock()}}
+function doPost(e){
+  const lock=LockService.getScriptLock();
+  try{
+    lock.waitLock(20000);
+    const d=JSON.parse(e.postData.contents);
+    if(!A[d.action])throw"Неизвестное действие";
+    return out(Object.assign({ok:true},A[d.action](d)));
+  }catch(err){
+    if(typeof err!=="string")console.error(err);
+    return out({ok:false,error:typeof err==="string"?err:"Ошибка сервера: "+err});
+  }finally{
+    try{lock.releaseLock()}catch(x){}
+  }
+}
 function out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON)}
