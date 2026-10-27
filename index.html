@@ -3,88 +3,216 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b3d2e">
+<meta name="theme-color" content="#f2f7f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#09110d" media="(prefers-color-scheme: dark)">
 <title>ЭкоТрек</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef5ef;--card:#fff;--text:#10241a;--muted:#5f7468;--pri:#12a150;--pri-ink:#fff;--pri2:#dcf3e4;--lime:#c8f169;--deep:#0b3d2e;--line:#dbe8df;--err:#c0392b;--r:22px;--sh:0 1px 2px rgba(11,61,46,.06),0 8px 24px -12px rgba(11,61,46,.18);--ease:cubic-bezier(.2,.8,.2,1)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a1511;--card:#13221b;--text:#e8f3ec;--muted:#8da598;--pri:#3ecf7b;--pri-ink:#07281a;--pri2:#1b382a;--line:#223a2d;--err:#ff7b6b;--sh:0 8px 24px -12px rgba(0,0,0,.6)}}
-:root[data-theme=dark]{--bg:#0a1511;--card:#13221b;--text:#e8f3ec;--muted:#8da598;--pri:#3ecf7b;--pri-ink:#07281a;--pri2:#1b382a;--line:#223a2d;--err:#ff7b6b;--sh:0 8px 24px -12px rgba(0,0,0,.6)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--text);font:600 16px/1.45 Nunito,system-ui,sans-serif;overflow-wrap:anywhere;transition:background .3s}
-#app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px 16px 110px}
-h1,h2{font-family:Unbounded,Nunito,sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1.15}
-h1{font-size:clamp(22px,6vw,28px);margin:.5em 0 .6em}h2{font-size:clamp(17px,4.6vw,20px);margin:.2em 0}
-.muted{color:var(--muted);font-weight:500}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:12px 0;box-shadow:var(--sh)}
-input,textarea,select{width:100%;max-width:100%;padding:14px 16px;margin:6px 0;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--text);font:inherit;transition:border-color .2s,box-shadow .2s}
-input:focus,textarea:focus,select:focus{outline:0;border-color:var(--pri);box-shadow:0 0 0 4px var(--pri2)}
-button{font:inherit;font-weight:800;border:0;border-radius:16px;padding:13px 20px;min-height:46px;background:var(--pri);color:var(--pri-ink);cursor:pointer;max-width:100%;transition:transform .15s var(--ease),filter .2s,box-shadow .2s;box-shadow:0 4px 0 rgba(0,0,0,.14)}
-button:hover{filter:brightness(1.06)}button:active{transform:translateY(3px) scale(.98);box-shadow:0 1px 0 rgba(0,0,0,.14)}
-button:focus-visible,a:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
-button.ghost{background:var(--pri2);color:var(--pri);box-shadow:none}button:disabled{opacity:.5;pointer-events:none}
-.err{color:var(--err);min-height:1.4em;font-weight:700}.row{display:flex;gap:12px;align-items:center}.grow{flex:1;min-width:0}
-.ava{flex:none;width:64px;height:64px;border-radius:50%;background:var(--lime);display:grid;place-items:center;font:700 22px Unbounded,sans-serif;color:var(--deep)}
-.bar{height:14px;border-radius:9px;background:var(--pri2);overflow:hidden}.bar i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--pri),var(--lime));transition:width 1.1s var(--ease)}
-.hero{background:linear-gradient(135deg,var(--deep),#12775a);color:#fff;border:0;position:relative;overflow:hidden}
-.hero .muted{color:#b9dccb}.hero .ava{width:72px;height:72px}
-.hero::after{content:"🌿";position:absolute;right:-8px;top:-14px;font-size:96px;opacity:.14;transform:rotate(18deg);animation:sway 6s ease-in-out infinite}
-@keyframes sway{50%{transform:rotate(2deg) translateY(6px)}}
-.lvl{font:700 34px Unbounded,sans-serif;line-height:1}
-.view{animation:in .35s var(--ease)}@keyframes in{from{opacity:0;transform:translateY(8px)}}
-nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:496px;margin:0 auto;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:26px;box-shadow:var(--sh);padding:6px}
-nav div{display:flex;gap:2px}
-nav button{flex:1;min-width:0;background:none;color:var(--muted);border-radius:20px;font-size:11px;font-weight:700;padding:7px 0;min-height:52px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none}
-nav button b{display:block;font-size:21px;transition:transform .3s var(--ease)}
-nav button.on{background:var(--pri2);color:var(--pri)}nav button.on b{transform:translateY(-2px) scale(1.15)}
-.task{display:flex;gap:12px;align-items:center;transition:opacity .3s,transform .3s}.task .ic{font-size:30px;flex:none;width:52px;height:52px;border-radius:16px;background:var(--pri2);display:grid;place-items:center}
-.done{opacity:.55}.done .ck{animation:pop .5s var(--ease)}@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.4)}}
-.tabs{display:flex;gap:8px;margin-bottom:10px;background:var(--bg);padding:5px;border-radius:18px}.tabs button{flex:1;padding:11px 6px;box-shadow:none}
-.opt{width:100%;margin:6px 0;text-align:left;background:var(--bg);color:var(--text);border:2px solid var(--line);box-shadow:none}
-.opt:hover{border-color:var(--pri)}.opt.pick{background:var(--pri);color:var(--pri-ink);border-color:var(--pri)}
-.q{animation:slide .35s var(--ease)}@keyframes slide{from{opacity:0;transform:translateX(24px)}}
-.gico{font-size:34px;display:inline-block;animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-5px) rotate(-6deg)}}
-.logo{font-size:64px;display:inline-block;animation:bob 3.2s ease-in-out infinite}
-.spin{width:28px;height:28px;border-radius:50%;border:4px solid var(--pri2);border-top-color:var(--pri);animation:rot .8s linear infinite;margin:24px auto}@keyframes rot{to{transform:rotate(360deg)}}
-#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-90px);background:var(--deep);color:#fff;padding:12px 20px;border-radius:30px;box-shadow:var(--sh);z-index:9;transition:transform .45s var(--ease);max-width:90vw;font-weight:800}
-#toast.on{transform:translate(-50%,0)}
-.news{display:block;transition:transform .2s var(--ease)}.news:hover{transform:translateY(-2px)}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:root{--bg:#f2f7f3;--bgt:rgba(242,247,243,.78);--card:rgba(255,255,255,.74);--solid:#fff;--text:#12211a;--muted:#5f7168;
+--pri:#16a34a;--pri-d:#0f7a37;--pri2:rgba(22,163,74,.12);--on:#fff;--line:rgba(18,33,26,.09);--err:#dc2626;
+--shadow:0 12px 30px -16px rgba(15,122,55,.45);--r:22px;--b1:#86efac;--b2:#7dd3fc;--ease:cubic-bezier(.2,.8,.2,1)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#09110d;--bgt:rgba(9,17,13,.78);--card:rgba(24,38,31,.72);--solid:#15231b;--text:#e9f4ee;--muted:#8da398;--pri:#34d399;--pri-d:#10b981;--pri2:rgba(52,211,153,.15);--on:#04210f;--line:rgba(255,255,255,.09);--err:#ff7b6b;--shadow:0 12px 30px -16px rgba(0,0,0,.7);--b1:#065f46;--b2:#0c4a6e}}
+:root[data-theme=dark]{--bg:#09110d;--bgt:rgba(9,17,13,.78);--card:rgba(24,38,31,.72);--solid:#15231b;--text:#e9f4ee;--muted:#8da398;--pri:#34d399;--pri-d:#10b981;--pri2:rgba(52,211,153,.15);--on:#04210f;--line:rgba(255,255,255,.09);--err:#ff7b6b;--shadow:0 12px 30px -16px rgba(0,0,0,.7);--b1:#065f46;--b2:#0c4a6e}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;pointer-events:none;opacity:.6}
+body::before{width:70vmax;height:70vmax;left:-25vmax;top:-25vmax;background:radial-gradient(circle,var(--b1),transparent 65%);animation:drift 22s ease-in-out infinite alternate}
+body::after{width:65vmax;height:65vmax;right:-25vmax;bottom:-20vmax;background:radial-gradient(circle,var(--b2),transparent 65%);animation:drift 28s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(9vmax,6vmax) scale(1.15)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+@keyframes float{50%{transform:translateY(-8px)}}
+@keyframes swap{from{opacity:0;transform:translateX(14px)}}
+@keyframes sh{to{background-position:-200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bump{40%{transform:scale(1.18)}}
+@keyframes tin{from{opacity:0;transform:translateY(-14px) scale(.95)}}
+@keyframes tout{to{opacity:0;transform:translateY(-10px)}}
+@keyframes cf{40%{transform:translate(calc(var(--dx)*.7),var(--dy)) rotate(calc(var(--r)*.5))}100%{transform:translate(var(--dx),calc(var(--dy) + 340px)) rotate(var(--r));opacity:0}}
+
+#app{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:0 16px calc(120px + env(safe-area-inset-bottom))}
+h1{font-size:clamp(24px,6.5vw,30px);margin:.35em 0;letter-spacing:-.02em}
+h2{font-size:clamp(18px,5vw,22px);margin:.2em 0}
+.sec{margin:26px 0 2px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.muted{color:var(--muted)}.sm{font-size:13px}.center{text-align:center}.err{color:var(--err);min-height:1.4em;font-size:14px}
+.row{display:flex;gap:12px;align-items:center}.grow{flex:1;min-width:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;background:var(--pri2);color:var(--pri);font-size:12px;font-weight:700}
+
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;margin:0 -16px;padding:calc(12px + env(safe-area-inset-top)) 16px 10px;background:var(--bgt);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.01em}
+.chip{padding:6px 12px;border-radius:99px;background:var(--pri2);color:var(--pri);font-weight:700;font-size:13px}
+.chip.bump{animation:bump .5s var(--ease)}
+
+.card{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:12px 0;box-shadow:var(--shadow);animation:rise .55s var(--ease) backwards;animation-delay:calc(var(--i,0)*60ms)}
+.hero{background:linear-gradient(135deg,rgba(34,197,94,.22),rgba(14,165,233,.16)),var(--card)}
+.empty{text-align:center;padding:30px 18px}.eb{font-size:46px;display:inline-block;animation:float 3s ease-in-out infinite}
+@media(hover:hover){.lift{transition:transform .25s var(--ease)}.lift:hover{transform:translateY(-3px)}}
+
+input,textarea{width:100%;padding:14px 16px;margin:6px 0;border-radius:14px;border:1.5px solid var(--line);background:var(--solid);color:var(--text);font:inherit;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus{outline:0;border-color:var(--pri);box-shadow:0 0 0 4px var(--pri2)}
+button{font:inherit;border:0;border-radius:14px;padding:12px 18px;min-height:44px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:var(--on);font-weight:700;cursor:pointer;box-shadow:0 8px 18px -10px var(--pri);transition:transform .15s var(--ease),filter .2s,opacity .2s;-webkit-tap-highlight-color:transparent;max-width:100%}
+button:hover{filter:brightness(1.07)}button:active{transform:scale(.96)}
+button:disabled{opacity:.55;pointer-events:none}
+button.ghost{background:var(--pri2);color:var(--pri);box-shadow:none}
+button.sm{padding:8px 12px;min-height:38px}
+.btn-full{width:100%}
+button:focus-visible,a:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+
+.auth{text-align:center;padding-top:calc(34px + env(safe-area-inset-top))}
+.auth .card{text-align:left}
+.logo-big{font-size:68px;display:inline-block;animation:float 3.5s ease-in-out infinite;filter:drop-shadow(0 12px 14px rgba(22,163,74,.35))}
+.grad{background:linear-gradient(90deg,var(--pri),#0ea5e9);-webkit-background-clip:text;background-clip:text;color:transparent;margin:.1em 0}
+.pw{position:relative}.pw input{padding-right:54px}
+.eye{position:absolute;right:6px;top:6px;bottom:6px;min-height:0;padding:0 10px;background:none;box-shadow:none;color:inherit;filter:none!important}
+form.swap{animation:swap .35s var(--ease)}
+
+.seg{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);background:var(--pri2);border-radius:16px;padding:4px}
+.seg i{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/var(--n));background:var(--solid);border-radius:12px;box-shadow:0 4px 12px -6px rgba(0,0,0,.35);transition:transform .4s var(--ease);transform:translateX(calc(var(--k)*100%))}
+.seg button{position:relative;background:none;box-shadow:none;color:var(--muted);padding:10px 4px;filter:none}
+.seg button.on{color:var(--text)}
+
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(536px,calc(100% - 24px));z-index:10;background:var(--card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid var(--line);border-radius:28px;box-shadow:0 18px 40px -16px rgba(0,0,0,.4);padding:6px}
+nav .in{position:relative;display:grid;grid-template-columns:repeat(5,1fr)}
+nav .ind{position:absolute;top:0;bottom:0;left:0;width:20%;border-radius:22px;background:var(--pri2);transition:transform .45s var(--ease);transform:translateX(calc(var(--k,0)*100%))}
+nav button{position:relative;min-width:0;background:none;box-shadow:none;color:var(--muted);font-size:11px;font-weight:600;padding:7px 0;border-radius:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;filter:none}
+nav button .e{display:block;font-size:22px;line-height:1.2;transition:transform .35s var(--ease)}
+nav button.on{color:var(--pri)}nav button.on .e{transform:translateY(-2px) scale(1.18)}
+nav button.dot::after{content:"";position:absolute;top:6px;left:calc(50% + 9px);width:10px;height:10px;border-radius:50%;background:var(--err);border:2px solid var(--solid);animation:pop .5s var(--ease)}
+
+.ava{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:16px;text-transform:uppercase}
+.ring{position:relative;width:112px;height:112px;flex:none}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ring .bg{stroke:var(--pri2)}
+.ring .fg{stroke:var(--pri);stroke-dasharray:289;stroke-dashoffset:289;transition:stroke-dashoffset 1.2s var(--ease)}
+.ring .ava{position:absolute;inset:14px;width:auto;height:auto;font-size:30px}
+.lvb{position:absolute;right:-2px;bottom:2px;min-width:30px;height:30px;padding:0 6px;border-radius:99px;display:grid;place-items:center;background:var(--pri);color:var(--on);font-weight:800;font-size:14px;border:3px solid var(--solid);animation:pop .6s var(--ease) .4s backwards}
+.num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:2px;font-size:34px;font-weight:800}
+.num small{font-size:15px;color:var(--muted);font-weight:600}
+.bio{margin:14px 0 0;color:var(--muted)}
+.prog{height:10px;border-radius:9px;background:var(--pri2);overflow:hidden}
+.prog i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--pri),#0ea5e9);transition:width .8s var(--ease)}
+
+.item{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line);margin-top:8px}
+.item:first-of-type{margin-top:10px}
+.acts{display:flex;gap:6px;flex:none}.acts button{padding:8px 14px;min-height:40px}
+.srch{display:flex;gap:8px;margin-top:6px}.srch input{margin:0}.srch button{flex:none}
+.hl{border-color:var(--pri)}
+
+.news{display:block;color:var(--text);text-decoration:none}
+.news .meta{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
+.dotc{width:9px;height:9px;border-radius:50%;flex:none}
+.nt{font-weight:700;font-size:17px;line-height:1.3;margin:8px 0}
+.more{color:var(--pri);font-weight:700;font-size:14px}
+
+.task{display:flex;gap:14px;align-items:center;transition:opacity .4s}
+.task .ic{flex:none;width:54px;height:54px;border-radius:17px;background:var(--pri2);display:grid;place-items:center;font-size:28px}
+.task.done{opacity:.6}
+.st{flex:none}.okc{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--pri);color:var(--on);font-weight:800;animation:pop .5s var(--ease)}
+
+.tile{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;width:100%;margin:12px 0;padding:20px;border-radius:24px;background:var(--g);color:#fff;text-align:left;box-shadow:0 18px 30px -18px rgba(0,0,0,.55);animation:rise .55s var(--ease) backwards;animation-delay:calc(var(--i,0)*60ms);transition:transform .25s var(--ease)}
+.tile::after{content:"";position:absolute;right:-34px;top:-34px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.16)}
+.tile:hover{transform:translateY(-3px) scale(1.01)}.tile:active{transform:scale(.97)}
+.te{font-size:44px;flex:none;animation:float 3.2s ease-in-out infinite}
+.tt{flex:1;min-width:0;display:grid;gap:2px}.tt b{font-size:18px}.tt span{opacity:.92;font-size:14px;font-weight:500}
+.tt em{font-style:normal;font-size:12px;font-weight:700;background:rgba(255,255,255,.24);padding:2px 10px;border-radius:99px;justify-self:start;margin-top:4px}
+.go{flex:none;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.26);display:grid;place-items:center;z-index:1}
+
+.qcard{text-align:center}.qcard h2{margin:8px 0 16px}
+.qe{font-size:46px;display:inline-block;animation:float 3s ease-in-out infinite}
+.opt{display:flex;gap:12px;align-items:center;width:100%;margin:8px 0;padding:14px 16px;background:var(--solid);color:var(--text);border:1.5px solid var(--line);box-shadow:none;text-align:left;filter:none}
+.opt b{flex:none;width:30px;height:30px;border-radius:10px;background:var(--pri2);color:var(--pri);display:grid;place-items:center;font-size:13px}
+.opt:hover{border-color:var(--pri)}
+.opt.sel{background:var(--pri);color:var(--on);border-color:var(--pri);transform:scale(1.02);opacity:1}
+.opt.sel b{background:rgba(255,255,255,.28);color:inherit}
+.wrong{border-left:4px solid var(--err)}.good{color:var(--pri);font-weight:700;margin:6px 0 2px}
+.wait{text-align:center}.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--pri2);border-top-color:var(--pri);animation:spin .8s linear infinite;margin:8px auto}
+.pops{display:inline-block;animation:pop .6s var(--ease) .9s backwards;margin-top:6px;font-size:15px;padding:6px 14px}
+
+.sk{height:84px;margin:12px 0;border-radius:var(--r);background:linear-gradient(90deg,var(--pri2),transparent,var(--pri2));background-size:200% 100%;animation:sh 1.4s linear infinite}
+
+#toasts{position:fixed;z-index:50;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:grid;gap:8px;width:min(92vw,420px);pointer-events:none}
+.toast{background:var(--solid);color:var(--text);border:1px solid var(--line);padding:12px 16px;border-radius:16px;font-weight:600;box-shadow:0 14px 30px -12px rgba(0,0,0,.4);animation:tin .4s var(--ease),tout .3s ease 2.4s forwards}
+.toast.err{border-color:var(--err);color:var(--err)}
+.cf{position:fixed;z-index:60;width:8px;height:12px;border-radius:2px;pointer-events:none;animation:cf 1.2s cubic-bezier(.1,.7,.3,1) forwards}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div id="app"><div class="spin"></div></div><div id="toast" role="status"></div>
+<div id="app">Загрузка…</div>
+<div id="toasts"></div>
 <script type="module">
 import {API_URL,BRAND} from "./config.js?v=6";
+
+/* ───────── утилиты ───────── */
 const $=s=>document.querySelector(s), app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let token=localStorage.getItem("tk"), me=null, tab="profile", mode="login", tt;
-const spin=`<div class="spin"></div>`;
-function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),2600)}
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let token=localStorage.getItem("tk"), me=null, tab=localStorage.getItem("tab")||"profile", mode="login", vid=0;
+
 async function api(action,d={}){
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,token,...d})});return await r.json()}
   catch{return{ok:false,error:"Нет соединения с сервером. Проверьте интернет."}}
 }
 const level=xp=>({lv:Math.floor(xp/100)+1,pct:xp%100});
+const RANKS=[[8,"Лес","🌲"],[5,"Дерево","🌳"],[3,"Кустик","🌿"],[1,"Росток","🌱"]];
+const rank=lv=>RANKS.find(r=>lv>=r[0]);
+const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
+const avatar=u=>{const h=hue(u.username);return`<div class="ava" style="background:linear-gradient(135deg,hsl(${h} 70% 52%),hsl(${(h+45)%360} 70% 40%))">${esc((u.firstName[0]||"")+(u.lastName[0]||""))}</div>`};
+const sk=n=>'<div class="sk"></div>'.repeat(n);
+const ring=id=>`<svg viewBox="0 0 112 112"><circle class="bg" cx="56" cy="56" r="46"/><circle class="fg" id="${id}" cx="56" cy="56" r="46"/></svg>`;
+const raf2=f=>requestAnimationFrame(()=>requestAnimationFrame(f));
+const ago=iso=>{const t=new Date(iso).getTime();if(isNaN(t))return"";const m=Math.round((Date.now()-t)/6e4);if(m<1)return"только что";if(m<60)return m+" мин назад";const h=Math.round(m/60);if(h<24)return h+" ч назад";const d=Math.round(h/24);return d<7?d+" дн назад":new Date(t).toLocaleDateString("ru-RU")};
+const count=(el,to)=>{if(!el)return;if(!to||RM){el.textContent=to;return}let n=0;const t=setInterval(()=>{el.textContent=++n;if(n>=to)clearInterval(t)},170)};
+const busy=(b,fn)=>async()=>{const t=b.textContent;b.disabled=true;b.textContent="Подождите…";try{await fn()}finally{b.disabled=false;b.textContent=t}};
+
 function theme(t){const r=document.documentElement;t==="auto"?r.removeAttribute("data-theme"):r.setAttribute("data-theme",t);localStorage.setItem("theme",t)}
 theme(localStorage.getItem("theme")||"auto");
 const setSession=r=>{token=r.token;me=r.user;localStorage.setItem("tk",token);theme(me.theme)};
-const grow=(sel,pct)=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const b=$(sel);if(b)b.style.width=pct+"%"}));
 
+function toast(msg,type=""){const t=document.createElement("div");t.className="toast "+type;t.textContent=msg;$("#toasts").append(t);setTimeout(()=>t.remove(),2800)}
+function burst(x=innerWidth/2,y=innerHeight/3,n=30){
+  if(RM)return;const cols=["#22c55e","#0ea5e9","#f59e0b","#ec4899","#a78bfa"];
+  for(let i=0;i<n;i++){const e=document.createElement("i");e.className="cf";
+    e.style.cssText=`left:${x}px;top:${y}px;background:${cols[i%5]};--dx:${(Math.random()-.5)*320}px;--dy:${-60-Math.random()*190}px;--r:${(Math.random()-.5)*900}deg`;
+    document.body.append(e);setTimeout(()=>e.remove(),1300)}
+}
+const stag=el=>el.querySelectorAll(".card,.tile").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,10)));
+const put=html=>{const v=$("#view");if(!v)return;v.onclick=null;v.innerHTML=html;stag(v)};
+const dead=r=>{if(r.error&&r.error.includes("Сессия")){vid++;localStorage.removeItem("tk");token=me=null;authView(r.error);return true}};
+const logout=async()=>{vid++;await api("logout");localStorage.removeItem("tk");token=me=null;tab="profile";mode="login";authView()};
+
+function chip(bump){const c=$("#xpc");if(!c||!me)return;const {lv}=level(me.xp);c.textContent=`${rank(lv)[2]} Ур. ${lv} · ${me.xp} XP`;
+  if(bump&&!RM){c.classList.remove("bump");void c.offsetWidth;c.classList.add("bump")}}
+function addXp(n){if(!n)return;const o=level(me.xp).lv;me.xp+=n;chip(true);
+  const l=level(me.xp).lv;if(l>o)setTimeout(()=>{toast("🎉 Новый уровень: "+l+"!");burst()},450)}
+async function badge(){const r=await api("friends");const n=$("#nv");if(!r.ok||!n)return;n.querySelector("[data-t=friends]").classList.toggle("dot",r.incoming.length>0)}
+
+/* ───────── вход и регистрация ───────── */
 function authView(msg=""){
-  const reg=mode==="register";
-  app.innerHTML=`<div class="view"><div style="text-align:center;margin-top:28px"><div class="logo">${BRAND.emoji}</div><h1>${BRAND.name}</h1>
-  <p class="muted">Заботиться о планете — просто и интересно</p></div>
-  <div class="card"><div class="tabs"><button class="${reg?"ghost":""}" id="m1">Вход</button><button class="${reg?"":"ghost"}" id="m2">Регистрация</button></div>
-  ${reg?`<input id="fn" placeholder="Имя" maxlength=40 autocomplete="given-name"><input id="ln" placeholder="Фамилия" maxlength=40 autocomplete="family-name">`:""}
-  <input id="un" placeholder="Юзернейм (a-z, 0-9, _)" maxlength=20 autocomplete="username" autocapitalize="none">
-  <input id="pw" type="password" placeholder="Пароль (от 8 символов)" autocomplete="${reg?"new-password":"current-password"}">
-  ${reg?`<input id="pw2" type="password" placeholder="Повторите пароль" autocomplete="new-password">`:""}
-  <div class="err" id="er">${esc(msg)}</div><button id="go" style="width:100%">${reg?"Зарегистрироваться":"Войти"}</button></div></div>`;
-  $("#m1").onclick=()=>{mode="login";authView()};$("#m2").onclick=()=>{mode="register";authView()};
-  $("#go").onclick=async()=>{
+  app.innerHTML=`<div class="auth"><div class="logo-big">${BRAND.emoji}</div><h1 class="grad">${esc(BRAND.name)}</h1>
+  <p class="muted">Заботиться о планете — просто и интересно</p>
+  <div class="card"><div class="seg" id="sg" style="--n:2;--k:${mode==="register"?1:0};margin-bottom:10px"><i></i>
+  <button type="button" data-m="login" class="${mode==="login"?"on":""}">Вход</button><button type="button" data-m="register" class="${mode==="register"?"on":""}">Регистрация</button></div>
+  <form id="af" novalidate></form></div></div>`;
+  const sg=$("#sg");
+  sg.querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;sg.style.setProperty("--k",mode==="register"?1:0);
+    sg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));drawForm()});
+  drawForm(msg);
+}
+function drawForm(msg=""){
+  const reg=mode==="register",f=$("#af");
+  const pw=(id,ph,ac)=>`<div class="pw"><input id="${id}" type="password" placeholder="${ph}" autocomplete="${ac}"><button type="button" class="eye" tabindex="-1" aria-label="Показать пароль">👁</button></div>`;
+  f.innerHTML=(reg?`<input id="fn" placeholder="Имя" maxlength="40" autocomplete="given-name"><input id="ln" placeholder="Фамилия" maxlength="40" autocomplete="family-name">`:"")+
+   `<input id="un" placeholder="Юзернейм (a-z, 0-9, _)" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">`+
+   pw("pw","Пароль (от 8 символов)",reg?"new-password":"current-password")+(reg?pw("pw2","Повторите пароль","new-password"):"")+
+   `<div class="err" id="er" role="alert">${esc(msg)}</div><button class="btn-full" id="go" type="submit">${reg?"Зарегистрироваться":"Войти"}</button>`;
+  f.classList.remove("swap");void f.offsetWidth;f.classList.add("swap");
+  f.querySelectorAll(".eye").forEach(b=>b.onclick=()=>{const i=b.previousElementSibling;i.type=i.type==="password"?"text":"password"});
+  f.onsubmit=async e=>{
+    e.preventDefault();
     const er=$("#er"),b=$("#go"),username=$("#un").value.trim().toLowerCase().replace(/^@/,""),password=$("#pw").value;
     er.textContent="";
     if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Юзернейм: 3–20 символов, a-z, 0-9 и _";
@@ -102,103 +230,187 @@ function authView(msg=""){
   };
 }
 
+/* ───────── оболочка и навигация ───────── */
+const TABS=[["feed","📰","Лента"],["friends","👥","Друзья"],["games","🎮","Игры"],["settings","⚙️","Настройки"],["profile","👤","Профиль"]];
+const VIEWS={feed:feedV,friends:friendsV,games:gamesV,settings:settingsV,profile:profileV};
 function shell(){
-  const T=[["feed","📰","Лента"],["friends","👥","Друзья"],["games","🎮","Игры"],["settings","⚙️","Настройки"],["profile","👤","Профиль"]];
-  app.innerHTML=`<div id="view" class="view"></div><nav><div>${T.map(([k,i,n])=>`<button data-t="${k}" class="${k===tab?"on":""}"><b>${i}</b>${n}</button>`).join("")}</div></nav>`;
-  app.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;shell()});
-  ({feed:feedV,friends:friendsV,games:gamesV,settings:settingsV,profile:profileV})[tab]();
+  app.innerHTML=`<header class="top"><div class="logo">${BRAND.emoji} ${esc(BRAND.name)}</div><div class="chip" id="xpc"></div></header><main id="view"></main>
+  <nav><div class="in" id="nv"><i class="ind"></i>${TABS.map(([k,i,n])=>`<button data-t="${k}"><span class="e">${i}</span>${n}</button>`).join("")}</div></nav>`;
+  $("#nv").querySelectorAll("button").forEach(b=>b.onclick=()=>go(b.dataset.t));
+  if(!VIEWS[tab])tab="profile";
+  chip();go(tab);badge();
 }
-const logout=async()=>{await api("logout");localStorage.removeItem("tk");token=me=null;tab="profile";authView()};
-const dead=r=>{if(r.error&&r.error.includes("Сессия")){localStorage.removeItem("tk");token=me=null;authView(r.error);return true}};
+function go(t){
+  tab=t;localStorage.setItem("tab",t);
+  const i=TABS.findIndex(x=>x[0]===t);$("#nv").style.setProperty("--k",i);
+  $("#nv").querySelectorAll("button").forEach((b,j)=>b.classList.toggle("on",j===i));
+  scrollTo({top:0});VIEWS[t]();
+}
 
+/* ───────── лента ───────── */
 async function feedV(){
-  $("#view").innerHTML=`<h1>Лента</h1><div id="nw">${spin}</div>`;
-  const r=await api("news");if(dead(r)||!$("#nw"))return;if(!r.ok)return $("#nw").innerHTML=`<div class="err">${esc(r.error)}</div>`;
-  $("#nw").innerHTML=r.news.length?r.news.map(n=>`<a class="card news" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none"><b>${esc(n.title)}</b><div class="muted" style="font-size:13px;margin-top:6px">${esc(n.source)} · ${new Date(n.published).toLocaleDateString("ru-RU")}</div><div style="color:var(--pri);margin-top:6px">Читать оригинал</div></a>`).join(""):`<div class="card" style="text-align:center"><div class="gico">📭</div><h2>Пока пусто</h2><p class="muted">Новости подтягиваются из источников, которые добавляет администратор.</p></div>`;
+  const my=++vid;
+  put(`<div class="row"><h1 class="grow">Лента</h1><button class="ghost sm" id="rf" aria-label="Обновить">↻</button></div><p class="muted sm" style="margin-top:-6px">Свежие новости об экологии из внешних источников</p><div id="nw">${sk(3)}</div>`);
+  const load=async()=>{
+    const r=await api("news");if(my!==vid||dead(r))return;const box=$("#nw");
+    if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+    box.innerHTML=r.news.length?r.news.map(n=>`<a class="card news lift" href="${esc(/^https?:\/\//.test(n.url)?n.url:"#")}" target="_blank" rel="noopener noreferrer"><div class="meta"><span class="dotc" style="background:hsl(${hue(n.source)} 70% 50%)"></span>${esc(n.source)}<span>· ${ago(n.published)}</span></div><div class="nt">${esc(n.title)}</div><div class="more">Читать оригинал →</div></a>`).join("")
+     :`<div class="card empty"><div class="eb">🗞️</div><h2>Пока пусто</h2><p class="muted">Новости подтягиваются из источников, которые добавляет администратор. Выдуманных новостей здесь не будет.</p></div>`;
+    stag(box);
+  };
+  $("#rf").onclick=()=>{$("#nw").innerHTML=sk(2);load()};
+  load();
 }
-const ppl=(u,btns)=>`<div class="row" style="margin:10px 0"><div class="ava" style="width:46px;height:46px;font-size:15px">${esc(u.firstName[0]+u.lastName[0])}</div><div class="grow"><b>${esc(u.firstName)} ${esc(u.lastName)}</b><div class="muted">@${esc(u.username)} · ур. ${level(u.xp).lv}</div></div>${btns}</div>`;
+
+/* ───────── друзья ───────── */
+const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b>${esc(u.firstName)} ${esc(u.lastName)}</b><div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
 const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
 async function friendsV(){
-  $("#view").innerHTML=`<h1>Друзья</h1><div class="card"><b>Найти по юзернейму</b><input id="q" placeholder="@username (от 3 символов)" autocapitalize="none"><button id="sq" style="width:100%">Найти</button><div id="sr"></div></div><div id="fl">${spin}</div>`;
-  $("#view").onclick=async e=>{const b=e.target.closest("button[data-a]");if(!b)return;b.disabled=true;
-    const m={add:["friendAdd",{},"Запрос отправлен"],ok:["friendRespond",{accept:true},"Теперь вы друзья 🎉"],no:["friendRespond",{accept:false},"Запрос отклонён"],rm:["friendRemove",{},"Готово"]}[b.dataset.a];
-    const r=await api(m[0],{username:b.dataset.u,...m[1]});if(dead(r))return;toast(r.ok?m[2]:r.error);friendsV()};
-  const search=async()=>{const b=$("#sq");b.disabled=true;b.textContent="Ищем…";const r=await api("search",{q:$("#q").value});if(!$("#sr"))return;b.disabled=false;b.textContent="Найти";if(dead(r))return;
-    $("#sr").innerHTML=!r.ok?`<div class="err">${esc(r.error)}</div>`:r.users.length?r.users.map(u=>ppl(u,{none:fb("add",u,"Добавить"),sent:"<span class=muted>Отправлено</span>",received:fb("ok",u,"Принять"),friend:"<span class=muted>Друг ✓</span>"}[u.rel])).join(""):`<div class="muted" style="margin-top:8px">Никого не найдено</div>`};
-  $("#sq").onclick=search;$("#q").onkeydown=e=>{if(e.key==="Enter")search()};
-  const r=await api("friends");if(dead(r)||!$("#fl"))return;if(!r.ok)return $("#fl").innerHTML=`<div class="err">${esc(r.error)}</div>`;
-  const sec=(t,a,f)=>a.length?`<div class="card"><b>${t}</b>${a.map(f).join("")}</div>`:"";
-  $("#fl").innerHTML=sec("Запросы в друзья",r.incoming,u=>ppl(u,fb("ok",u,"Принять")+fb("no",u,"✕",1)))+sec("Мои друзья ("+r.friends.length+")",r.friends,u=>ppl(u,fb("rm",u,"Удалить",1)))+sec("Отправленные запросы",r.outgoing,u=>ppl(u,fb("rm",u,"Отменить",1)))||`<div class="card muted" style="text-align:center"><div class="gico">🤝</div><p>Пока нет друзей. Найдите кого-нибудь по юзернейму.</p></div>`;
-}
-async function play(g){
-  const v=$("#view");v.innerHTML=spin;
-  const r=await api("gameStart",{game:g});if(dead(r))return;if(!r.ok){v.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
-  const items=r.items,ans=[];let i=0;
-  const step=()=>{if(i>=items.length)return finish();const it=items[i];
-    v.innerHTML=`<h1>${g==="sort"?"♻️ Сортировка":"❓ Викторина"}</h1><div class="bar"><i id="pg"></i></div><p class="muted">Вопрос ${i+1} из ${items.length}</p><div class="card q"><h2>${esc(it.q)}</h2><div style="margin-top:8px">${it.o.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div></div>${r.played?`<p class="muted">Награда за эту игру сегодня уже получена, играйте для тренировки.</p>`:""}`;
-    grow("#pg",i/items.length*100);
-    v.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{b.classList.add("pick");v.querySelectorAll("[data-k]").forEach(x=>x.disabled=true);setTimeout(()=>{ans.push({id:it.id,a:+b.dataset.k});i++;step()},280)})};
-  const finish=async()=>{v.innerHTML=spin;const s=await api("gameSubmit",{game:g,answers:ans});if(dead(s))return;
-    if(!s.ok){v.innerHTML=`<div class="card err">${esc(s.error)}</div><button id="bk">Назад</button>`;$("#bk").onclick=gamesV;return}
-    const m=await api("me");if(m.ok)me=m.user;
-    const emo=s.score===s.total?"🏆":s.score>=s.total/2?"🌱":"💪";
-    v.innerHTML=`<div class="card hero" style="text-align:center"><div class="gico" style="font-size:56px">${emo}</div><h1 style="margin:.2em 0">${s.score} из ${s.total}</h1><b>${s.xp?`+${s.xp} XP`:"XP за эту игру сегодня уже получены"}</b></div>`+s.results.filter(x=>!x.ok).map(x=>{const it=items.find(t=>t.id===x.id);return`<div class="card"><b>${esc(it.q)}</b><div style="color:var(--pri)">Правильно: ${esc(it.o[x.right])}</div><div class="muted">${esc(x.e)}</div></div>`}).join("")+`<button id="bk" style="width:100%">К играм</button>`;$("#bk").onclick=gamesV;if(s.xp)toast("+"+s.xp+" XP 🎉")};
-  step();
+  const my=++vid;let users=[];
+  put(`<h1>Друзья</h1><div class="card"><b>Найти по юзернейму</b><form class="srch" id="sf"><input id="q" placeholder="@username (от 3 символов)" autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="submit" id="sq" aria-label="Найти">🔍</button></form><div id="sr"></div></div><div id="fl">${sk(2)}</div>`);
+  const drawSr=()=>{$("#sr").innerHTML=users.length?users.map(u=>ppl(u,{none:fb("add",u,"Добавить"),sent:`<span class="tag">Отправлено</span>`,received:fb("ok",u,"Принять"),friend:`<span class="tag">Друг ✓</span>`}[u.rel])).join(""):`<p class="muted sm">Никого не найдено</p>`};
+  const loadFl=async()=>{
+    const r=await api("friends");if(my!==vid||dead(r))return;const box=$("#fl");
+    if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+    const sec=(t,a,f,c)=>a.length?`<div class="card ${c||""}"><b>${t}</b>${a.map(f).join("")}</div>`:"";
+    box.innerHTML=sec("🔔 Запросы в друзья",r.incoming,u=>ppl(u,fb("ok",u,"Принять")+fb("no",u,"✕",1)),"hl")
+      +sec(`Мои друзья (${r.friends.length})`,r.friends,u=>ppl(u,fb("rm",u,"Удалить",1)))
+      +sec("Отправленные запросы",r.outgoing,u=>ppl(u,fb("rm",u,"Отменить",1)))
+      ||`<div class="card empty"><div class="eb">🫂</div><h2>Пока нет друзей</h2><p class="muted">Найдите кого-нибудь по юзернейму и отправьте запрос.</p></div>`;
+    stag(box);
+  };
+  $("#sf").onsubmit=async e=>{
+    e.preventDefault();const b=$("#sq");b.disabled=true;
+    const r=await api("search",{q:$("#q").value});if(my!==vid)return;b.disabled=false;if(dead(r))return;
+    if(!r.ok){$("#sr").innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
+    users=r.users;drawSr();
+  };
+  const act={add:["friendAdd",{},"sent","Запрос отправлен ✉️"],ok:["friendRespond",{accept:true},"friend","Теперь вы друзья 🎉"],no:["friendRespond",{accept:false},"none","Запрос отклонён"],rm:["friendRemove",{},"none","Готово"]};
+  $("#view").onclick=async e=>{
+    const b=e.target.closest("button[data-a]");if(!b)return;b.disabled=true;
+    const a=b.dataset.a,[m,x,rel,msg]=act[a],name=b.dataset.u,px=e.clientX,py=e.clientY;
+    const r=await api(m,{username:name,...x});if(my!==vid||dead(r))return;
+    if(!r.ok){b.disabled=false;toast(r.error,"err");return}
+    toast(msg);if(a==="ok")burst(px,py,20);
+    const u=users.find(z=>z.username===name);if(u){u.rel=rel;drawSr()}
+    loadFl();badge();
+  };
+  loadFl();
 }
 
-function profileV(){
-  const {lv,pct}=level(me.xp);
-  $("#view").innerHTML=`<div class="card hero"><div class="row"><div class="ava">${esc((me.firstName[0]||"")+(me.lastName[0]||""))}</div><div class="grow"><h2>${esc(me.firstName)} ${esc(me.lastName)}</h2>
-  <div class="muted">@${esc(me.username)}${me.role!=="student"?" · "+(me.role==="teacher"?"Учитель":"Администратор"):""}</div></div></div>
-  <div class="row" style="margin-top:18px"><div class="lvl">${lv}</div><div class="grow"><div class="muted">уровень · ${me.xp} XP</div><div class="bar" style="margin-top:6px;background:rgba(255,255,255,.18)"><i id="xb"></i></div></div></div>
-  <div class="muted" style="margin-top:8px">До следующего уровня: ${100-pct} XP</div></div>
-  <div class="card"><b>Редактировать профиль</b><input id="fn" value="${esc(me.firstName)}" maxlength=40 placeholder="Имя"><input id="ln" value="${esc(me.lastName)}" maxlength=40 placeholder="Фамилия">
-  <textarea id="bio" rows=3 maxlength=200 placeholder="О себе">${esc(me.bio)}</textarea><div class="err" id="er"></div><button id="sv" style="width:100%">Сохранить</button></div>`;
-  grow("#xb",pct);
-  $("#sv").onclick=async()=>{
-    const r=await api("update",{firstName:$("#fn").value,lastName:$("#ln").value,bio:$("#bio").value});
-    if(dead(r))return;if(r.ok){me=r.user;profileV();toast("Сохранено ✓")}else $("#er").textContent=r.error;
-  };
-}
+/* ───────── игры и задания ───────── */
+const GAMES={
+  sort:{n:"Сортировка мусора",e:"♻️",d:"Куда выбросить предмет?",g:"linear-gradient(135deg,#16a34a,#0d9488)",xp:"до 10 XP"},
+  quiz:{n:"Эко-викторина",e:"🧠",d:"5 вопросов об экологии",g:"linear-gradient(135deg,#2563eb,#7c3aed)",xp:"до 15 XP"},
+  myth:{n:"Миф или правда",e:"🔍",d:"Проверь, что ты знаешь о природе",g:"linear-gradient(135deg,#f59e0b,#ec4899)",xp:"до 15 XP"}};
+const OI={"Бумага":"📄","Пластик":"🧴","Стекло":"🫙","Металл":"🥫","Опасные отходы":"☣️","Правда":"✅","Миф":"❌"};
+const optText=o=>((OI[o]||"")+" "+o).trim();
 
 async function gamesV(){
-  $("#view").innerHTML=`<h1>Игры и задания</h1><h2>Задания на сегодня</h2><div id="tk">${spin}</div>
-  <h2 style="margin-top:20px">Мини-игры</h2>
-  <div class="card row"><div class="gico">♻️</div><div class="grow"><b>Сортировка мусора</b><p class="muted" style="margin:2px 0 10px">Куда выбросить? 5 предметов. Правила приёма могут отличаться в вашем городе.</p><button data-g="sort">Играть</button></div></div>
-  <div class="card row"><div class="gico">❓</div><div class="grow"><b>Эко-викторина</b><p class="muted" style="margin:2px 0 10px">5 вопросов об экологии.</p><button data-g="quiz">Играть</button></div></div>
-  <p class="muted" style="font-size:13px">XP даётся за первое прохождение каждой игры в день.</p>`;
+  const my=++vid;
+  put(`<h1>Игры и задания</h1><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div><h2 class="sec">Мини-игры</h2>`+
+  Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
+  `<p class="muted sm">XP даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`);
   $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));
-  const r=await api("tasks");if(dead(r)||!$("#tk"))return;
-  if(!r.ok)return $("#tk").innerHTML=`<div class="err">${esc(r.error)}</div>`;
-  $("#tk").innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b>
-  <div class="muted">${esc(t.description)}</div><div style="color:var(--pri)">+${t.xp} XP</div></div>${t.done?`<span class="ck" style="font-size:26px">✅</span>`:`<button data-s="${t.slot}" data-x="${t.xp}">Готово</button>`}</div>`).join("")+
-  `<p class="muted" style="font-size:13px">Это самоотчёт. Новые задания — каждый день.</p>`;
-  $("#tk").querySelectorAll("button").forEach(b=>b.onclick=async()=>{
-    b.disabled=true;const c=await api("complete",{slot:+b.dataset.s});if(c.gained)toast("+"+c.gained+" XP 🌿");const m=await api("me");if(m.ok)me=m.user;gamesV();
+  const r=await api("tasks");if(my!==vid||dead(r))return;
+  const box=$("#tk");if(!r.ok){box.textContent=r.error;return}
+  box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div><span class="tag">+${t.xp} XP</span></div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
+   `<p class="muted sm">Это самоотчёт: отмечайте, только если правда сделали. Новые задания — каждый день.</p>`;
+  stag(box);
+  box.querySelectorAll("button[data-s]").forEach(b=>b.onclick=async()=>{
+    b.disabled=true;const res=await api("complete",{slot:+b.dataset.s});if(dead(res))return;
+    if(!res.ok){b.disabled=false;toast(res.error,"err");return}
+    const card=b.closest(".task"),rc=b.getBoundingClientRect();card.classList.add("done");b.parentElement.innerHTML=`<span class="okc">✓</span>`;
+    if(res.gained){burst(rc.left+rc.width/2,rc.top,22);toast(`+${res.gained} XP 🌱`);addXp(res.gained)}
   });
 }
 
-function settingsV(){
-  $("#view").innerHTML=`<h1>Настройки</h1>
-  <div class="card"><b>Тема</b><select id="th"><option value="auto">Как в системе</option><option value="light">Светлая</option><option value="dark">Тёмная</option></select></div>
-  <div class="card"><b>Сменить юзернейм</b><input id="nu" placeholder="Новый юзернейм" maxlength=20 autocapitalize="none"><input id="up" type="password" placeholder="Текущий пароль">
-  <div class="err" id="e1"></div><button id="b1" style="width:100%">Сменить юзернейм</button></div>
-  <div class="card"><b>Сменить пароль</b><input id="op" type="password" placeholder="Текущий пароль"><input id="np" type="password" placeholder="Новый пароль (от 8 символов)"><input id="np2" type="password" placeholder="Повторите новый пароль">
-  <div class="err" id="e2"></div><button id="b2" style="width:100%">Сменить пароль</button></div>
-  <div class="card"><button class="ghost" id="out" style="width:100%">Выйти из аккаунта</button></div>`;
-  $("#th").value=me.theme;
-  $("#th").onchange=async e=>{theme(e.target.value);const r=await api("update",{theme:e.target.value});if(r.ok)me=r.user};
-  $("#b1").onclick=async()=>{const r=await api("changeUsername",{username:$("#nu").value.trim().toLowerCase().replace(/^@/,""),password:$("#up").value});
-    if(dead(r))return;if(r.ok){me=r.user;$("#e1").textContent="";toast("Юзернейм изменён ✓");$("#nu").value=$("#up").value=""}else $("#e1").textContent=r.error};
-  $("#b2").onclick=async()=>{if($("#np").value!==$("#np2").value)return $("#e2").textContent="Пароли не совпадают";
-    const r=await api("changePassword",{oldPassword:$("#op").value,newPassword:$("#np").value});
-    if(dead(r))return;$("#e2").textContent=r.ok?"":r.error;if(r.ok){toast("Пароль изменён ✓");$("#op").value=$("#np").value=$("#np2").value=""}};
-  $("#out").onclick=logout;
-  for(const id of ["b1","b2"]){const b=$("#"+id),f=b.onclick;b.onclick=async()=>{const t=b.textContent;b.disabled=true;b.textContent="Подождите…";try{await f()}finally{b.disabled=false;b.textContent=t}}}
+async function play(g){
+  const my=++vid,G=GAMES[g];
+  put(`<div class="sk" style="height:140px"></div>`);
+  const r=await api("gameStart",{game:g});if(my!==vid||dead(r))return;
+  if(!r.ok){put(`<div class="card err">${esc(r.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=gamesV;return}
+  const items=r.items,ans=[],n=items.length;let i=0;
+  const step=()=>{
+    if(i>=n)return finish();const it=items[i];
+    put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти из игры">✕</button><div class="grow prog"><i id="pb" style="width:${i/n*100}%"></i></div><span class="muted sm">${i+1}/${n}</span></div>
+    <div class="card qcard"><div class="qe">${G.e}</div><h2>${esc(it.q)}</h2>${it.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCDE"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}</div>
+    ${r.played?`<p class="muted sm center">XP за эту игру сегодня уже получены — играйте для тренировки.</p>`:""}`);
+    $("#bk").onclick=gamesV;raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/n*100+"%"});
+    const v=$("#view");
+    v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      v.querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");
+      ans.push({id:it.id,a:it.ix[+b.dataset.k]});setTimeout(()=>{if(my!==vid)return;i++;step()},330);
+    });
+  };
+  const finish=async()=>{
+    put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем ответы…</p></div>`);
+    const s=await api("gameSubmit",{game:g,answers:ans});if(my!==vid||dead(s))return;
+    if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=gamesV;return}
+    addXp(s.xp);
+    const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка — в следующий раз выйдет лучше!";
+    const bad=s.results.filter(x=>!x.ok);
+    put(`<div class="card center"><div class="ring" style="margin:6px auto 10px">${ring("fg")}<div class="num"><span id="cn">0</span><small>/${s.total}</small></div></div>
+      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} XP 🎉`:"XP за эту игру сегодня уже получены"}</span></div>`+
+      (bad.length?`<h2 class="sec">Разбор ошибок</h2>`+bad.map(x=>{const it=items.find(t=>t.id===x.id);return`<div class="card wrong"><b>${esc(it.q)}</b><div class="good">✓ ${esc(optText(it.o[it.ix.indexOf(x.right)]))}</div><div class="muted sm">${esc(x.e)}</div></div>`}).join(""):`<div class="card center muted">Ошибок нет — так держать! 🌍</div>`)+
+      `<div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
+    $("#bk").onclick=gamesV;$("#again").onclick=()=>play(g);
+    raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct)});count($("#cn"),s.score);
+    if(pct>=.6)setTimeout(()=>burst(),500);
+  };
+  step();
 }
 
+/* ───────── профиль ───────── */
+function profileV(){
+  ++vid;
+  const {lv,pct}=level(me.xp),rk=rank(lv);
+  put(`<div class="card hero"><div class="row"><div class="ring">${ring("fg")}${avatar(me)}<span class="lvb">${lv}</span></div>
+    <div class="grow"><h2>${esc(me.firstName)} ${esc(me.lastName)}</h2><div class="muted">@${esc(me.username)}${me.role!=="student"?" · "+(me.role==="teacher"?"Учитель":"Администратор"):""}</div><span class="tag" style="margin-top:6px">${rk[2]} ${rk[1]}</span></div></div>
+    ${me.bio?`<p class="bio">${esc(me.bio)}</p>`:""}</div>
+  <div class="card"><div class="row"><b class="grow">Уровень ${lv}</b><span class="muted">${me.xp} XP</span></div><div class="prog" style="margin-top:10px"><i id="pb" style="width:0"></i></div>
+  <div class="muted sm" style="margin-top:8px">До следующего уровня: ${100-pct} XP</div></div>
+  <div class="card"><b>Редактировать профиль</b><input id="fn" value="${esc(me.firstName)}" maxlength="40" placeholder="Имя"><input id="ln" value="${esc(me.lastName)}" maxlength="40" placeholder="Фамилия">
+  <textarea id="bio" rows="3" maxlength="200" placeholder="О себе">${esc(me.bio)}</textarea><div class="err" id="er"></div><button class="btn-full" id="sv">Сохранить</button></div>`);
+  raf2(()=>{const f=$("#fg"),p=$("#pb");if(f)f.style.strokeDashoffset=289*(1-pct/100);if(p)p.style.width=pct+"%"});
+  $("#sv").onclick=busy($("#sv"),async()=>{
+    const r=await api("update",{firstName:$("#fn").value,lastName:$("#ln").value,bio:$("#bio").value});
+    if(dead(r))return;if(r.ok){me=r.user;toast("Сохранено ✓");profileV()}else $("#er").textContent=r.error;
+  });
+}
+
+/* ───────── настройки ───────── */
+function settingsV(){
+  ++vid;
+  const TH=[["auto","Авто"],["light","Светлая"],["dark","Тёмная"]],k=Math.max(0,TH.findIndex(x=>x[0]===me.theme));
+  put(`<h1>Настройки</h1>
+  <div class="card"><b>Тема</b><div class="seg" id="th" style="--n:3;--k:${k};margin-top:10px"><i></i>${TH.map(([v,n],j)=>`<button type="button" data-v="${v}" class="${j===k?"on":""}">${n}</button>`).join("")}</div></div>
+  <div class="card"><b>Сменить юзернейм</b><input id="nu" placeholder="Новый юзернейм" maxlength="20" autocapitalize="none" autocomplete="off"><input id="up" type="password" placeholder="Текущий пароль" autocomplete="current-password">
+  <div class="err" id="e1"></div><button class="btn-full" id="b1">Сменить юзернейм</button></div>
+  <div class="card"><b>Сменить пароль</b><input id="op" type="password" placeholder="Текущий пароль" autocomplete="current-password"><input id="np" type="password" placeholder="Новый пароль (от 8 символов)" autocomplete="new-password"><input id="np2" type="password" placeholder="Повторите новый пароль" autocomplete="new-password">
+  <div class="err" id="e2"></div><button class="btn-full" id="b2">Сменить пароль</button></div>
+  <div class="card"><button class="ghost btn-full" id="out">Выйти из аккаунта</button></div>`);
+  const th=$("#th");
+  th.querySelectorAll("button").forEach((b,j)=>b.onclick=async()=>{
+    theme(b.dataset.v);th.style.setProperty("--k",j);th.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+    const r=await api("update",{theme:b.dataset.v});if(r.ok)me=r.user;else if(!dead(r))toast(r.error,"err");
+  });
+  $("#b1").onclick=busy($("#b1"),async()=>{
+    const r=await api("changeUsername",{username:$("#nu").value.trim().toLowerCase().replace(/^@/,""),password:$("#up").value});
+    if(dead(r))return;if(r.ok){me=r.user;$("#e1").textContent="";toast("Юзернейм изменён ✓");$("#nu").value=$("#up").value=""}else $("#e1").textContent=r.error;
+  });
+  $("#b2").onclick=busy($("#b2"),async()=>{
+    if($("#np").value!==$("#np2").value)return $("#e2").textContent="Пароли не совпадают";
+    const r=await api("changePassword",{oldPassword:$("#op").value,newPassword:$("#np").value});
+    if(dead(r))return;
+    if(r.ok){$("#e2").textContent="";toast("Пароль изменён ✓");$("#op").value=$("#np").value=$("#np2").value=""}else $("#e2").textContent=r.error;
+  });
+  $("#out").onclick=logout;
+}
+
+/* ───────── запуск ───────── */
 (async()=>{
-  if(!API_URL){app.innerHTML=`<div class="card"><h2>Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js.</p></div>`;return}
+  if(!API_URL){app.innerHTML=`<div class="card"><h2>⚙️ Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js. Инструкция — в README.md.</p></div>`;return}
   if(token){const r=await api("me");if(r.ok){me=r.user;theme(me.theme)}else{if(!/Сессия/.test(r.error||""))return app.innerHTML=`<div class="card"><h2>Нет соединения</h2><p class="muted">${esc(r.error)}</p></div>`;localStorage.removeItem("tk");token=null}}
   me?shell():authView();
 })();
