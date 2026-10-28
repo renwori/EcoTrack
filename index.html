@@ -13,20 +13,13 @@
 <style>
 :root{--bg:#f2f7f3;--bgt:rgba(242,247,243,.72);--card:rgba(255,255,255,.68);--solid:#fff;--text:#12211a;--muted:#5f7168;
 --pri:#16a34a;--pri-d:#0f7a37;--pri2:rgba(22,163,74,.12);--on:#fff;--line:rgba(18,33,26,.09);--err:#dc2626;--hi:rgba(255,255,255,.7);
---shadow:0 14px 34px -18px rgba(15,122,55,.5);--r:24px;--b1:#86efac;--b2:#7dd3fc;--b3:#fde68a;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#09110d;--bgt:rgba(9,17,13,.72);--card:rgba(24,38,31,.66);--solid:#15231b;--text:#e9f4ee;--muted:#8da398;--pri:#34d399;--pri-d:#10b981;--pri2:rgba(52,211,153,.15);--on:#04210f;--line:rgba(255,255,255,.09);--err:#ff7b6b;--hi:rgba(255,255,255,.08);--shadow:0 14px 34px -18px rgba(0,0,0,.75);--b1:#065f46;--b2:#0c4a6e;--b3:#422006}}
-:root[data-theme=dark]{--bg:#09110d;--bgt:rgba(9,17,13,.72);--card:rgba(24,38,31,.66);--solid:#15231b;--text:#e9f4ee;--muted:#8da398;--pri:#34d399;--pri-d:#10b981;--pri2:rgba(52,211,153,.15);--on:#04210f;--line:rgba(255,255,255,.09);--err:#ff7b6b;--hi:rgba(255,255,255,.08);--shadow:0 14px 34px -18px rgba(0,0,0,.75);--b1:#065f46;--b2:#0c4a6e;--b3:#422006}
+--shadow:0 14px 34px -18px rgba(15,122,55,.5);--r:24px;--b1:#86efac;--b2:#7dd3fc;--b3:#fde68a;--sky1:#bfe3fb;--sky2:#eaf7ef;--sun:#ffd166;--sunglow:rgba(255,209,102,.42);--h3:#c3e8cf;--h2:#94d6aa;--h1:#5cbf85;--tr1:#86cfa1;--tr2:#3f9e68;--tr3:#2e7d50;--cloud:rgba(255,255,255,.92);--stars:0;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#09110d;--bgt:rgba(9,17,13,.72);--card:rgba(24,38,31,.66);--solid:#15231b;--text:#e9f4ee;--muted:#8da398;--pri:#34d399;--pri-d:#10b981;--pri2:rgba(52,211,153,.15);--on:#04210f;--line:rgba(255,255,255,.09);--err:#ff7b6b;--hi:rgba(255,255,255,.08);--shadow:0 14px 34px -18px rgba(0,0,0,.75);--b1:#065f46;--b2:#0c4a6e;--b3:#422006;--sky1:#050d1a;--sky2:#0b1d16;--sun:#e9eefc;--sunglow:rgba(190,210,255,.16);--h3:#13291f;--h2:#0e2119;--h1:#0a1812;--tr1:#10261b;--tr2:#0b1c14;--tr3:#07130d;--cloud:rgba(170,190,215,.07);--stars:1}}
+:root[data-theme=dark]{--bg:#09110d;--bgt:rgba(9,17,13,.72);--card:rgba(24,38,31,.66);--solid:#15231b;--text:#e9f4ee;--muted:#8da398;--pri:#34d399;--pri-d:#10b981;--pri2:rgba(52,211,153,.15);--on:#04210f;--line:rgba(255,255,255,.09);--err:#ff7b6b;--hi:rgba(255,255,255,.08);--shadow:0 14px 34px -18px rgba(0,0,0,.75);--b1:#065f46;--b2:#0c4a6e;--b3:#422006;--sky1:#050d1a;--sky2:#0b1d16;--sun:#e9eefc;--sunglow:rgba(190,210,255,.16);--h3:#13291f;--h2:#0e2119;--h1:#0a1812;--tr1:#10261b;--tr2:#0b1c14;--tr3:#07130d;--cloud:rgba(170,190,215,.07);--stars:1}
 
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Nunito,ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
 body.lock{overflow:hidden}
-body::before,body::after{content:"";position:fixed;z-index:-2;border-radius:50%;pointer-events:none;opacity:.6}
-body::before{width:70vmax;height:70vmax;left:-25vmax;top:-25vmax;background:radial-gradient(circle,var(--b1),transparent 65%);animation:drift 22s ease-in-out infinite alternate}
-body::after{width:65vmax;height:65vmax;right:-25vmax;bottom:-20vmax;background:radial-gradient(circle,var(--b2),transparent 65%);animation:drift 28s ease-in-out infinite alternate-reverse}
-#fx{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-#fx::before{content:"";position:absolute;width:50vmax;height:50vmax;left:40%;top:30%;border-radius:50%;background:radial-gradient(circle,var(--b3),transparent 65%);opacity:.35;animation:drift 34s ease-in-out infinite alternate}
-.lf{position:absolute;bottom:-60px;opacity:0;animation:leaf linear infinite;will-change:transform}
-@keyframes leaf{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:.55}85%{opacity:.4}100%{transform:translate(var(--sx),-115vh) rotate(var(--rot));opacity:0}}
 @keyframes drift{to{transform:translate(9vmax,6vmax) scale(1.15)}}
 @keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
 @keyframes vin{from{opacity:0;transform:translateY(10px);filter:blur(4px)}}
@@ -256,11 +249,74 @@ button.chi{display:flex;gap:12px;align-items:center;width:100%;text-align:left;c
 .composer textarea{margin:0;min-height:44px;max-height:140px;resize:none;border-radius:20px;padding:11px 14px;line-height:1.4}
 .composer button{flex:none;width:44px;height:44px;min-height:0;padding:0;border-radius:50%;font-size:18px}
 
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.lf{display:none}}
+/* природный пейзаж */
+#scene{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:linear-gradient(180deg,var(--sky1),var(--sky2) 72%);transition:background .6s}
+.sun{position:absolute;top:8vh;right:10vw;width:min(110px,22vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 38%,#fffbea,var(--sun) 62%);box-shadow:0 0 50px 14px var(--sunglow),0 0 140px 50px var(--sunglow);animation:sunglow 7s ease-in-out infinite alternate}
+.sun::after{content:"";position:absolute;inset:0;border-radius:50%;opacity:var(--stars);background:radial-gradient(circle at 68% 32%,rgba(110,120,150,.35) 9%,transparent 10%),radial-gradient(circle at 36% 62%,rgba(110,120,150,.3) 12%,transparent 13%),radial-gradient(circle at 62% 74%,rgba(110,120,150,.25) 6%,transparent 7%)}
+@keyframes sunglow{to{box-shadow:0 0 70px 22px var(--sunglow),0 0 180px 70px var(--sunglow)}}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:calc(var(--stars)*.85);animation:tw 3.5s ease-in-out infinite}
+@keyframes tw{50%{opacity:calc(var(--stars)*.15)}}
+.cloud{position:absolute;left:0;width:160px;height:44px;border-radius:99px;background:var(--cloud);animation:cloud 140s linear infinite}
+.cloud::before,.cloud::after{content:"";position:absolute;border-radius:50%;background:inherit}
+.cloud::before{width:70px;height:70px;left:24px;top:-30px}.cloud::after{width:52px;height:52px;left:80px;top:-20px}
+.c0{top:13vh;animation-delay:-40s}.c1{top:25vh;scale:.7;animation-duration:110s;animation-delay:-85s}.c2{top:6vh;scale:.5;animation-duration:170s;animation-delay:-130s}
+@keyframes cloud{from{translate:-30vw 0}to{translate:110vw 0}}
+.land{position:absolute;left:0;bottom:0;width:100%;height:44vh;min-height:220px}
+.land .l3{transform:translateY(calc(var(--py,0px)*.04))}.land .l2{transform:translateY(calc(var(--py,0px)*.07))}.land .l1{transform:translateY(calc(var(--py,0px)*.11))}
+.land .tr{transform-box:fill-box;transform-origin:50% 100%;animation:sway 6s ease-in-out infinite alternate}
+.land .tr:nth-child(2n){animation-duration:7.5s;animation-delay:-2s}
+@keyframes sway{from{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+
+/* профиль: серия, сад, польза, лента */
+[data-pf]{cursor:pointer}
+.tag.flame{background:linear-gradient(135deg,#fb923c,#ef4444);color:#fff;animation:pop .5s var(--spring)}
+.fl{display:inline-block;animation:flick 1.6s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.18) rotate(4deg)}}
+.streakc .bigfl{flex:none;font-size:40px;filter:grayscale(1);opacity:.6}
+.streakc.on{background:linear-gradient(135deg,rgba(251,146,60,.22),rgba(239,68,68,.14)),var(--card)}
+.streakc.on .bigfl{filter:none;opacity:1;animation:flick 1.6s ease-in-out infinite}
+.tstage{width:min(190px,58%);margin:4px auto 10px}
+.tree{display:block;width:100%;height:auto;overflow:visible}
+.tree .sway{transform-box:view-box;transform-origin:60px 110px;animation:sway 5s ease-in-out infinite alternate}
+.impg{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-top:10px}
+.imp{display:grid;gap:2px;padding:10px 12px;border-radius:16px;background:var(--pri2)}
+.imp span{font-size:22px}.imp b{font-size:20px;line-height:1.1}.imp small{color:var(--muted);font-size:12px;line-height:1.25}
+.evi{flex:none;width:40px;height:40px;border-radius:50%;background:var(--pri2);display:grid;place-items:center;font-size:20px}
+.forest{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px;align-items:end}
+.ft{display:grid;justify-items:center;text-align:center;padding:6px 2px;border-radius:16px;transition:background .2s}
+.ft:hover{background:var(--pri2)}.ft .tree{width:70px}.ft b{font-size:13px;line-height:1.2}.ft small{font-size:11px;color:var(--muted);line-height:1.2}
+.tag.imp{background:rgba(14,165,233,.14);color:#0284c7}
+
+/* реакции */
+.bub{cursor:pointer}
+.rx{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.rx:empty{display:none}
+button.rc{display:inline-flex;align-items:center;gap:3px;min-height:0;padding:2px 8px;border-radius:99px;font-size:14px;font-weight:800;background:rgba(0,0,0,.07);color:inherit;box-shadow:none;animation:pop .35s var(--spring)}
+.mine button.rc{background:rgba(255,255,255,.22)}
+button.rc.on{box-shadow:inset 0 0 0 2px currentColor}
+button.rc b{font-size:12px}
+.rpick{position:fixed;z-index:45;display:flex;gap:2px;padding:5px;border-radius:99px;background:var(--solid);border:1px solid var(--line);box-shadow:0 14px 34px -12px rgba(0,0,0,.45);animation:zin .25s var(--spring)}
+.rpick button{width:40px;height:40px;min-height:0;padding:0;border-radius:50%;background:none;box-shadow:none;font-size:22px;color:var(--text);transition:transform .2s var(--spring)}
+.rpick button:hover{transform:scale(1.25);filter:none}
+
+/* эко-карта */
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chips button{flex:none;min-height:36px;padding:6px 12px;border-radius:99px;background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:none;font-size:14px}
+.chips button.on{background:var(--pri);color:var(--on);border-color:var(--pri)}
+.mapc{padding:0;overflow:hidden;isolation:isolate}
+#map{height:min(55vh,460px);width:100%;background:var(--pri2)}
+.mapmsg{position:absolute;left:10px;right:10px;bottom:10px;z-index:900;background:var(--solid);color:var(--text);border-radius:14px;padding:10px 14px;font-size:14px;font-weight:700;box-shadow:0 10px 24px -12px rgba(0,0,0,.5)}
+.mapmsg:empty{display:none}
+.pin{width:34px;height:34px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);background:linear-gradient(135deg,var(--pri),#0ea5e9);display:grid;place-items:center;border:2px solid #fff;box-shadow:0 6px 14px -6px rgba(0,0,0,.6)}
+.pin span{transform:rotate(45deg);font-size:15px}
+.me-dot{width:16px;height:16px;border-radius:50%;background:#2563eb;border:3px solid #fff;box-shadow:0 0 0 6px rgba(37,99,235,.25)}
+.leaflet-popup-content{font:14px/1.45 Nunito,system-ui,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}}
+:root[data-theme=dark] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div id="fx" aria-hidden="true"></div>
+<div id="scene" aria-hidden="true"></div>
 <div id="app">Загрузка…</div>
 <div id="toasts"></div>
 <script type="module">
@@ -299,7 +355,7 @@ const devTag=(u,mini)=>u&&u.dev?`<span class="tag dev ${mini?"mini":""}">💜 Р
 const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
 const initials=u=>esc(((u.firstName||"")[0]||"")+((u.lastName||"")[0]||""));
 const avInner=u=>AV[u.username]?`<img src="${esc(AV[u.username])}" alt="">`:initials(u);
-const avatar=u=>{const h=hue(u.username);return`<div class="ava" data-av="${esc(u.username)}" data-i="${initials(u)}" style="background:linear-gradient(135deg,hsl(${h} 70% 52%),hsl(${(h+45)%360} 70% 40%))">${avInner(u)}</div>`};
+const avatar=(u,nol)=>{const h=hue(u.username);return`<div class="ava" data-av="${esc(u.username)}"${nol?"":` data-pf="${esc(u.username)}"`} data-i="${initials(u)}" style="background:linear-gradient(135deg,hsl(${h} 70% 52%),hsl(${(h+45)%360} 70% 40%))">${avInner(u)}</div>`};
 const paintAv=un=>document.querySelectorAll(`[data-av="${CSS.escape(un)}"]`).forEach(e=>{if(AV[un])e.innerHTML=`<img src="${esc(AV[un])}" alt="">`;else e.textContent=e.dataset.i});
 let avSave=0;const saveAV=()=>{clearTimeout(avSave);avSave=setTimeout(()=>{try{localStorage.setItem("av",JSON.stringify(AV))}catch{ls.del("av")}},500)};
 async function loadAv(list){
@@ -334,15 +390,27 @@ function burst(x=innerWidth/2,y=innerHeight/3,n=30){
     document.body.append(e);setTimeout(()=>e.remove(),1300)}
 }
 const stag=el=>el.querySelectorAll(".card,.tile").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,10)));
-const put=html=>{const v=$("#view");if(!v)return;v.onclick=null;v.oncontextmenu=null;v.innerHTML=html;stag(v);if(!RM){v.classList.remove("vin");void v.offsetWidth;v.classList.add("vin")}};
+const put=html=>{const v=$("#view");if(!v)return;closePick();if(curMap){try{curMap.remove()}catch{}curMap=null}v.onclick=null;v.oncontextmenu=null;v.innerHTML=html;stag(v);if(!RM){v.classList.remove("vin");void v.offsetWidth;v.classList.add("vin")}};
 const stopPoll=()=>{clearInterval(poll);poll=null};
 const dead=r=>{if(r&&r.error&&r.error.includes("Сессия")){vid++;stopPoll();document.body.classList.remove("chatting");localStorage.removeItem("tk");cclear();token=me=X=CH=null;authView(r.error);return true}};
 const logout=async()=>{vid++;stopPoll();await api("logout");localStorage.removeItem("tk");cclear();token=me=X=CH=null;tab="profile";mode="login";authView()};
 
 /* ───────── эффекты ───────── */
-if(!RM){const fx=$("#fx"),L=["🍃","🌿","🍀","🌱","🍂"];
-  for(let i=0;i<9;i++){const s=document.createElement("span");s.className="lf";s.textContent=L[i%5];
-    s.style.cssText=`left:${Math.random()*100}%;font-size:${14+Math.random()*16}px;animation-duration:${18+Math.random()*16}s;animation-delay:${-Math.random()*30}s;--sx:${(Math.random()-.5)*30}vw;--rot:${(Math.random()-.5)*720}deg`;fx.append(s)}}
+/* Природный пейзаж: холмы с деревьями, солнце (в тёмной теме - луна и звёзды), облака. */
+(()=>{const sc=$("#scene");if(!sc)return;const W=1000,H=300;
+  const rnd=(n,k)=>Array.from({length:n},(_,i)=>{const r=Math.sin(i*99.7+k*7.3)*43758.5453;return r-Math.floor(r)});
+  const layer=(seed,base,amp,fill,tf,n,hmin,hmax,cls)=>{const f=x=>base-amp*(Math.sin(x/170+seed)*.6+Math.sin(x/63+seed*2.3)*.4);
+    let d=`M0 ${H}`;for(let x=0;x<=W;x+=10)d+=` L${x} ${f(x).toFixed(1)}`;d+=` L${W} ${H}Z`;
+    const r1=rnd(n,seed),r2=rnd(n,seed+1);let t="";
+    for(let i=0;i<n;i++){const x=Math.round((i+.2+r1[i]*.6)*W/n),h=hmin+(hmax-hmin)*r2[i],y=f(x)+3;
+      t+=i%3===1?`<g class="tr"><rect x="${x-h*.06}" y="${y-h*.4}" width="${h*.12}" height="${h*.4}" fill="${tf}"/><circle cx="${x}" cy="${y-h*.6}" r="${h*.3}" fill="${tf}"/><circle cx="${x-h*.18}" cy="${y-h*.45}" r="${h*.21}" fill="${tf}"/><circle cx="${x+h*.18}" cy="${y-h*.47}" r="${h*.21}" fill="${tf}"/></g>`
+        :`<path class="tr" d="M${x} ${y-h} L${x-h*.26} ${y-h*.42} L${x-h*.11} ${y-h*.44} L${x-h*.33} ${y} L${x+h*.33} ${y} L${x+h*.11} ${y-h*.44} L${x+h*.26} ${y-h*.42}Z" fill="${tf}"/>`}
+    return`<g class="${cls}"><path d="${d}" fill="${fill}"/>${t}</g>`};
+  sc.innerHTML=`<div class="stars">${Array.from({length:70},()=>`<i style="left:${Math.random()*100}%;top:${Math.random()*55}%;animation-delay:${-Math.random()*4}s;scale:${(.5+Math.random()).toFixed(2)}"></i>`).join("")}</div>
+   <div class="sun"></div><div class="cloud c0"></div><div class="cloud c1"></div><div class="cloud c2"></div>
+   <svg class="land" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice">${layer(1.3,150,22,"var(--h3)","var(--tr1)",9,26,40,"l3")}${layer(4.1,200,18,"var(--h2)","var(--tr2)",7,34,52,"l2")}${layer(2.2,250,14,"var(--h1)","var(--tr3)",5,44,64,"l1")}</svg>`;
+  if(!RM){let tk=0;addEventListener("scroll",()=>{if(tk)return;tk=requestAnimationFrame(()=>{tk=0;sc.style.setProperty("--py",Math.min(scrollY,600)+"px")})},{passive:true})}
+})();
 document.addEventListener("pointerdown",e=>{
   if(RM)return;const b=e.target.closest("button");if(!b||b.disabled||b.classList.contains("eye")||b.classList.contains("bdg"))return;
   const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2.2,i=document.createElement("span");i.className="rip";
@@ -430,7 +498,7 @@ function cropper(file){
 }
 function avatarMenu(){
   if(!AV[me.username])return pickAvatar();
-  const m=modal(`<h2>Фото профиля</h2><div style="margin:16px auto;width:120px;height:120px">${avatar(me).replace('class="ava"','class="ava" style="width:120px;height:120px"')}</div>
+  const m=modal(`<h2>Фото профиля</h2><div style="margin:16px auto;width:120px;height:120px">${avatar(me,1).replace('class="ava"','class="ava" style="width:120px;height:120px"')}</div>
    <button class="btn-full" id="ch">📷 Выбрать другое фото</button><button class="ghost danger btn-full" id="dl" style="margin-top:8px">Удалить фото</button>`);
   m.el.querySelector(".ava").removeAttribute("data-av");
   m.el.querySelector("#ch").onclick=()=>{m.close();pickAvatar()};
@@ -459,11 +527,146 @@ async function pulse(){
 setInterval(()=>{if(!document.hidden&&me)pulse()},30000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me)pulse()});
 
+/* ───────── серия дней, эко-сад, польза, лента ───────── */
+const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return n+" "+(m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c)};
+const flame=n=>n>0?`<span class="tag flame" title="Серия дней в мини-играх"><span class="fl">🔥</span> ${plural(n,"день","дня","дней")} подряд</span>`:"";
+const STAGES=[[0,"Семечко"],[30,"Росток"],[100,"Саженец"],[250,"Молодое дерево"],[500,"Дерево"],[900,"Могучее дерево"]];
+const stageOf=xp=>STAGES.filter(s=>xp>=s[0]).length-1;
+function treeSvg(st,streak){
+  const K=["#86efac","#4ade80","#22c55e","#16a34a"];
+  const Y=[78,66,48,34,20,6][st];let s=`<svg class="tree" viewBox="0 ${Y} 120 ${120-Y}" aria-hidden="true"><ellipse cx="60" cy="110" rx="${16+st*7}" ry="5" fill="#6b4423" opacity=".25"/>`;
+  if(st===0)return s+`<ellipse cx="60" cy="107" rx="7" ry="5" fill="#a0703f"/><path d="M60 103 q0 -9 5 -13" stroke="#22c55e" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="67" cy="89" rx="5" ry="3" fill="#4ade80" transform="rotate(-25 67 89)"/></svg>`;
+  if(st===1)return s+`<g class="sway"><path d="M60 110 q-2 -16 1 -28" stroke="#16a34a" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="52" cy="88" rx="9" ry="5" fill="#4ade80" transform="rotate(25 52 88)"/><ellipse cx="69" cy="82" rx="9" ry="5" fill="#22c55e" transform="rotate(-30 69 82)"/></g></svg>`;
+  const Ht=[0,0,40,52,62,70][st],W=[0,0,4,5,7,9][st],R=[0,0,13,16,19,21][st],N=[0,0,3,4,6,8][st],top=110-Ht;
+  s+=`<path d="M${60-W/2} 110 L${60-W/3} ${top+R*.4} L${60+W/3} ${top+R*.4} L${60+W/2} 110Z" fill="#8b5e34"/><g class="sway">`;
+  const pts=[];for(let i=0;i<N;i++){const a=Math.PI*(1.05+.9*i/(N-1));pts.push([60+Math.cos(a)*R*1.15,top+R*.35+Math.sin(a)*R*.7])}
+  pts.forEach(([x,y],i)=>s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(R*.72).toFixed(1)}" fill="${K[i%4]}"/>`);
+  s+=`<circle cx="60" cy="${top}" r="${R}" fill="${K[2]}"/><circle cx="${60-R*.3}" cy="${top-R*.3}" r="${R*.45}" fill="#bbf7d0" opacity=".35"/>`;
+  const dots=(n,c,r)=>pts.concat([[60,top]]).slice(0,n).forEach(([x,y],i)=>s+=`<circle cx="${(x+(i%2?4:-3)).toFixed(1)}" cy="${(y+(i%3?3:-4)).toFixed(1)}" r="${r}" fill="${c}"/>`);
+  if(streak>=7)dots(7,"#f9a8d4",2.6);if(streak>=30)dots(5,"#ef4444",3.4);
+  return s+"</g></svg>";
+}
+function gardenCard(xp,streak,own){const st=stageOf(xp),nx=STAGES[st+1],lo=STAGES[st][0];
+  return`<div class="card"><b>🌳 ${own?"Мой эко-сад":"Эко-сад"}</b><div class="muted sm">${STAGES[st][1]}${streak>=30?" · даёт плоды 🍎":streak>=7?" · цветёт 🌸":""}</div>
+  <div class="tstage">${treeSvg(st,streak)}</div>
+  ${nx?`<div class="prog"><i style="width:${Math.round((xp-lo)/(nx[0]-lo)*100)}%"></i></div><div class="muted sm" style="margin-top:6px">До стадии «${nx[1]}»: ${nx[0]-xp} XP</div>`:`<div class="muted sm center">Самая высокая стадия! 🎉</div>`}
+  ${own?`<p class="muted sm" style="margin:8px 0 0">Сад растёт от опыта. Серия 7+ дней - дерево цветёт, 30+ - даёт плоды.</p>`:""}</div>`}
+const IMP=[["water","💧","л воды сэкономлено"],["plastic","🧴","шт. пластика не выброшено"],["paper","📄","кг макулатуры собрано"],["co2","🌫️","кг CO₂ - меньше выбросов"],["energy","💡","кВт·ч электричества сэкономлено"]];
+const fnum=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:2});
+const impText=imp=>IMP.filter(([k])=>imp&&imp[k]).map(([k,e])=>`${e} ≈ ${fnum(imp[k])} ${{water:"л",plastic:"шт.",paper:"кг",co2:"кг CO₂",energy:"кВт·ч"}[k]}`).join(" · ");
+function impactCard(imp,title,empty){if(!imp)return"";const has=IMP.some(([k])=>imp[k]>0);
+  return`<div class="card"><b>🌍 ${title}</b> <span class="muted sm">(примерно)</span>${has?`<div class="impg">${IMP.filter(([k])=>imp[k]>0).map(([k,e,t])=>`<div class="imp"><span>${e}</span><b>${fnum(imp[k])}</b><small>${t}</small></div>`).join("")}</div>`:`<p class="muted sm" style="margin:6px 0 0">${empty}</p>`}</div>`}
+function feedCard(ev,title,empty){if(!ev)return"";
+  return`<div class="card"><b>📰 ${title}</b>${ev.length?ev.map(e=>`<div class="item"><div class="evi">${esc(e.emoji)}</div><div class="grow"><div>${esc(e.text)}</div><div class="muted sm">${ago(e.created)}</div></div></div>`).join(""):`<p class="muted sm" style="margin:6px 0 0">${empty}</p>`}</div>`}
+function forestCard(title,trees){if(!trees)return"";
+  return`<div class="card"><b>🌲 ${esc(title)}</b><p class="muted sm" style="margin:2px 0 0">У каждого своё дерево - оно растёт от опыта. Чем активнее класс, тем гуще лес!</p>
+  <div class="forest">${trees.map(t=>`<div class="ft" data-pf="${esc(t.user.username)}">${treeSvg(stageOf(t.xp),t.streak)}<b>${esc(t.user.firstName)}</b><small>${t.teacher?"учитель":STAGES[stageOf(t.xp)][1]}${t.streak?" · 🔥"+t.streak:""}</small></div>`).join("")}</div></div>`}
+async function forestModal(un){
+  const m=modal(`<div id="fm">${sk(2)}</div>`),r=await api("classForest",{username:un});if(dead(r))return m.close();
+  const b=m.el.querySelector("#fm");if(!b)return;if(!r.ok){b.innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
+  b.innerHTML=forestCard("Лес класса «"+r.name+"»",r.trees)+impactCard(r.impact,"Польза класса","Пока никто в классе не выполнил задания дня.");
+}
+
+/* ───────── чужой профиль ───────── */
+function userV(un,back){
+  const my=++vid;stopPoll();chatsDraw=null;openChat=null;document.body.classList.remove("chatting");
+  put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="ub" aria-label="Назад">←</button><b class="grow muted">Профиль</b></div><div id="uv">${sk(3)}</div>`);
+  $("#ub").onclick=back||(()=>go(tab));scrollTo({top:0});
+  const draw=r=>{const box=$("#uv");if(!box||my!==vid)return;
+    if(!r.ok){box.innerHTML=`<div class="card err">${esc(/Неизвестное действие/.test(r.error)?"Профили заработают после обновления серверной части (Badges.gs).":r.error)}</div>`;return}
+    const u=r.user,{lv,pct}=level(u.xp),rk=rank(lv),B=r.badges;
+    if((AV[u.username]||"")!==(r.avatar||"")){AV[u.username]=r.avatar||"";saveAV()}
+    box.innerHTML=`<div class="card hero"><div class="row"><div class="ring">${ring("fg")}${avatar(u,1)}<span class="lvb">${lv}</span></div>
+      <div class="grow"><h2>${esc(u.firstName)} ${esc(u.lastName)}</h2><div class="muted">@${esc(u.username)}</div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(u)}${isT(u)?`<span class="tag t">🧑‍🏫 Учитель</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span>${flame(r.streak)}</div></div></div>
+      ${u.bio?`<p class="bio">${esc(u.bio)}</p>`:""}
+      ${r.self?`<button class="ghost btn-full" id="mine" style="margin-top:12px">Это вы - открыть свой профиль</button>`:r.friend?`<button class="btn-full" id="wr" style="margin-top:12px">💬 Написать</button>`:""}</div>
+      ${gardenCard(u.xp,r.streak,false)}
+      ${B.length?`<div class="card"><div class="row"><b class="grow">🏅 Бейджи</b><span class="tag">${B.length}</span></div>${bgrid(B.map(b=>({...b,seen:true})))}</div>`:""}
+      ${impactCard(r.impact,"Польза для природы","Пока нет выполненных заданий дня.")}
+      ${feedCard(r.events,"Лента достижений","Здесь появятся новые бейджи, уровни и серии дней.")}`;
+    stag(box);raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct/100)});
+    box.querySelectorAll(".bdg").forEach(b=>b.onclick=()=>badgeModal(B[+b.dataset.b]));tilt(box);
+    if($("#mine"))$("#mine").onclick=()=>go("profile");
+    if($("#wr"))$("#wr").onclick=()=>chatV("f:"+u.username);
+  };
+  swr("pf:"+un,"profile",{username:un},draw,my);
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-pf]");if(!t||!me||t.closest(".chi"))return;
+  if(t.closest(".mb")){document.querySelectorAll(".mb").forEach(m=>m.remove());document.body.classList.remove("lock")}
+  const ch=openChat;userV(t.dataset.pf,ch?()=>chatV(ch):null);
+});
+
+/* ───────── эко-карта: пункты приёма из OpenStreetMap ───────── */
+const LEAF="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/";
+let leafP=null,curMap=null;
+const leaflet=()=>leafP||(leafP=new Promise((res,rej)=>{const l=document.createElement("link");l.rel="stylesheet";l.href=LEAF+"leaflet.css";document.head.append(l);
+  const s=document.createElement("script");s.src=LEAF+"leaflet.js";s.onload=()=>res(window.L);s.onerror=()=>{leafP=null;s.remove();rej()};document.head.append(s)}));
+const RCAT=[["all","Все","♻️",[]],["batteries","Батарейки","🔋",["batteries"]],["plastic","Пластик","🧴",["plastic","plastic_bottles","plastic_packaging","PET"]],["glass","Стекло","🫙",["glass","glass_bottles"]],["paper","Бумага","📄",["paper","cardboard","newspaper","paper_packaging","magazines"]],["metal","Металл","🥫",["cans","scrap_metal","aluminium"]],["clothes","Одежда","👕",["clothes","shoes"]]];
+const accepts=t=>RCAT.slice(1).filter(c=>c[3].some(k=>t["recycling:"+k]==="yes"));
+async function overpass(lat,lon,rad){
+  const q=`[out:json][timeout:25];(node["amenity"="recycling"](around:${rad},${lat},${lon});way["amenity"="recycling"](around:${rad},${lat},${lon}););out center 300;`;
+  for(const u of["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"]){
+    try{const r=await fetch(u,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)});if(r.ok)return(await r.json()).elements}catch{}}
+  throw new Error("overpass");
+}
+const geoDist=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return 6371e3*Math.sqrt(x*x+y*y)};
+const fdist=m=>m<1000?Math.round(m/10)*10+" м":(m/1000).toFixed(1).replace(".",",")+" км";
+async function mapV(){
+  const my=++vid;let cat="all",pts=[],here=null,L,map,layer,meMark=null;
+  put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="mb" aria-label="Назад">←</button><h1 class="grow" style="margin:0">🗺️ Эко-карта</h1></div>
+   <p class="muted sm" style="margin:4px 0 8px">Пункты приёма вторсырья и батареек. Данные OpenStreetMap - их добавляют волонтёры, поэтому перед поездкой проверьте часы работы.</p>
+   <div class="chips" id="mf">${RCAT.map((c,i)=>`<button type="button" data-c="${c[0]}" class="${i?"":"on"}">${c[2]} ${c[1]}</button>`).join("")}</div>
+   <div class="card mapc"><div id="map"></div><div class="mapmsg" id="mm">Загружаем карту…</div></div>
+   <div class="row"><button class="grow" id="geo">📍 Рядом со мной</button><button class="ghost grow" id="here" hidden>🔄 Искать здесь</button></div>
+   <form class="srch" id="msf" style="margin-top:8px"><input id="mq" placeholder="Город или адрес" autocomplete="off"><button type="submit" aria-label="Найти">🔍</button></form>
+   <div id="ml"></div>`);
+  $("#mb").onclick=()=>go(tab);
+  const msg=t=>{const m=$("#mm");if(m)m.textContent=t};
+  try{L=await leaflet()}catch{msg("Не удалось загрузить карту. Проверьте интернет и попробуйте ещё раз.");return}
+  if(my!==vid)return;
+  const g=ls.get("geo")||{lat:55.7558,lon:37.6173,z:12};
+  map=curMap=L.map("map").setView([g.lat,g.lon],g.z);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
+  layer=L.layerGroup().addTo(map);setTimeout(()=>map.invalidateSize(),600);
+  const ico=p=>L.divIcon({className:"",html:`<div class="pin"><span>${(p.acc[0]||RCAT[0])[2]}</span></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
+  const popup=p=>`<b>${esc(p.name)}</b><br>${p.acc.length?"Принимают: "+p.acc.map(c=>c[2]+" "+c[1].toLowerCase()).join(", "):"Вид вторсырья не указан"}${p.hours?`<br>🕒 ${esc(p.hours)}`:""}<br><a href="https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=18/${p.lat}/${p.lon}" target="_blank" rel="noopener">Открыть на карте</a>`;
+  const draw=()=>{layer.clearLayers();const f=cat==="all"?pts:pts.filter(p=>p.acc.some(c=>c[0]===cat));
+    f.forEach(p=>L.marker([p.lat,p.lon],{icon:ico(p)}).bindPopup(popup(p)).addTo(layer));
+    const near=f.slice().sort((a,b)=>a.d-b.d).slice(0,8);
+    $("#ml").innerHTML=near.length?`<div class="card"><b>Ближайшие пункты ${here?"к вам":"к центру карты"}</b>${near.map(p=>`<div class="item" data-i="${pts.indexOf(p)}" style="cursor:pointer"><div class="evi">${(p.acc[0]||RCAT[0])[2]}</div><div class="grow"><b>${esc(p.name)}</b><div class="muted sm">${p.acc.length?p.acc.map(c=>c[1]).join(", "):"Вид вторсырья не указан"}</div></div><span class="tmr">${fdist(p.d)}</span></div>`).join("")}</div>`:"";
+    stag($("#ml"));$("#ml").querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const p=pts[+el.dataset.i];map.setView([p.lat,p.lon],17);scrollTo({top:0,behavior:"smooth"})});
+    msg(!pts.length?"Здесь пока не отмечено ни одного пункта. Отдалите карту или найдите другой город.":f.length?"":"Для этого вида вторсырья здесь пунктов нет - попробуйте другой фильтр.");
+  };
+  const load=async()=>{const c=map.getCenter(),rad=Math.min(8000,Math.max(800,Math.round(c.distanceTo(map.getBounds().getNorthEast()))));
+    msg("Ищем пункты приёма…");$("#here").hidden=true;ls.set("geo",{lat:c.lat,lon:c.lng,z:map.getZoom()});
+    try{const el=await overpass(c.lat,c.lng,rad);if(my!==vid)return;const o=here||{lat:c.lat,lon:c.lng};
+      pts=el.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
+        return{lat,lon,name:t.name||t.operator||(t.recycling_type==="centre"?"Пункт приёма":"Контейнер для вторсырья"),acc:accepts(t),hours:t.opening_hours||"",d:geoDist(o.lat,o.lon,lat,lon)}}).filter(p=>p.lat!=null);
+      draw()}
+    catch{if(my===vid)msg("Сервис карты сейчас не отвечает. Попробуйте ещё раз через минуту.")}};
+  let skip=true;map.on("moveend",()=>{if(skip){skip=false;return}$("#here").hidden=false});
+  const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z);load()};
+  $("#here").onclick=()=>load();
+  $("#mf").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=b.dataset.c;$("#mf").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));if(pts.length)draw()};
+  const locate=()=>{if(!navigator.geolocation)return msg("Браузер не умеет определять место. Найдите город через поиск.");msg("Определяем, где вы…");
+    navigator.geolocation.getCurrentPosition(p=>{if(my!==vid)return;here={lat:p.coords.latitude,lon:p.coords.longitude};
+      if(meMark)meMark.remove();meMark=L.marker([here.lat,here.lon],{icon:L.divIcon({className:"",html:'<div class="me-dot"></div>',iconSize:[16,16]})}).addTo(map);goTo(here.lat,here.lon,15)},
+      ()=>{if(my===vid){msg("Не удалось определить место. Разрешите доступ к геолокации или найдите город через поиск.");if(!pts.length)load()}},{timeout:10000,maximumAge:600000})};
+  $("#geo").onclick=locate;
+  $("#msf").onsubmit=async e=>{e.preventDefault();const q=$("#mq").value.trim();if(!q)return;msg("Ищем «"+q+"»…");
+    try{const r=await(await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=ru&q="+encodeURIComponent(q))).json();
+      if(my!==vid)return;if(!r.length)return msg("Ничего не нашлось. Попробуйте написать иначе.");here=null;goTo(+r[0].lat,+r[0].lon,13)}
+    catch{msg("Поиск сейчас не работает. Попробуйте позже.")}};
+  locate();
+}
+
 /* ───────── вход и регистрация ───────── */
 function authView(msg=""){
   document.body.classList.remove("chatting");
   app.innerHTML=`<div class="auth"><div class="lw"><div class="logo-big">${BRAND.emoji}</div></div><h1 class="grad">${esc(BRAND.name)}</h1>
-  <p class="muted" style="margin:0 0 8px">Заботиться о планете — просто и интересно</p>
+  <p class="muted" style="margin:0 0 8px">Заботиться о планете - просто и интересно</p>
   <div class="feat">${["🎮 Игры","🏅 Бейджи","💬 Чаты","🌱 Задания"].map((t,i)=>`<span style="animation-delay:${200+i*90}ms">${t}</span>`).join("")}</div>
   <div class="card"><div class="seg" id="sg" style="--n:2;--k:${mode==="register"?1:0};margin-bottom:10px"><i></i>
   <button type="button" data-m="login" class="${mode==="login"?"on":""}">Вход</button><button type="button" data-m="register" class="${mode==="register"?"on":""}">Регистрация</button></div>
@@ -491,7 +694,7 @@ function drawForm(msg=""){
     e.preventDefault();
     const er=$("#er"),b=$("#go"),username=$("#un").value.trim().toLowerCase().replace(/^@/,""),password=$("#pw").value;
     er.textContent="";
-    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Юзернейм: 3–20 символов, a-z, 0-9 и _";
+    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Юзернейм: 3-20 символов, a-z, 0-9 и _";
     let body={username,password};
     if(reg){
       if(tch()&&!$("#tc").value.trim())return er.textContent="Введите код учителя";
@@ -548,7 +751,7 @@ function feedV(){
 }
 
 /* ───────── друзья ───────── */
-const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b>${esc(u.firstName)} ${esc(u.lastName)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${isT(u)?"🧑‍🏫 учитель":rank(level(u.xp).lv)[2]+" ур. "+level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
+const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${esc(u.firstName)} ${esc(u.lastName)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${isT(u)?"🧑‍🏫 учитель":rank(level(u.xp).lv)[2]+" ур. "+level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
 const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
 function friendsV(){
   const my=++vid;let users=[];
@@ -589,14 +792,14 @@ function friendsV(){
 /* ───────── чаты ───────── */
 const prevText=c=>{if(!c.last)return c.kind==="c"?"Напишите классу первым!":"Скажите привет 👋";
   const l=c.last;return esc((l.mine?"Вы: ":c.kind==="c"?l.from+": ":"")+l.text)};
-const chatIcon=c=>c.kind==="f"&&c.user?avatar(c.user):`<div class="ava cls">🏫</div>`;
+const chatIcon=(c,nol)=>c.kind==="f"&&c.user?avatar(c.user,nol):`<div class="ava cls">🏫</div>`;
 function chatsV(){
   const my=++vid;
   put(`<h1>Чаты</h1><div id="chl">${sk(3)}</div>`);
   const draw=r=>{const box=$("#chl");if(!box||my!==vid)return;
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(/Неизвестное действие/.test(r.error)?"Чаты заработают после обновления серверной части (Badges.gs, см. README).":r.error)}</div>`;return}
-    box.innerHTML=r.chats.length?r.chats.map(c=>`<button class="card chi lift" data-k="${esc(c.key)}">${chatIcon(c)}<div class="grow" style="min-width:0"><div class="row" style="gap:6px"><b class="grow el">${esc(c.title)}</b>${c.user?devTag(c.user,1):""}${c.last?`<span class="tmr">${tshort(c.last.ts)}</span>`:""}</div><div class="row" style="gap:6px"><span class="prev grow">${prevText(c)}</span>${c.unread?`<span class="unr">${c.unread>99?"99+":c.unread}</span>`:""}</div></div></button>`).join("")
-      :`<div class="card empty"><div class="eb">💬</div><h2>Пока нет чатов</h2><p class="muted">Личный чат появляется, когда вы и друг приняли запрос в друзья. Чат класса — когда вы вступили в класс учителя.</p></div>`;
+    box.innerHTML=r.chats.length?r.chats.map(c=>`<button class="card chi lift" data-k="${esc(c.key)}">${chatIcon(c,1)}<div class="grow" style="min-width:0"><div class="row" style="gap:6px"><b class="grow el">${esc(c.title)}</b>${c.user?devTag(c.user,1):""}${c.last?`<span class="tmr">${tshort(c.last.ts)}</span>`:""}</div><div class="row" style="gap:6px"><span class="prev grow">${prevText(c)}</span>${c.unread?`<span class="unr">${c.unread>99?"99+":c.unread}</span>`:""}</div></div></button>`).join("")
+      :`<div class="card empty"><div class="eb">💬</div><h2>Пока нет чатов</h2><p class="muted">Личный чат появляется, когда вы и друг приняли запрос в друзья. Чат класса - когда вы вступили в класс учителя.</p></div>`;
     stag(box);loadAv(r.chats.map(c=>c.user));
     box.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>chatV(b.dataset.k));
   };
@@ -604,6 +807,11 @@ function chatsV(){
   const c=CH||cget("chats");if(c)draw(c);
   pulse();
 }
+const REACTS=["👍","❤️","😂","😮","😢","🔥","🌱"];
+const rxHtml=rx=>rx?Object.entries(rx).map(([e,v])=>`<button type="button" class="rc ${v.mine?"on":""}" data-re="${e}" title="${esc(v.who.join(", "))}">${e}<b>${v.n}</b></button>`).join(""):"";
+const closePick=()=>document.querySelectorAll(".rpick").forEach(p=>p.remove());
+document.addEventListener("pointerdown",e=>{if(!e.target.closest(".rpick"))closePick()},true);
+addEventListener("scroll",closePick,{passive:true});
 const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
 async function chatV(key){
   const my=++vid;stopPoll();chatsDraw=null;openChat=key;document.body.classList.add("chatting");
@@ -615,12 +823,12 @@ async function chatV(key){
   document.documentElement.style.setProperty("--toph",($(".top")?.offsetHeight||62)+"px");
   if(meta.user)loadAv([meta.user]);
   $("#cb").onclick=()=>go("chats");
-  const box=$("#ms"),seen=new Set();let last=0,lastDay="",list=[],tmpN=0,busyPoll=false;
-  const empty=`<div class="empty muted" id="me0"><div class="eb">👋</div><p>Здесь пока пусто — напишите первым!</p></div>`;
+  const box=$("#ms"),seen=new Set(),R={};let last=0,lastDay="",list=[],tmpN=0,busyPoll=false;
+  const empty=`<div class="empty muted" id="me0"><div class="eb">👋</div><p>Здесь пока пусто - напишите первым!</p></div>`;
   const nearBottom=()=>innerHeight+scrollY>=document.documentElement.scrollHeight-200;
   const bottom=smooth=>requestAnimationFrame(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:smooth&&!RM?"smooth":"auto"}));
   const html=(m,anim)=>{const other=grp&&!m.mine;
-    return`<div class="msg ${m.mine?"mine":""} ${anim?"new":""} ${m.pending?"pending":""}" data-id="${esc(m.id)}">${other?avatar(m.from):""}<div class="bub">${other?`<div class="nm">${esc(m.from.firstName+" "+m.from.lastName)}${m.from.dev?" 💜":""}</div>`:""}<div class="tx">${linkify(esc(m.text))}</div><span class="tm">${m.pending?"⏳":hhmm(m.ts)}</span></div></div>`};
+    return`<div class="msg ${m.mine?"mine":""} ${anim?"new":""} ${m.pending?"pending":""}" data-id="${esc(m.id)}">${other?avatar(m.from):""}<div class="bub">${other?`<div class="nm" data-pf="${esc(m.from.username)}">${esc(m.from.firstName+" "+m.from.lastName)}${m.from.dev?" 💜":""}</div>`:""}<div class="tx">${linkify(esc(m.text))}</div><div class="rx">${rxHtml(R[m.id])}</div><span class="tm">${m.pending?"⏳":hhmm(m.ts)}</span></div></div>`};
   const append=(m,anim)=>{$("#me0")?.remove();const d=dayKey(m.ts);let h="";if(d!==lastDay){h=`<div class="day">${dayLabel(m.ts)}</div>`;lastDay=d}box.insertAdjacentHTML("beforeend",h+html(m,anim))};
   const full=ms=>{box.innerHTML="";lastDay="";seen.clear();list=ms.slice();ms.forEach(m=>{seen.add(m.id);append(m,false);last=Math.max(last,m.ts)});if(!ms.length)box.innerHTML=empty;loadAv(ms.map(m=>m.from));bottom()};
   const save=()=>cset("m:"+key,list.filter(m=>!m.pending).slice(-80));
@@ -629,7 +837,8 @@ async function chatV(key){
   const r=await api("chatMessages",{chat:key,after:0});if(my!==vid||dead(r))return;
   if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#cf").remove();return}
   if(r.info){$("#ctt").textContent=r.info.title;if(r.info.sub)$("#csub").textContent=r.info.sub}
-  if(JSON.stringify(r.messages)!==JSON.stringify(cached))full(r.messages);else last=Math.max(last,...r.messages.map(m=>m.ts),0);
+  Object.assign(R,r.reacts||{});
+  if(JSON.stringify(r.messages)!==JSON.stringify(cached))full(r.messages);else{applyR(r.reacts||{});last=Math.max(last,...r.messages.map(m=>m.ts),0)}
   save();
   if(CH){const c=CH.chats.find(x=>x.key===key);if(c){c.unread=0;cset("chats",CH);dots(CH)}}
   poll=setInterval(async()=>{
@@ -640,6 +849,7 @@ async function chatV(key){
       const tmp=m.mine&&box.querySelector(`.msg.pending[data-txt="${CSS.escape(m.text)}"]`);
       if(take(m)){added=true;if(tmp)tmp.remove()}});
     (p.gone||[]).forEach(id=>{box.querySelector(`[data-id="${CSS.escape(id)}"]`)?.remove();if(seen.has(id))list=list.filter(m=>m.id!==id)});
+    applyR(p.reacts||{});
     if(added){loadAv(p.messages.map(m=>m.from));if(near)bottom(true);save()}
   },3000);
   // отправка
@@ -661,7 +871,27 @@ async function chatV(key){
     if(!await ask("Удалить сообщение?","Удалить",1))return;
     const r=await api("chatDelete",{chat:key,id});if(dead(r))return;if(!r.ok)return toast(r.error,"err");
     el.remove();list=list.filter(x=>x.id!==id);save();toast("Сообщение удалено")};
-  $("#view").oncontextmenu=e=>{const el=e.target.closest(".msg[data-id]");if(!el||el.classList.contains("pending"))return;e.preventDefault();del(el)};
+  // реакции: нажатие на сообщение открывает выбор, нажатие на реакцию - ставит или снимает её
+  function applyR(map){list.slice(-200).forEach(m=>{const v=map[m.id];if(JSON.stringify(v||null)!==JSON.stringify(R[m.id]||null))setR(m.id,v||{})})}
+  function setR(id,v){if(v&&Object.keys(v).length)R[id]=v;else delete R[id];const x=box.querySelector(`[data-id="${CSS.escape(id)}"] .rx`);if(x)x.innerHTML=rxHtml(R[id])}
+  const react=async(id,e)=>{
+    const prev=R[id]?JSON.parse(JSON.stringify(R[id])):{},cur=JSON.parse(JSON.stringify(prev)),mine=Object.keys(cur).find(k=>cur[k].mine);
+    if(mine){const v=cur[mine];v.n--;v.mine=false;v.who=v.who.filter((w,i)=>i!==v.who.lastIndexOf(me.firstName));if(!v.n)delete cur[mine]}
+    if(mine!==e){const v=cur[e]=cur[e]||{n:0,mine:false,who:[]};v.n++;v.mine=true;v.who.push(me.firstName)}
+    setR(id,cur);
+    const r=await api("chatReact",{chat:key,id,emoji:e});if(my!==vid||dead(r))return;
+    if(!r.ok){setR(id,prev);return toast(r.error,"err")}setR(id,r.reacts);
+  };
+  const pick=el=>{closePick();const id=el.dataset.id,m=list.find(x=>x.id===id);if(!m)return;
+    const b=el.querySelector(".bub").getBoundingClientRect(),p=document.createElement("div");p.className="rpick";
+    p.innerHTML=REACTS.map(e=>`<button type="button" data-pe="${e}" aria-label="Реакция ${e}">${e}</button>`).join("")+(m.mine||canMod?`<button type="button" data-del aria-label="Удалить сообщение">🗑</button>`:"");
+    document.body.append(p);const w=p.offsetWidth;p.style.left=Math.max(8,Math.min(innerWidth-w-8,m.mine?b.right-w:b.left))+"px";
+    const y=b.top-p.offsetHeight-8;p.style.top=(y<70?b.bottom+8:y)+"px";
+    p.onclick=ev=>{const t=ev.target.closest("button");if(!t)return;closePick();if(t.hasAttribute("data-del"))return del(el);react(id,t.dataset.pe)}};
+  $("#view").onclick=e=>{if(e.target.closest("a,[data-pf]"))return;
+    const c=e.target.closest(".rc");if(c){const el=c.closest(".msg");if(el&&!el.classList.contains("pending"))react(el.dataset.id,c.dataset.re);return}
+    const el=e.target.closest(".msg[data-id]");if(el&&e.target.closest(".bub")&&!el.classList.contains("pending"))pick(el)};
+  $("#view").oncontextmenu=e=>{const el=e.target.closest(".msg[data-id]");if(!el||el.classList.contains("pending"))return;e.preventDefault();pick(el)};
 }
 
 /* ───────── игры и задания ───────── */
@@ -674,15 +904,15 @@ const optText=o=>((OI[o]||"")+" "+o).trim();
 
 function gamesV(){
   const my=++vid;
-  put(`<h1>Игры и задания</h1><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div><h2 class="sec">Мини-игры</h2>`+
+  put(`<h1>Игры и задания</h1><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div><h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>`+
   Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
   `<p class="muted sm">XP даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`);
-  $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));
+  $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));$("#emap").onclick=mapV;
   let T=null;
   const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.textContent=r.error;return}T=r;
-    box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div><span class="tag">+${t.xp} XP</span></div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
-     `<p class="muted sm">Это самоотчёт: отмечайте, только если правда сделали. Новые задания — каждый день.</p>`;
-    stag(box);
+    box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div><span class="tag">+${t.xp} XP</span>${impText(t.imp)?` <span class="tag imp">${impText(t.imp)}</span>`:""}${t.map?`<div style="margin-top:8px"><button class="ghost sm" data-map>🗺️ Открыть эко-карту</button></div>`:""}</div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
+     `<p class="muted sm">Это самоотчёт: отмечайте, только если правда сделали. Новые задания - каждый день.</p>`;
+    stag(box);box.querySelectorAll("[data-map]").forEach(b=>b.onclick=mapV);
     box.querySelectorAll("button[data-s]").forEach(b=>b.onclick=async()=>{
       const slot=+b.dataset.s,card=b.closest(".task"),st=b.parentElement,rc=b.getBoundingClientRect(),t=T.tasks.find(x=>x.slot===slot);
       card.classList.add("done");st.innerHTML=`<span class="okc">✓</span>`;burst(rc.left+rc.width/2,rc.top,22);   // сразу, не дожидаясь сервера
@@ -705,7 +935,7 @@ async function play(g){
     if(i>=n)return finish();const it=items[i];
     put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти из игры">✕</button><div class="grow prog"><i id="pb" style="width:${i/n*100}%"></i></div><span class="muted sm">${i+1}/${n}</span></div>
     <div class="card qcard"><div class="qe">${G.e}</div><h2>${esc(it.q)}</h2>${it.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCDE"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}</div>
-    ${r.played?`<p class="muted sm center">XP за эту игру сегодня уже получены — играйте для тренировки.</p>`:""}`);
+    ${r.played?`<p class="muted sm center">XP за эту игру сегодня уже получены - играйте для тренировки.</p>`:""}`);
     $("#bk").onclick=()=>go("games");raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/n*100+"%"});
     const v=$("#view");
     v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
@@ -718,11 +948,12 @@ async function play(g){
     const s=await api("gameSubmit",{game:g,answers:ans});if(my!==vid||dead(s))return;
     if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
     addXp(s.xp);
-    const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка — в следующий раз выйдет лучше!";
+    if(s.streak!==undefined){if(X){X.streak=s.streak;X.playedToday=true;cset("x",X)}if(s.newDay)setTimeout(()=>toast(`🔥 ${plural(s.streak,"день","дня","дней")} подряд в мини-играх!`),900)}
+    const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка - в следующий раз выйдет лучше!";
     const bad=s.results.filter(x=>!x.ok);
     put(`<div class="card center"><div class="ring" style="margin:6px auto 10px">${ring("fg")}<div class="num"><span id="cn">0</span><small>/${s.total}</small></div></div>
-      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} XP 🎉`:r.played?"XP за эту игру сегодня уже получены":"Пока без XP — попробуйте ещё раз!"}</span></div>`+
-      (bad.length?`<h2 class="sec">Разбор ошибок</h2>`+bad.map(x=>{const it=items.find(t=>t.id===x.id);return`<div class="card wrong"><b>${esc(it.q)}</b><div class="good">✓ ${esc(optText(it.o[it.ix.indexOf(x.right)]))}</div><div class="muted sm">${esc(x.e)}</div></div>`}).join(""):`<div class="card center muted">Ошибок нет — так держать! 🌍</div>`)+
+      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} XP 🎉`:r.played?"XP за эту игру сегодня уже получены":"Пока без XP - попробуйте ещё раз!"}</span></div>`+
+      (bad.length?`<h2 class="sec">Разбор ошибок</h2>`+bad.map(x=>{const it=items.find(t=>t.id===x.id);return`<div class="card wrong"><b>${esc(it.q)}</b><div class="good">✓ ${esc(optText(it.o[it.ix.indexOf(x.right)]))}</div><div class="muted sm">${esc(x.e)}</div></div>`}).join(""):`<div class="card center muted">Ошибок нет - так держать! 🌍</div>`)+
       `<div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
     $("#bk").onclick=()=>go("games");$("#again").onclick=()=>play(g);
     raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct)});count($("#cn"),s.score);
@@ -734,19 +965,20 @@ async function play(g){
 /* ───────── класс (учитель и разработчик) ───────── */
 function classV(){
   const my=++vid;let C=null;
-  put(`<h1>Мой класс</h1>${me.dev?`<div class="card"><b>💜 Выдать бейдж любому пользователю</b><p class="muted sm" style="margin:4px 0 0">Как разработчик вы можете наградить кого угодно, не только учеников класса.</p><form class="srch" id="dg"><input id="du" placeholder="@username" autocapitalize="none" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Выдать бейдж">🏅</button></form></div>`:""}<div id="cl">${sk(1)}</div><div id="st">${sk(3)}</div>`);
+  put(`<h1>Мой класс</h1>${me.dev?`<div class="card"><b>💜 Выдать бейдж любому пользователю</b><p class="muted sm" style="margin:4px 0 0">Как разработчик вы можете наградить кого угодно, не только учеников класса.</p><form class="srch" id="dg"><input id="du" placeholder="@username" autocapitalize="none" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Выдать бейдж">🏅</button></form></div>`:""}<div id="cl">${sk(1)}</div><div id="st">${sk(3)}</div><div id="fo"></div>`);
   if(me.dev)$("#dg").onsubmit=e=>{e.preventDefault();const un=$("#du").value.trim().toLowerCase().replace(/^@/,"");if(!/^[a-z0-9_]{3,20}$/.test(un))return toast("Введите юзернейм","err");
     giveBadge({username:un,firstName:"@"+un},()=>{$("#du").value=""})};
   const drawCl=()=>{$("#cl").innerHTML=`<div class="card hero"><div class="row"><div class="grow"><div class="muted sm">Класс</div><h2>${esc(C.name)}</h2></div><button class="ghost sm" data-c="rename" aria-label="Переименовать">✏️</button></div>
     <div class="muted sm center" style="margin-top:10px">Код для учеников</div><div class="code" aria-label="Код класса ${esc(C.code)}">${[...C.code].map((ch,i)=>`<span style="animation-delay:${i*70}ms">${esc(ch)}</span>`).join("")}</div>
     <div class="row"><button class="grow" data-c="copy">📋 Скопировать</button><button class="ghost grow" data-c="code">🔄 Новый код</button></div>
     <button class="ghost btn-full" data-c="chat" style="margin-top:8px">💬 Чат класса</button>
-    <p class="muted sm" style="margin:10px 0 0">Ученик вводит этот код у себя в профиле — и попадает в ваш класс и его чат.</p></div>`};
+    <p class="muted sm" style="margin:10px 0 0">Ученик вводит этот код у себя в профиле - и попадает в ваш класс и его чат.</p></div>`};
   const drawSt=()=>{const s=C.students;
-    $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b>${esc(u.firstName)} ${esc(u.lastName)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать бейдж">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
-      :`<div class="card empty"><div class="eb">🏫</div><h2>Пока нет учеников</h2><p class="muted">Поделитесь кодом класса — ученики введут его в профиле.</p></div>`;
+    $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${esc(u.firstName)} ${esc(u.lastName)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать бейдж">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
+      :`<div class="card empty"><div class="eb">🏫</div><h2>Пока нет учеников</h2><p class="muted">Поделитесь кодом класса - ученики введут его в профиле.</p></div>`;
     stag($("#st"));loadAv(s)};
-  const draw=r=>{if(my!==vid)return;if(!r.ok){$("#cl").innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#st").innerHTML="";return}C=r;drawCl();drawSt()};
+  const draw=r=>{if(my!==vid)return;if(!r.ok){$("#cl").innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#st").innerHTML="";return}C=r;drawCl();drawSt();
+    $("#fo").innerHTML=forestCard("Лес класса",C.trees)+impactCard(C.impact,"Польза класса","Когда ученики начнут выполнять задания дня, здесь появится общий результат.");stag($("#fo"))};
   const save=()=>cset("class",{ok:true,...C});
   swr("class","classInfo",{},draw,my);
   const stu=un=>C.students.find(s=>s.username===un);
@@ -814,26 +1046,34 @@ async function loadX(){
 }
 function drawX(){
   const box=$("#px");if(!box||!X)return;
-  if(X.off){box.innerHTML=`<div class="card"><b>🏅 Бейджи и аватарки</b><p class="muted sm">Серверная часть ещё не обновлена — добавьте файл Badges.gs в Apps Script (см. README).<br>${esc(X.off)}</p></div>`;return}
+  if(X.off){box.innerHTML=`<div class="card"><b>🏅 Бейджи и аватарки</b><p class="muted sm">Серверная часть ещё не обновлена - добавьте файл Badges.gs в Apps Script (см. README).<br>${esc(X.off)}</p></div>`;return}
+  const fl=$("#flm");if(fl)fl.innerHTML=flame(X.streak||0);
   let h="";
+  if(X.streak!==undefined){const n=X.streak,pl=X.playedToday;
+    h+=`<div class="card streakc ${n?"on":""}"><div class="row"><div class="bigfl">🔥</div><div class="grow"><b>${n?plural(n,"день","дня","дней")+" подряд":"Серия дней"}</b><div class="muted sm">${pl?"Сегодня серия продлена ✓ Возвращайся завтра!":n?"Сыграй сегодня в мини-игру, чтобы не потерять серию":"Сыграй в любую мини-игру - и начнётся серия дней"}</div></div>${pl?"":`<button class="sm" id="pl">Играть</button>`}</div></div>`}
   if(isStaff(me)){const c=X.class;
     h+=`<div class="card lift"><div class="row"><div class="eb" style="font-size:38px">🏫</div><div class="grow"><b>${esc(c?c.name:"Мой класс")}</b><div class="muted sm">${c?`Код: <b>${esc(c.code)}</b> · учеников: ${c.count}`:"Откройте, чтобы создать класс"}</div></div><button class="sm" id="oc">Открыть</button></div></div>`}
+  h+=gardenCard(me.xp,X.streak||0,true);
   if(!isT(me)){const B=X.badges,T=X.teachers;
     h+=`<div class="card"><div class="row"><b class="grow">🏅 Мои бейджи</b><span class="tag">${B.length}</span></div>
       ${B.length?bgrid(B):`<div class="empty" style="padding:18px 6px 6px"><div class="eb">🏅</div><p class="muted" style="margin:6px 0 0">Бейджи выдают учителя за достижения. Вступите в класс своего учителя по коду ниже!</p></div>`}</div>
-      <div class="card"><b>🧑‍🏫 Мои учителя</b>${T.map(t=>`<div class="item">${avatar(t)}<div class="grow"><b>${esc(t.firstName)} ${esc(t.lastName)}</b><div class="muted sm">@${esc(t.username)}</div></div><div class="acts"><button class="ghost sm" data-ct="${esc(t.username)}" aria-label="Чат класса">💬</button><button class="ghost sm" data-lv="${esc(t.username)}">Выйти</button></div></div>`).join("")}
+      <div class="card"><b>🧑‍🏫 Мои учителя</b>${T.map(t=>`<div class="item">${avatar(t)}<div class="grow"><b data-pf="${esc(t.username)}">${esc(t.firstName)} ${esc(t.lastName)}</b><div class="muted sm">@${esc(t.username)}</div></div><div class="acts"><button class="ghost sm" data-fo="${esc(t.username)}" aria-label="Лес класса">🌲</button><button class="ghost sm" data-ct="${esc(t.username)}" aria-label="Чат класса">💬</button><button class="ghost sm" data-lv="${esc(t.username)}">Выйти</button></div></div>`).join("")}
       <form class="srch" id="jf" style="margin-top:12px"><input id="jc" placeholder="Код класса" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.12em"><button type="submit" id="jb">Вступить</button></form>
       <p class="muted sm" style="margin:6px 0 0">Код класса даёт учитель.</p></div>`}
+  h+=impactCard(X.impact,"Моя польза для природы","Выполняй задания дня во вкладке «Игры» - здесь будет видно, сколько воды, пластика и бумаги удалось сберечь.");
+  h+=feedCard(X.events,"Моя лента","Здесь появятся новые бейджи, уровни, серии дней и рост эко-сада.");
   box.innerHTML=h;
+  if($("#pl"))$("#pl").onclick=()=>go("games");
+  box.querySelectorAll("[data-fo]").forEach(b=>b.onclick=()=>forestModal(b.dataset.fo));
   if($("#oc"))$("#oc").onclick=()=>go("class");
   if(!isT(me)){const B=X.badges;
     box.querySelectorAll(".bdg").forEach(b=>b.onclick=()=>badgeModal(B[+b.dataset.b]));tilt(box);loadAv(X.teachers);
     box.querySelectorAll("[data-ct]").forEach(b=>b.onclick=()=>chatV("c:"+b.dataset.ct));
     box.querySelectorAll("[data-lv]").forEach(b=>b.onclick=async()=>{if(!await ask("Выйти из класса этого учителя?","Выйти",1))return;
       const r=await api("classLeave",{username:b.dataset.lv});if(dead(r))return;if(!r.ok)return toast(r.error,"err");toast("Вы вышли из класса");await loadX();drawX();pulse()});
-    $("#jf").onsubmit=async e=>{e.preventDefault();const b=$("#jb"),code=$("#jc").value.trim().toUpperCase();if(code.length<6)return toast("Код класса — 6 символов","err");
+    $("#jf").onsubmit=async e=>{e.preventDefault();const b=$("#jb"),code=$("#jc").value.trim().toUpperCase();if(code.length<6)return toast("Код класса - 6 символов","err");
       b.disabled=true;const r=await api("classJoin",{code});b.disabled=false;if(dead(r))return;if(!r.ok)return toast(r.error,"err");
-      const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,26);toast(`Вы в классе «${r.className}» 🎉 Чат класса — во вкладке «Чаты»`);await loadX();drawX();pulse()};
+      const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,26);toast(`Вы в классе «${r.className}» 🎉 Чат класса - во вкладке «Чаты»`);await loadX();drawX();pulse()};
   }
   stag(box);
 }
@@ -841,9 +1081,9 @@ async function profileV(){
   const my=++vid;
   const {lv,pct}=level(me.xp),rk=rank(lv);
   if(!X)X=cget("x");
-  put(`<div class="card hero"><div class="row"><div class="ring">${ring("fg")}${avatar(me)}<span class="lvb">${lv}</span><button class="cam" id="cam" aria-label="Сменить фото">📷</button></div>
+  put(`<div class="card hero"><div class="row"><div class="ring">${ring("fg")}${avatar(me,1)}<span class="lvb">${lv}</span><button class="cam" id="cam" aria-label="Сменить фото">📷</button></div>
     <div class="grow"><h2>${esc(me.firstName)} ${esc(me.lastName)}</h2><div class="muted">@${esc(me.username)}</div>
-    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(me)}${isT(me)?`<span class="tag t">🧑‍🏫 ${me.role==="admin"?"Администратор":"Учитель"}</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span></div></div></div>
+    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(me)}${isT(me)?`<span class="tag t">🧑‍🏫 ${me.role==="admin"?"Администратор":"Учитель"}</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span><span id="flm" style="display:contents">${X?flame(X.streak||0):""}</span></div></div></div>
     ${me.bio?`<p class="bio">${esc(me.bio)}</p>`:""}</div>
   <div class="card"><div class="row"><div class="grow"><div class="muted sm">Уровень ${lv}</div><div class="xpn"><span id="xn">0</span> XP</div></div><div class="eb" style="font-size:34px">${rk[2]}</div></div><div class="prog" style="margin-top:10px"><i id="pb" style="width:0"></i></div>
   <div class="muted sm" style="margin-top:8px">До следующего уровня: ${100-pct} XP</div></div>
@@ -900,7 +1140,7 @@ function settingsV(){
 
 /* ───────── запуск ───────── */
 (async()=>{
-  if(!API_URL){app.innerHTML=`<div class="card"><h2>⚙️ Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js. Инструкция — в README.md.</p></div>`;return}
+  if(!API_URL){app.innerHTML=`<div class="card"><h2>⚙️ Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js. Инструкция - в README.md.</p></div>`;return}
   const cached=token&&ls.get("me");
   if(cached){
     // Мгновенный старт: показываем сохранённый профиль, а сессию проверяем в фоне.
