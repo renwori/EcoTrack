@@ -312,6 +312,76 @@ button.rc b{font-size:12px}
 .leaflet-popup-content{font:14px/1.45 Nunito,system-ui,sans-serif}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}}
 :root[data-theme=dark] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}
+/* оформление профиля */
+.ava{background:var(--face)}
+.ava.fr{border:2.5px solid transparent;background:var(--face) padding-box,var(--fr) border-box}
+.ring .ava.fr,.bigav .ava.fr{border-width:4px}
+.f-leaf{--fr:linear-gradient(135deg,#bbf7d0,#16a34a,#86efac)}
+.f-ocean{--fr:linear-gradient(135deg,#a5f3fc,#2563eb,#67e8f9)}
+.f-fire{--fr:conic-gradient(#fde047,#f97316,#dc2626,#f97316,#fde047);box-shadow:0 0 14px -3px #f97316}
+.f-rainbow{--fr:conic-gradient(#ef4444,#f59e0b,#eab308,#22c55e,#06b6d4,#3b82f6,#a855f7,#ef4444)}
+.f-medal{--fr:linear-gradient(135deg,#f8fafc,#94a3b8,#e2e8f0,#64748b)}
+.f-gold{--fr:linear-gradient(135deg,#fef9c3,#eab308,#fde68a,#a16207);box-shadow:0 0 14px -3px #eab308}
+.f-dev{--fr:linear-gradient(135deg,#e9d5ff,#9333ea,#c084fc,#6d28d9);box-shadow:0 0 14px -3px #a855f7}
+.bigav{width:120px;height:120px;margin:16px auto}.bigav .ava{width:120px;height:120px;font-size:40px}
+.nemo{font-size:.9em}
+.stat{margin-top:4px;font-size:14px;font-weight:700;font-style:italic;opacity:.85}
+.showc{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.scm{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border-radius:99px;background:rgba(255,255,255,.35);font-size:12px;font-weight:800;max-width:100%}
+:root[data-theme=dark] .scm{background:rgba(0,0,0,.25)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .scm{background:rgba(0,0,0,.25)}}
+.scm small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.md.xs{--s:26px}.md.xs::before{display:none}
+.scb{font-size:12px;margin-left:3px}
+.hero .pat{position:absolute;inset:0;pointer-events:none;opacity:.14;z-index:0}
+.hero>:not(.pat){position:relative;z-index:1}
+:root[data-theme=dark] .hero .pat{filter:invert(1);opacity:.16}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .hero .pat{filter:invert(1);opacity:.16}}
+.pt-leaves .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M10 34c0-12 10-22 22-22 0 12-10 22-22 22z' fill='%2314532d'/%3E%3Cpath d='M38 52c0-7 6-13 13-13 0 7-6 13-13 13z' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-waves .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='22'%3E%3Cpath d='M0 11q15-10 30 0t30 0' fill='none' stroke='%2314532d' stroke-width='2.5'/%3E%3C/svg%3E")}
+.pt-stars .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M14 6l2.5 6 6.5.6-5 4.3 1.5 6.4L14 20l-5.5 3.3L10 17l-5-4.4 6.5-.6z' fill='%2314532d'/%3E%3Ccircle cx='34' cy='34' r='2' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-dots .pat{background:radial-gradient(#14532d 1.7px,transparent 2px) 0 0/14px 14px}
+.hero.cv-forest{background:linear-gradient(135deg,rgba(22,163,74,.45),rgba(20,83,45,.3)),var(--card)}
+.hero.cv-ocean{background:linear-gradient(135deg,rgba(14,165,233,.45),rgba(30,64,175,.32)),var(--card)}
+.hero.cv-sunset{background:linear-gradient(135deg,rgba(251,146,60,.5),rgba(236,72,153,.38)),var(--card)}
+.hero.cv-aurora{background:linear-gradient(135deg,rgba(52,211,153,.42),rgba(139,92,246,.42)),var(--card)}
+.hero.cv-meadow{background:linear-gradient(135deg,rgba(163,230,53,.48),rgba(250,204,21,.34)),var(--card)}
+.hero.cv-night{background:linear-gradient(135deg,rgba(30,27,75,.85),rgba(76,29,149,.7)),var(--card);color:#fff}
+.hero.cv-night .muted{color:rgba(255,255,255,.75)}
+.hero.cv-berry{background:linear-gradient(135deg,rgba(244,63,94,.45),rgba(147,51,234,.38)),var(--card)}
+.hero>button.edit{position:absolute;top:10px;right:10px;z-index:2;width:38px;height:38px;min-height:0;padding:0;border-radius:50%;font-size:17px}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin:8px 0}
+.sw button{position:relative;height:52px;min-height:0;padding:0;border-radius:14px;box-shadow:none;border:2px solid var(--line);color:var(--text);font-size:11px;font-weight:800;filter:none;overflow:hidden}
+.sw button.on{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri2)}
+.sw button .pat{opacity:.25}
+.sw button span{position:relative;z-index:1}
+.frs{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;margin:8px 0}
+.frs button{display:grid;justify-items:center;gap:4px;padding:8px 2px;min-height:0;border-radius:14px;background:var(--pri2);box-shadow:none;color:var(--text);font-size:11px;font-weight:800;filter:none}
+.frs button.on{box-shadow:inset 0 0 0 2px var(--pri)}
+.frs button[disabled]{opacity:.5;pointer-events:auto;cursor:not-allowed}
+.frs .ava{width:44px;height:44px}
+.frs small{font-weight:600;color:var(--muted);font-size:10px;line-height:1.2}
+.scpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-top:8px}
+.scpick button{display:grid;justify-items:center;gap:4px;padding:6px 2px;min-height:0;border-radius:14px;background:none;box-shadow:inset 0 0 0 2px var(--line);color:var(--text);font-size:11px;font-weight:800;filter:none}
+.scpick button.on{box-shadow:inset 0 0 0 2px var(--pri);background:var(--pri2)}
+.scpick .md{--s:40px}
+
+/* чат: мгновенная отправка, реакции с аватарками */
+.msg.pending{opacity:1}
+.clk{font-size:10px;opacity:.8}
+.msg.gone{animation:gone .25s ease forwards}
+@keyframes gone{to{opacity:0;transform:scale(.85);height:0;margin:0}}
+.rav{display:inline-flex;margin-left:2px}
+.rav .ava{width:18px;height:18px;font-size:8px;border:1.5px solid var(--solid)!important;margin-left:-6px;box-shadow:none}
+.rav .ava:first-child{margin-left:0}
+
+/* игра «Что дольше разлагается» */
+.ordb b.n{background:var(--pri);color:var(--on)}
+.ordb.picked{border-color:var(--pri)}
+.ores{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.ores:first-of-type{border-top:0}
+.ores .num2{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;background:var(--pri2);color:var(--pri)}
+.ores.bad .num2{background:rgba(239,68,68,.15);color:var(--err)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -343,7 +413,7 @@ const saveMe=()=>ls.set("me",me);
 async function swr(k,action,d,draw,my,force){
   const c=force?null:cget(k);if(c)draw(c);
   const r=await api(action,d);if(my!==vid||dead(r))return null;
-  if(r.ok){if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);
+  if(r.ok){if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);else toast(r.error,"err");
   return r;
 }
 const level=xp=>({lv:Math.floor(xp/100)+1,pct:xp%100});
@@ -355,7 +425,15 @@ const devTag=(u,mini)=>u&&u.dev?`<span class="tag dev ${mini?"mini":""}">💜 Р
 const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
 const initials=u=>esc(((u.firstName||"")[0]||"")+((u.lastName||"")[0]||""));
 const avInner=u=>AV[u.username]?`<img src="${esc(AV[u.username])}" alt="">`:initials(u);
-const avatar=(u,nol)=>{const h=hue(u.username);return`<div class="ava" data-av="${esc(u.username)}"${nol?"":` data-pf="${esc(u.username)}"`} data-i="${initials(u)}" style="background:linear-gradient(135deg,hsl(${h} 70% 52%),hsl(${(h+45)%360} 70% 40%))">${avInner(u)}</div>`};
+const frameOf=u=>(u&&((u.cust&&u.cust.frame)||u.frame))||"";
+const avatar=(u,nol,frame)=>{const h=hue(u.username),f=frame??frameOf(u),fr=f&&f!=="none"?" fr f-"+f:"";
+  return`<div class="ava${fr}" data-av="${esc(u.username)}"${nol?"":` data-pf="${esc(u.username)}"`} data-i="${initials(u)}" style="--face:linear-gradient(135deg,hsl(${h} 70% 52%),hsl(${(h+45)%360} 70% 40%))">${avInner(u)}</div>`};
+const custOf=u=>(u&&u.cust)||{};
+const emo=u=>{const e=custOf(u).emoji||(u&&u.emoji);return e?` <span class="nemo">${esc(e)}</span>`:""};
+const nameH=u=>`${esc(u.firstName)} ${esc(u.lastName)}${emo(u)}`;
+const statusH=u=>custOf(u).status?`<div class="stat">${esc(custOf(u).status)}</div>`:"";
+const heroCls=u=>`card hero cv-${custOf(u).cover||"default"} pt-${custOf(u).pattern||"none"}`;
+const showcaseH=u=>{const sc=custOf(u).sc||[];return sc.length?`<div class="showc">${sc.map(b=>`<span class="scm" title="${esc(b.title)}">${medal(b,"xs")}<small>${esc(b.title)}</small></span>`).join("")}</div>`:""};
 const paintAv=un=>document.querySelectorAll(`[data-av="${CSS.escape(un)}"]`).forEach(e=>{if(AV[un])e.innerHTML=`<img src="${esc(AV[un])}" alt="">`;else e.textContent=e.dataset.i});
 let avSave=0;const saveAV=()=>{clearTimeout(avSave);avSave=setTimeout(()=>{try{localStorage.setItem("av",JSON.stringify(AV))}catch{ls.del("av")}},500)};
 async function loadAv(list){
@@ -498,7 +576,7 @@ function cropper(file){
 }
 function avatarMenu(){
   if(!AV[me.username])return pickAvatar();
-  const m=modal(`<h2>Фото профиля</h2><div style="margin:16px auto;width:120px;height:120px">${avatar(me,1).replace('class="ava"','class="ava" style="width:120px;height:120px"')}</div>
+  const m=modal(`<h2>Фото профиля</h2><div class="bigav">${avatar(me,1)}</div>
    <button class="btn-full" id="ch">📷 Выбрать другое фото</button><button class="ghost danger btn-full" id="dl" style="margin-top:8px">Удалить фото</button>`);
   m.el.querySelector(".ava").removeAttribute("data-av");
   m.el.querySelector("#ch").onclick=()=>{m.close();pickAvatar()};
@@ -567,6 +645,41 @@ async function forestModal(un){
   b.innerHTML=forestCard("Лес класса «"+r.name+"»",r.trees)+impactCard(r.impact,"Польза класса","Пока никто в классе не выполнил задания дня.");
 }
 
+/* ───────── оформление профиля ───────── */
+const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Аврора"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"]];
+const PATTERNS=[["none","Без узора"],["leaves","Листья"],["waves","Волны"],["stars","Звёзды"],["dots","Точки"]];
+const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
+function customize(){
+  const lv=level(me.xp).lv,best=(X&&X.bestStreak)||0,nb=((X&&X.badges)||[]).length,c=custOf(me);
+  const FR=[["none","Без рамки",1,""],["leaf","Листья",1,""],["ocean","Океан",lv>=3,"с 3 уровня"],["fire","Огонь",best>=7,"серия 7 дней"],
+    ["rainbow","Радуга",lv>=5,"с 5 уровня"],["medal","Медальная",nb>=3,"3 бейджа"],["gold","Золото",lv>=10,"с 10 уровня"],...(me.dev?[["dev","Разработчик",1,""]]:[])];
+  const st={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",emoji:c.emoji||"",status:c.status||"",showcase:(c.sc||[]).map(b=>b.id)};
+  const B=(X&&X.badges)||[];
+  const m=modal(`<h2 style="padding-right:40px">🎨 Оформление профиля</h2><div id="cpv"></div>
+    <label class="lbl">Обложка</label><div class="sw" id="cco">${COVERS.map(([k,n])=>`<button type="button" data-v="${k}" class="hero cv-${k}"><span>${n}</span></button>`).join("")}</div>
+    <label class="lbl">Узор</label><div class="sw" id="cpt">${PATTERNS.map(([k,n])=>`<button type="button" data-v="${k}" class="hero pt-${k}"><i class="pat"></i><span>${n}</span></button>`).join("")}</div>
+    <label class="lbl">Рамка аватарки</label><div class="frs" id="cfr">${FR.map(([k,n,ok,req])=>`<button type="button" data-v="${k}" ${ok?"":"disabled"}>${avatar(me,1,k)}<span>${ok?"":"🔒 "}${n}</span>${ok?"":`<small>${req}</small>`}</button>`).join("")}</div>
+    <label class="lbl">Эмодзи рядом с именем</label><div class="egrid" id="cem">${P_EMOJI.map(e=>`<button type="button" data-v="${e}">${e||"✕"}</button>`).join("")}</div>
+    <label class="lbl" for="cst">Статус <span class="cnt" id="csc">0/60</span></label><input id="cst" maxlength="60" placeholder="Например: «Сортирую мусор с 2025 🌍»">
+    ${B.length?`<label class="lbl">Витрина бейджей <span class="cnt">до 3</span></label><div class="scpick" id="csp">${B.map(b=>`<button type="button" data-v="${esc(b.id)}">${medal(b)}<span>${esc(b.title)}</span></button>`).join("")}</div>`:`<p class="muted sm">Витрина появится, когда у вас будут бейджи.</p>`}
+    <div class="err" id="cer"></div><button class="btn-full" id="csv">Сохранить</button>`);
+  const q=x=>m.el.querySelector(x);
+  const mark=()=>{[["#cco","cover"],["#cpt","pattern"],["#cfr","frame"],["#cem","emoji"]].forEach(([sel,k])=>q(sel).querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===st[k])));
+    if(q("#csp"))q("#csp").querySelectorAll("button").forEach(b=>b.classList.toggle("on",st.showcase.includes(b.dataset.v)));
+    const u={...me,cust:{...st,sc:st.showcase.map(id=>B.find(b=>b.id===id)).filter(Boolean)}};
+    q("#cpv").innerHTML=`<div class="${heroCls(u)}" style="margin:8px 0"><i class="pat"></i><div class="row">${avatar(u,1)}<div class="grow"><b>${nameH(u)}</b><div class="muted sm">@${esc(me.username)}</div>${statusH(u)}</div></div>${showcaseH(u)}</div>`;
+    q("#csc").textContent=st.status.length+"/60"};
+  [["#cco","cover"],["#cpt","pattern"],["#cfr","frame"],["#cem","emoji"]].forEach(([sel,k])=>q(sel).onclick=e=>{const b=e.target.closest("button");if(!b||b.disabled)return;st[k]=b.dataset.v;mark()});
+  if(q("#csp"))q("#csp").onclick=e=>{const b=e.target.closest("button");if(!b)return;const id=b.dataset.v;
+    if(st.showcase.includes(id))st.showcase=st.showcase.filter(x=>x!==id);else if(st.showcase.length<3)st.showcase.push(id);else return toast("В витрине максимум 3 бейджа","err");mark()};
+  const si=q("#cst");si.value=st.status;si.oninput=()=>{st.status=si.value;mark()};
+  mark();
+  const sb=q("#csv");sb.onclick=busy(sb,async()=>{
+    const r=await api("profileSet",st);if(dead(r))return m.close();
+    if(!r.ok)return q("#cer").textContent=/Неизвестное действие/.test(r.error)?"Оформление заработает после обновления серверной части (Badges.gs).":r.error;
+    me.cust=r.cust;saveMe();m.close();toast("Профиль обновлён ✨");burst();profileV()});
+}
+
 /* ───────── чужой профиль ───────── */
 function userV(un,back){
   const my=++vid;stopPoll();chatsDraw=null;openChat=null;document.body.classList.remove("chatting");
@@ -576,10 +689,10 @@ function userV(un,back){
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(/Неизвестное действие/.test(r.error)?"Профили заработают после обновления серверной части (Badges.gs).":r.error)}</div>`;return}
     const u=r.user,{lv,pct}=level(u.xp),rk=rank(lv),B=r.badges;
     if((AV[u.username]||"")!==(r.avatar||"")){AV[u.username]=r.avatar||"";saveAV()}
-    box.innerHTML=`<div class="card hero"><div class="row"><div class="ring">${ring("fg")}${avatar(u,1)}<span class="lvb">${lv}</span></div>
-      <div class="grow"><h2>${esc(u.firstName)} ${esc(u.lastName)}</h2><div class="muted">@${esc(u.username)}</div>
+    box.innerHTML=`<div class="${heroCls(u)}"><i class="pat"></i><div class="row"><div class="ring">${ring("fg")}${avatar(u,1)}<span class="lvb">${lv}</span></div>
+      <div class="grow"><h2>${nameH(u)}</h2><div class="muted">@${esc(u.username)}</div>${statusH(u)}
       <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(u)}${isT(u)?`<span class="tag t">🧑‍🏫 Учитель</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span>${flame(r.streak)}</div></div></div>
-      ${u.bio?`<p class="bio">${esc(u.bio)}</p>`:""}
+      ${showcaseH(u)}${u.bio?`<p class="bio">${esc(u.bio)}</p>`:""}
       ${r.self?`<button class="ghost btn-full" id="mine" style="margin-top:12px">Это вы - открыть свой профиль</button>`:r.friend?`<button class="btn-full" id="wr" style="margin-top:12px">💬 Написать</button>`:""}</div>
       ${gardenCard(u.xp,r.streak,false)}
       ${B.length?`<div class="card"><div class="row"><b class="grow">🏅 Бейджи</b><span class="tag">${B.length}</span></div>${bgrid(B.map(b=>({...b,seen:true})))}</div>`:""}
@@ -751,7 +864,7 @@ function feedV(){
 }
 
 /* ───────── друзья ───────── */
-const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${esc(u.firstName)} ${esc(u.lastName)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${isT(u)?"🧑‍🏫 учитель":rank(level(u.xp).lv)[2]+" ур. "+level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
+const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${isT(u)?"🧑‍🏫 учитель":rank(level(u.xp).lv)[2]+" ур. "+level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
 const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
 function friendsV(){
   const my=++vid;let users=[];
@@ -798,7 +911,7 @@ function chatsV(){
   put(`<h1>Чаты</h1><div id="chl">${sk(3)}</div>`);
   const draw=r=>{const box=$("#chl");if(!box||my!==vid)return;
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(/Неизвестное действие/.test(r.error)?"Чаты заработают после обновления серверной части (Badges.gs, см. README).":r.error)}</div>`;return}
-    box.innerHTML=r.chats.length?r.chats.map(c=>`<button class="card chi lift" data-k="${esc(c.key)}">${chatIcon(c,1)}<div class="grow" style="min-width:0"><div class="row" style="gap:6px"><b class="grow el">${esc(c.title)}</b>${c.user?devTag(c.user,1):""}${c.last?`<span class="tmr">${tshort(c.last.ts)}</span>`:""}</div><div class="row" style="gap:6px"><span class="prev grow">${prevText(c)}</span>${c.unread?`<span class="unr">${c.unread>99?"99+":c.unread}</span>`:""}</div></div></button>`).join("")
+    box.innerHTML=r.chats.length?r.chats.map(c=>`<button class="card chi lift" data-k="${esc(c.key)}">${chatIcon(c,1)}<div class="grow" style="min-width:0"><div class="row" style="gap:6px"><b class="grow el">${esc(c.title)}${c.user?emo(c.user):""}</b>${c.user?devTag(c.user,1):""}${c.last?`<span class="tmr">${tshort(c.last.ts)}</span>`:""}</div><div class="row" style="gap:6px"><span class="prev grow">${prevText(c)}</span>${c.unread?`<span class="unr">${c.unread>99?"99+":c.unread}</span>`:""}</div></div></button>`).join("")
       :`<div class="card empty"><div class="eb">💬</div><h2>Пока нет чатов</h2><p class="muted">Личный чат появляется, когда вы и друг приняли запрос в друзья. Чат класса - когда вы вступили в класс учителя.</p></div>`;
     stag(box);loadAv(r.chats.map(c=>c.user));
     box.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>chatV(b.dataset.k));
@@ -808,7 +921,9 @@ function chatsV(){
   pulse();
 }
 const REACTS=["👍","❤️","😂","😮","😢","🔥","🌱"];
-const rxHtml=rx=>rx?Object.entries(rx).map(([e,v])=>`<button type="button" class="rc ${v.mine?"on":""}" data-re="${e}" title="${esc(v.who.join(", "))}">${e}<b>${v.n}</b></button>`).join(""):"";
+const whoName=w=>typeof w==="string"?w:w.firstName;
+const rxHtml=rx=>rx?Object.entries(rx).map(([e,v])=>{const ws=v.who.filter(w=>typeof w!=="string");
+  return`<button type="button" class="rc ${v.mine?"on":""}" data-re="${e}" title="${esc(v.who.map(whoName).join(", "))}">${e}${ws.length&&v.n<=3?`<span class="rav">${ws.slice(0,3).map(w=>avatar(w,1,"")).join("")}</span>`:`<b>${v.n}</b>`}</button>`}).join(""):"";
 const closePick=()=>document.querySelectorAll(".rpick").forEach(p=>p.remove());
 document.addEventListener("pointerdown",e=>{if(!e.target.closest(".rpick"))closePick()},true);
 addEventListener("scroll",closePick,{passive:true});
@@ -817,41 +932,24 @@ async function chatV(key){
   const my=++vid;stopPoll();chatsDraw=null;openChat=key;document.body.classList.add("chatting");
   const meta=((CH||cget("chats")||{}).chats||[]).find(c=>c.key===key)||{key,kind:key[0],title:"Чат"},grp=meta.kind==="c";
   const canMod=grp&&(key==="c:"+me.username||me.dev);
-  put(`<div class="chead"><button class="ghost sm" id="cb" aria-label="Назад">←</button>${chatIcon(meta)}<div class="grow" style="min-width:0"><b class="el" id="ctt">${esc(meta.title)}</b><div class="muted sm el" id="csub">${meta.user?"@"+esc(meta.user.username):esc(meta.sub||"Чат класса")}</div></div></div>
+  put(`<div class="chead"><button class="ghost sm" id="cb" aria-label="Назад">←</button>${chatIcon(meta)}<div class="grow" style="min-width:0"><b class="el" id="ctt">${esc(meta.title)}${meta.user?emo(meta.user):""}</b><div class="muted sm el" id="csub">${meta.user?"@"+esc(meta.user.username):esc(meta.sub||"Чат класса")}</div></div></div>
    <div class="msgs" id="ms"></div>
    <form class="composer" id="cf"><textarea id="mt" rows="1" maxlength="1000" placeholder="Сообщение…" enterkeyhint="send"></textarea><button type="submit" id="snd" aria-label="Отправить">➤</button></form>`);
   document.documentElement.style.setProperty("--toph",($(".top")?.offsetHeight||62)+"px");
   if(meta.user)loadAv([meta.user]);
   $("#cb").onclick=()=>go("chats");
-  const box=$("#ms"),seen=new Set(),R={};let last=0,lastDay="",list=[],tmpN=0,busyPoll=false;
+  const box=$("#ms"),seen=new Set(),R={},rxAt={};let last=0,lastDay="",list=[],tmpN=0,busyPoll=false;
   const empty=`<div class="empty muted" id="me0"><div class="eb">👋</div><p>Здесь пока пусто - напишите первым!</p></div>`;
   const nearBottom=()=>innerHeight+scrollY>=document.documentElement.scrollHeight-200;
   const bottom=smooth=>requestAnimationFrame(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:smooth&&!RM?"smooth":"auto"}));
   const html=(m,anim)=>{const other=grp&&!m.mine;
-    return`<div class="msg ${m.mine?"mine":""} ${anim?"new":""} ${m.pending?"pending":""}" data-id="${esc(m.id)}">${other?avatar(m.from):""}<div class="bub">${other?`<div class="nm" data-pf="${esc(m.from.username)}">${esc(m.from.firstName+" "+m.from.lastName)}${m.from.dev?" 💜":""}</div>`:""}<div class="tx">${linkify(esc(m.text))}</div><div class="rx">${rxHtml(R[m.id])}</div><span class="tm">${m.pending?"⏳":hhmm(m.ts)}</span></div></div>`};
+    return`<div class="msg ${m.mine?"mine":""} ${anim?"new":""} ${m.pending?"pending":""}" data-id="${esc(m.id)}">${other?avatar(m.from):""}<div class="bub">${other?`<div class="nm" data-pf="${esc(m.from.username)}">${esc(m.from.firstName+" "+m.from.lastName)}${emo(m.from)}${m.from.dev?" 💜":""}${(m.from.sc||[]).map(b=>`<span class="scb" title="${esc(b.title)}">${esc(b.emoji)}</span>`).join("")}</div>`:""}<div class="tx">${linkify(esc(m.text))}</div><div class="rx">${rxHtml(R[m.id])}</div><span class="tm">${hhmm(m.ts)}${m.pending?' <span class="clk">🕓</span>':""}</span></div></div>`};
   const append=(m,anim)=>{$("#me0")?.remove();const d=dayKey(m.ts);let h="";if(d!==lastDay){h=`<div class="day">${dayLabel(m.ts)}</div>`;lastDay=d}box.insertAdjacentHTML("beforeend",h+html(m,anim))};
-  const full=ms=>{box.innerHTML="";lastDay="";seen.clear();list=ms.slice();ms.forEach(m=>{seen.add(m.id);append(m,false);last=Math.max(last,m.ts)});if(!ms.length)box.innerHTML=empty;loadAv(ms.map(m=>m.from));bottom()};
+  const full=ms=>{const pend=[...box.querySelectorAll(".msg.pending")];box.innerHTML="";lastDay="";seen.clear();list=ms.slice();ms.forEach(m=>{seen.add(m.id);append(m,false);last=Math.max(last,m.ts)});
+    if(!ms.length&&!pend.length)box.innerHTML=empty;pend.forEach(e=>box.append(e));loadAv(ms.map(m=>m.from));bottom()};
   const save=()=>cset("m:"+key,list.filter(m=>!m.pending).slice(-80));
   const take=m=>{if(seen.has(m.id))return false;seen.add(m.id);list.push(m);append(m,true);return true};
   const cached=cget("m:"+key);if(cached)full(cached);else box.innerHTML=sk(3);
-  const r=await api("chatMessages",{chat:key,after:0});if(my!==vid||dead(r))return;
-  if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#cf").remove();return}
-  if(r.info){$("#ctt").textContent=r.info.title;if(r.info.sub)$("#csub").textContent=r.info.sub}
-  Object.assign(R,r.reacts||{});
-  if(JSON.stringify(r.messages)!==JSON.stringify(cached))full(r.messages);else{applyR(r.reacts||{});last=Math.max(last,...r.messages.map(m=>m.ts),0)}
-  save();
-  if(CH){const c=CH.chats.find(x=>x.key===key);if(c){c.unread=0;cset("chats",CH);dots(CH)}}
-  poll=setInterval(async()=>{
-    if(document.hidden||busyPoll||my!==vid)return;busyPoll=true;
-    const p=await api("chatMessages",{chat:key,after:last});busyPoll=false;if(my!==vid||!p.ok)return;
-    const near=nearBottom();let added=false;
-    p.messages.forEach(m=>{last=Math.max(last,m.ts);
-      const tmp=m.mine&&box.querySelector(`.msg.pending[data-txt="${CSS.escape(m.text)}"]`);
-      if(take(m)){added=true;if(tmp)tmp.remove()}});
-    (p.gone||[]).forEach(id=>{box.querySelector(`[data-id="${CSS.escape(id)}"]`)?.remove();if(seen.has(id))list=list.filter(m=>m.id!==id)});
-    applyR(p.reacts||{});
-    if(added){loadAv(p.messages.map(m=>m.from));if(near)bottom(true);save()}
-  },3000);
   // отправка
   const send=async text=>{
     const id="tmp"+(++tmpN),m={id,mine:true,pending:true,ts:Date.now(),from:me,type:"text",text};
@@ -860,7 +958,7 @@ async function chatV(key){
     if(my!==vid)return;if(dead(res))return;
     if(!res.ok){el.classList.add("fail");el.querySelector(".tm").textContent="⚠️ не отправлено";toast(res.error,"err");return}
     if(seen.has(res.message.id)){el.remove();return}
-    seen.add(res.message.id);list.push(res.message);el.outerHTML=html(res.message,false);save();
+    seen.add(res.message.id);list.push(res.message);if(el.isConnected)el.outerHTML=html(res.message,false);else append(res.message,false);save();
   };
   const ta=$("#mt");
   ta.oninput=()=>{ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,140)+"px"};
@@ -868,18 +966,22 @@ async function chatV(key){
   $("#cf").onsubmit=e=>{e.preventDefault();const text=ta.value.trim();if(!text)return;ta.value="";ta.oninput();ta.focus();send(text)};
   // удаление сообщения
   const del=async el=>{const id=el.dataset.id,m=list.find(x=>x.id===id);if(!m||(!m.mine&&!canMod))return;
-    if(!await ask("Удалить сообщение?","Удалить",1))return;
-    const r=await api("chatDelete",{chat:key,id});if(dead(r))return;if(!r.ok)return toast(r.error,"err");
-    el.remove();list=list.filter(x=>x.id!==id);save();toast("Сообщение удалено")};
+    const next=el.nextSibling,at=list.indexOf(m);list=list.filter(x=>x!==m);save();
+    el.classList.add("gone");setTimeout(()=>el.remove(),RM?0:250);
+    const r=await api("chatDelete",{chat:key,id});if(my!==vid||dead(r))return;
+    if(!r.ok){el.classList.remove("gone");box.insertBefore(el,next&&next.parentNode===box?next:null);list.splice(at,0,m);save();toast(r.error,"err")}};
   // реакции: нажатие на сообщение открывает выбор, нажатие на реакцию - ставит или снимает её
-  function applyR(map){list.slice(-200).forEach(m=>{const v=map[m.id];if(JSON.stringify(v||null)!==JSON.stringify(R[m.id]||null))setR(m.id,v||{})})}
-  function setR(id,v){if(v&&Object.keys(v).length)R[id]=v;else delete R[id];const x=box.querySelector(`[data-id="${CSS.escape(id)}"] .rx`);if(x)x.innerHTML=rxHtml(R[id])}
+  // ответ проверки, ушедшей до последнего нажатия, устарел - его не применяем, иначе реакция «мигает»
+  function applyR(map,t0){list.slice(-200).forEach(m=>{if((rxAt[m.id]||0)>=t0)return;const v=map[m.id];if(JSON.stringify(v||null)!==JSON.stringify(R[m.id]||null))setR(m.id,v||{})})}
+  function setR(id,v){if(v&&Object.keys(v).length)R[id]=v;else delete R[id];const x=box.querySelector(`[data-id="${CSS.escape(id)}"] .rx`);
+    if(x){x.innerHTML=rxHtml(R[id]);loadAv(Object.values(R[id]||{}).flatMap(e=>e.who.filter(w=>typeof w!=="string")))}}
   const react=async(id,e)=>{
     const prev=R[id]?JSON.parse(JSON.stringify(R[id])):{},cur=JSON.parse(JSON.stringify(prev)),mine=Object.keys(cur).find(k=>cur[k].mine);
-    if(mine){const v=cur[mine];v.n--;v.mine=false;v.who=v.who.filter((w,i)=>i!==v.who.lastIndexOf(me.firstName));if(!v.n)delete cur[mine]}
-    if(mine!==e){const v=cur[e]=cur[e]||{n:0,mine:false,who:[]};v.n++;v.mine=true;v.who.push(me.firstName)}
-    setR(id,cur);
-    const r=await api("chatReact",{chat:key,id,emoji:e});if(my!==vid||dead(r))return;
+    const self={username:me.username,firstName:me.firstName,lastName:me.lastName};
+    if(mine){const v=cur[mine];v.n--;v.mine=false;v.who=v.who.filter(w=>(w.username||w)!==me.username&&w!==me.firstName);if(!v.n)delete cur[mine]}
+    if(mine!==e){const v=cur[e]=cur[e]||{n:0,mine:false,who:[]};v.n++;v.mine=true;v.who.push(self)}
+    rxAt[id]=Date.now();setR(id,cur);
+    const r=await api("chatReact",{chat:key,id,emoji:e});rxAt[id]=Date.now();if(my!==vid||dead(r))return;
     if(!r.ok){setR(id,prev);return toast(r.error,"err")}setR(id,r.reacts);
   };
   const pick=el=>{closePick();const id=el.dataset.id,m=list.find(x=>x.id===id);if(!m)return;
@@ -892,12 +994,35 @@ async function chatV(key){
     const c=e.target.closest(".rc");if(c){const el=c.closest(".msg");if(el&&!el.classList.contains("pending"))react(el.dataset.id,c.dataset.re);return}
     const el=e.target.closest(".msg[data-id]");if(el&&e.target.closest(".bub")&&!el.classList.contains("pending"))pick(el)};
   $("#view").oncontextmenu=e=>{const el=e.target.closest(".msg[data-id]");if(!el||el.classList.contains("pending"))return;e.preventDefault();pick(el)};
+  // история и проверка новых сообщений - после того, как поле ввода уже работает
+  (async()=>{
+    const t00=Date.now(),r=await api("chatMessages",{chat:key,after:0});if(my!==vid||dead(r))return;
+    if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#cf").remove();return}
+    if(r.info){$("#ctt").innerHTML=esc(r.info.title)+(r.info.user?emo(r.info.user):"");if(r.info.sub)$("#csub").textContent=r.info.sub}
+    Object.assign(R,r.reacts||{});
+    if(JSON.stringify(r.messages)!==JSON.stringify(cached))full(r.messages);else{applyR(r.reacts||{},t00);last=Math.max(last,...r.messages.map(m=>m.ts),0)}
+    save();
+    if(CH){const c=CH.chats.find(x=>x.key===key);if(c){c.unread=0;cset("chats",CH);dots(CH)}}
+    poll=setInterval(async()=>{
+      if(document.hidden||busyPoll||my!==vid)return;busyPoll=true;
+      const t0=Date.now(),p=await api("chatMessages",{chat:key,after:last});busyPoll=false;if(my!==vid||!p.ok)return;
+      const near=nearBottom();let added=false;
+      p.messages.forEach(m=>{last=Math.max(last,m.ts);
+        const tmp=m.mine&&box.querySelector(`.msg.pending[data-txt="${CSS.escape(m.text)}"]`);
+        if(take(m)){added=true;if(tmp)tmp.remove()}});
+      (p.gone||[]).forEach(id=>{box.querySelector(`[data-id="${CSS.escape(id)}"]`)?.remove();if(seen.has(id))list=list.filter(m=>m.id!==id)});
+      applyR(p.reacts||{},t0);
+      if(added){loadAv(p.messages.map(m=>m.from));if(near)bottom(true);save()}
+    },3000);
+  })();
 }
 
 /* ───────── игры и задания ───────── */
 const GAMES={
   sort:{n:"Сортировка мусора",e:"♻️",d:"Куда выбросить предмет?",g:"linear-gradient(135deg,#16a34a,#0d9488)",xp:"до 10 XP"},
   quiz:{n:"Эко-викторина",e:"🧠",d:"5 вопросов об экологии",g:"linear-gradient(135deg,#2563eb,#7c3aed)",xp:"до 15 XP"},
+  act:{n:"Как поступить?",e:"🤔",d:"Выбери лучший поступок в жизненной ситуации",g:"linear-gradient(135deg,#0d9488,#2563eb)",xp:"до 15 XP"},
+  decay:{n:"Что дольше разлагается",e:"⏳",d:"Расставь предметы по сроку разложения",g:"linear-gradient(135deg,#a16207,#16a34a)",xp:"до 12 XP"},
   myth:{n:"Миф или правда",e:"🔍",d:"Проверь, что ты знаешь о природе",g:"linear-gradient(135deg,#f59e0b,#ec4899)",xp:"до 15 XP"}};
 const OI={"Бумага":"📄","Пластик":"🧴","Стекло":"🫙","Металл":"🥫","Опасные отходы":"☣️","Правда":"✅","Миф":"❌"};
 const optText=o=>((OI[o]||"")+" "+o).trim();
@@ -909,7 +1034,8 @@ function gamesV(){
   `<p class="muted sm">XP даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`);
   $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));$("#emap").onclick=mapV;
   let T=null;
-  const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.textContent=r.error;return}T=r;
+  const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}T=r;
+    if(!r.tasks.length){box.innerHTML=`<div class="card muted">Задания пока не загрузились. Обновите страницу через минуту.</div>`;return}
     box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div><span class="tag">+${t.xp} XP</span>${impText(t.imp)?` <span class="tag imp">${impText(t.imp)}</span>`:""}${t.map?`<div style="margin-top:8px"><button class="ghost sm" data-map>🗺️ Открыть эко-карту</button></div>`:""}</div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
      `<p class="muted sm">Это самоотчёт: отмечайте, только если правда сделали. Новые задания - каждый день.</p>`;
     stag(box);box.querySelectorAll("[data-map]").forEach(b=>b.onclick=mapV);
@@ -930,6 +1056,7 @@ async function play(g){
   put(`<div class="card wait"><div class="qe">${G.e}</div><div class="spin"></div><p class="muted">Готовим вопросы…</p></div>`);
   const r=await api("gameStart",{game:g});if(my!==vid||dead(r))return;
   if(!r.ok){put(`<div class="card err">${esc(r.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
+  if(r.kind==="order")return playOrder(g,G,r,my);
   const items=r.items,ans=[],n=items.length;let i=0;
   const step=()=>{
     if(i>=n)return finish();const it=items[i];
@@ -962,6 +1089,43 @@ async function play(g){
   step();
 }
 
+
+// «Что дольше разлагается»: нажимай предметы по порядку - от самого быстрого к самому долгому
+function playOrder(g,G,r,my){
+  const R=r.rounds,ans=[];let i=0;
+  const step=()=>{
+    if(i>=R.length)return finish();const rd=R[i],sel=[];
+    put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти из игры">✕</button><div class="grow prog"><i id="pb" style="width:${i/R.length*100}%"></i></div><span class="muted sm">${i+1}/${R.length}</span></div>
+    <div class="card qcard"><div class="qe">${G.e}</div><h2>Что разложится быстрее?</h2><p class="muted sm" style="margin-top:-8px">Нажимай по порядку: первым - то, что исчезнет быстрее всего. Нажми ещё раз, чтобы отменить.</p>
+    ${rd.items.map(x=>`<button class="opt ordb" data-k="${x.k}"><b></b><span>${x.icon} ${esc(x.name)}</span></button>`).join("")}
+    <button class="btn-full" id="nx" disabled style="margin-top:8px">${i<R.length-1?"Дальше →":"Проверить"}</button></div>
+    ${r.played?`<p class="muted sm center">XP за эту игру сегодня уже получены - играйте для тренировки.</p>`:""}`);
+    $("#bk").onclick=()=>go("games");raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/R.length*100+"%"});
+    const v=$("#view"),upd=()=>{v.querySelectorAll(".ordb").forEach(b=>{const n=sel.indexOf(+b.dataset.k);b.querySelector("b").textContent=n>=0?n+1:"";
+      b.querySelector("b").classList.toggle("n",n>=0);b.classList.toggle("picked",n>=0)});$("#nx").disabled=sel.length<rd.items.length};
+    v.querySelectorAll(".ordb").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,n=sel.indexOf(k);if(n>=0)sel.splice(n,1);else sel.push(k);upd()});
+    $("#nx").onclick=()=>{ans.push({id:rd.id,order:sel.slice()});i++;step()};
+  };
+  const finish=async()=>{
+    put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем ответы…</p></div>`);
+    const s=await api("gameSubmit",{game:g,answers:ans});if(my!==vid||dead(s))return;
+    if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
+    addXp(s.xp);
+    if(s.streak!==undefined){if(X){X.streak=s.streak;X.playedToday=true;cset("x",X)}if(s.newDay)setTimeout(()=>toast(`🔥 ${plural(s.streak,"день","дня","дней")} подряд в мини-играх!`),900)}
+    const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка - в следующий раз выйдет лучше!";
+    put(`<div class="card center"><div class="ring" style="margin:6px auto 10px">${ring("fg")}<div class="num"><span id="cn">0</span><small>/${s.total}</small></div></div>
+      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} XP 🎉`:r.played?"XP за эту игру сегодня уже получены":"Пока без XP - попробуйте ещё раз!"}</span></div>
+      <h2 class="sec">Правильный порядок</h2>${s.results.map((x,k)=>`<div class="card ${x.ok?"":"wrong"}"><b>Раунд ${k+1}${x.ok?" ✓":""}</b>
+        ${x.right.map((it,j)=>`<div class="ores ${x.order[j]===it.k?"":"bad"}"><span class="num2">${j+1}</span><span class="grow">${it.icon} ${esc(it.name)}</span><span class="muted sm">${esc(it.time)}</span></div>`).join("")}</div>`).join("")}
+      <p class="muted sm">Примерные сроки разложения в природе (по данным NOAA для морской среды). Красным отмечены места, где порядок был другим.</p>
+      <div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
+    $("#bk").onclick=()=>go("games");$("#again").onclick=()=>play(g);
+    raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct)});count($("#cn"),s.score);
+    if(pct>=.6)setTimeout(()=>burst(),500);
+  };
+  step();
+}
+
 /* ───────── класс (учитель и разработчик) ───────── */
 function classV(){
   const my=++vid;let C=null;
@@ -974,7 +1138,7 @@ function classV(){
     <button class="ghost btn-full" data-c="chat" style="margin-top:8px">💬 Чат класса</button>
     <p class="muted sm" style="margin:10px 0 0">Ученик вводит этот код у себя в профиле - и попадает в ваш класс и его чат.</p></div>`};
   const drawSt=()=>{const s=C.students;
-    $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${esc(u.firstName)} ${esc(u.lastName)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать бейдж">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
+    $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать бейдж">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
       :`<div class="card empty"><div class="eb">🏫</div><h2>Пока нет учеников</h2><p class="muted">Поделитесь кодом класса - ученики введут его в профиле.</p></div>`;
     stag($("#st"));loadAv(s)};
   const draw=r=>{if(my!==vid)return;if(!r.ok){$("#cl").innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#st").innerHTML="";return}C=r;drawCl();drawSt();
@@ -1081,17 +1245,17 @@ async function profileV(){
   const my=++vid;
   const {lv,pct}=level(me.xp),rk=rank(lv);
   if(!X)X=cget("x");
-  put(`<div class="card hero"><div class="row"><div class="ring">${ring("fg")}${avatar(me,1)}<span class="lvb">${lv}</span><button class="cam" id="cam" aria-label="Сменить фото">📷</button></div>
-    <div class="grow"><h2>${esc(me.firstName)} ${esc(me.lastName)}</h2><div class="muted">@${esc(me.username)}</div>
+  put(`<div class="${heroCls(me)}"><i class="pat"></i><button class="ghost edit" id="cust" aria-label="Оформление профиля" title="Оформление профиля">🎨</button><div class="row"><div class="ring">${ring("fg")}${avatar(me,1)}<span class="lvb">${lv}</span><button class="cam" id="cam" aria-label="Сменить фото">📷</button></div>
+    <div class="grow"><h2 style="padding-right:34px">${nameH(me)}</h2><div class="muted">@${esc(me.username)}</div>${statusH(me)}
     <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(me)}${isT(me)?`<span class="tag t">🧑‍🏫 ${me.role==="admin"?"Администратор":"Учитель"}</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span><span id="flm" style="display:contents">${X?flame(X.streak||0):""}</span></div></div></div>
-    ${me.bio?`<p class="bio">${esc(me.bio)}</p>`:""}</div>
+    ${showcaseH(me)}${me.bio?`<p class="bio">${esc(me.bio)}</p>`:""}</div>
   <div class="card"><div class="row"><div class="grow"><div class="muted sm">Уровень ${lv}</div><div class="xpn"><span id="xn">0</span> XP</div></div><div class="eb" style="font-size:34px">${rk[2]}</div></div><div class="prog" style="margin-top:10px"><i id="pb" style="width:0"></i></div>
   <div class="muted sm" style="margin-top:8px">До следующего уровня: ${100-pct} XP</div></div>
   <div id="px">${X?"":sk(2)}</div>
   <div class="card"><b>Редактировать профиль</b><input id="fn" value="${esc(me.firstName)}" maxlength="40" placeholder="Имя"><input id="ln" value="${esc(me.lastName)}" maxlength="40" placeholder="Фамилия">
   <textarea id="bio" rows="3" maxlength="200" placeholder="О себе">${esc(me.bio)}</textarea><div class="err" id="er"></div><button class="btn-full" id="sv">Сохранить</button></div>`);
   raf2(()=>{const f=$("#fg"),p=$("#pb");if(f)f.style.strokeDashoffset=289*(1-pct/100);if(p)p.style.width=pct+"%"});countUp($("#xn"),me.xp);
-  $("#cam").onclick=$(".ring .ava").onclick=avatarMenu;
+  $("#cam").onclick=$(".ring .ava").onclick=avatarMenu;$("#cust").onclick=customize;
   $("#sv").onclick=busy($("#sv"),async()=>{
     const r=await api("update",{firstName:$("#fn").value,lastName:$("#ln").value,bio:$("#bio").value});
     if(dead(r))return;if(r.ok){me=r.user;saveMe();toast("Сохранено ✓");profileV()}else $("#er").textContent=r.error;
