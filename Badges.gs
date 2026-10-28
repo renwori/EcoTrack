@@ -8,14 +8,17 @@ Messages:["id","chat","userId","type","text","media","created"],ChatReads:["user
 GamesPlayed:["userId","date","game"],DailyTasks:["userId","date","slot","taskId","done"],PlayDays:["userId","date"],
 Events:["id","userId","type","emoji","text","created"],Reactions:["msgId","chat","userId","emoji"],
 Profiles:["userId","cover","pattern","frame","status","emoji","showcase"],
-NewsSources:["name","url","filter","status","checked"]});
-function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"]});
+function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
 
 // Новости: запустите ecoCheckNews(), чтобы сразу скачать ленту и увидеть в листе NewsSources, какие источники работают.
 var ecoNewsRefresh_=null;
-function ecoCheckNews(){const n=ecoNewsRefresh_(true);console.log("Загружено новостей: "+n.length+". Статус каждого источника - в листе NewsSources.")}
+function ecoCheckNews(){const n=ecoNewsRefresh_(true);console.log("Новостей в ленте: "+n.length+". Статус каждого источника - в листе NewsSources.")}
+// Для триггера по времени (Триггеры -> Добавить -> ecoNewsTick, по времени, каждые 30 минут): сервер заходит в источники сам,
+// даже когда сайт никто не открывает, и не пропускает новости из быстрых лент.
+function ecoNewsTick(){ecoNewsRefresh_(true)}
 
 // Всё остальное - внутри замкнутой области, чтобы имена не конфликтовали с Code.gs.
 (function(){
@@ -30,7 +33,7 @@ const delRows=(n,list)=>{const sh=SS().getSheetByName(n);list.map(r=>r._row).sor
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
-const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources"];
+const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive"];
 const ensured={};
 function ensure(n){if(ensured[n]||MY.indexOf(n)<0)return;
  if(!SS().getSheetByName(n)){const s=SS().insertSheet(n);s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -44,6 +47,9 @@ try{const _r0=rows;rows=function(n){ensure(n);const a=_r0(n);
 const rowsRaw=rows;  // чтение без кэша запроса
 let held=false;      // держит ли этот запрос общую блокировку
 function withLock(f){if(held)return f();const L=LockService.getScriptLock();L.waitLock(15000);held=true;try{return f()}finally{held=false;try{L.releaseLock()}catch(x){}}}
+function addManyT(n,list){if(!list.length)return;ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1,w=list[0].length;
+ if(r+list.length>sh.getMaxRows())sh.insertRowsAfter(sh.getMaxRows(),list.length+200);
+ sh.getRange(r,1,list.length,w).setNumberFormat("@").setValues(list.map(a=>a.map(String)))})}
 function addT(n,a){ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1;
  if(r>sh.getMaxRows())sh.insertRowsAfter(sh.getMaxRows(),200);
  sh.getRange(r,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])})}
@@ -447,6 +453,8 @@ function parseFeed(xml){const out=[];
   const d=new Date(tag("pubDate")||tag("published")||tag("updated")||tag("dc:date")),title=tag("title");
   if(title&&link)out.push({title:title.slice(0,200),url:link,published:isNaN(d)?"":d.toISOString(),text:(tag("description")||tag("summary")).slice(0,500)})});
  return out}
+// Найденные новости копятся в листе NewsArchive и держатся в ленте 14 дней, даже когда пропали из RSS источника.
+const NEWS_DAYS=14,NEWS_MAX=60,NEWS_TTL=1500;
 function newsRefresh(force){const c=CacheService.getScriptCache(),hit=c.get("eco_news");
  if(hit&&!force)return JSON.parse(hit);
  if(!force&&c.get("eco_news_busy")){const old=c.get("eco_news_old");return old?JSON.parse(old):[]}
@@ -461,8 +469,13 @@ function newsRefresh(force){const c=CacheService.getScriptCache(),hit=c.get("eco
     st=items.length?"работает: "+plural(items.length,"новость","новости","новостей")+", про экологию "+eco.length:"не работает: по адресу нет RSS"}}
   catch(e){st="не работает: "+String(e).slice(0,100)}
   try{upd("NewsSources",x._row,"status",st);upd("NewsSources",x._row,"checked",now())}catch(e){}});
- const seen={};all=all.filter(n=>!seen[n.url]&&(seen[n.url]=1)).sort((a,b)=>(b.published||"").localeCompare(a.published||"")).slice(0,40);
- const js=JSON.stringify(all);c.put("eco_news",js,3600);c.put("eco_news_old",js,21600);c.remove("eco_news_busy");return all}
+ const arch=rowsRaw("NewsArchive"),have={};arch.forEach(a=>have[a.url]=1);
+ const fresh=[];all.forEach(n=>{if(!have[n.url]){have[n.url]=1;fresh.push(n)}});
+ addManyT("NewsArchive",fresh.map(n=>[n.url,n.title,n.source,n.published,now()]));
+ const since=new Date(Date.now()-NEWS_DAYS*864e5).toISOString();
+ all=arch.map(a=>({title:a.title,url:a.url,source:a.source,published:a.published||a.found})).concat(fresh.map(n=>({...n,published:n.published||now()})))
+  .filter(n=>n.published>=since).sort((a,b)=>b.published.localeCompare(a.published)).slice(0,NEWS_MAX);
+ const js=JSON.stringify(all);c.put("eco_news",js,NEWS_TTL);c.put("eco_news_old",js,21600);c.remove("eco_news_busy");return all}
 ecoNewsRefresh_=newsRefresh;
 A.news=d=>{who(d);return{news:newsRefresh(false)}};
 
