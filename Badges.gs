@@ -4,10 +4,12 @@
 Object.assign(H,{Avatars:["userId","data","updated"],Classes:["teacherId","code","name"],
 Members:["teacherId","studentId","created"],
 Badges:["id","teacherId","studentId","emoji","color","title","description","created","seen"]});
-const NEW_SHEETS=["Avatars","Classes","Members","Badges"];
-function setupBadges(){NEW_SHEETS.forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+function setupBadges(){["Avatars","Classes","Members","Badges"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
+
+// Всё остальное — внутри замкнутой области, чтобы имена не конфликтовали с Code.gs.
+(function(){
 
 const COLORS=["green","blue","purple","orange","pink","gold"];
 const AV_MAX=48000;
@@ -86,3 +88,4 @@ badgeGive(d){const t=who(d);needTeacher(t);const s=studentOf(t,d.username);
 badgeRevoke(d){const t=who(d);needTeacher(t);const b=rows("Badges").find(x=>x.id===String(d.id||""));
  if(!b||b.teacherId!==t.id)throw"Можно отозвать только свой бейдж";delRows("Badges",[b]);return{}},
 badgesSeen(d){const u=who(d);rows("Badges").filter(b=>b.studentId===u.id&&b.seen!=="1").forEach(b=>upd("Badges",b._row,"seen","1"));return{}}});
+})();
