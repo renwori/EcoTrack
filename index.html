@@ -856,7 +856,7 @@ function feedV(){
   const draw=r=>{const box=$("#nw");if(!box||my!==vid)return;
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
     box.innerHTML=r.news.length?r.news.map(n=>`<a class="card news lift" href="${esc(/^https?:\/\//.test(n.url)?n.url:"#")}" target="_blank" rel="noopener noreferrer"><div class="meta"><span class="dotc" style="background:hsl(${hue(n.source)} 70% 50%)"></span>${esc(n.source)}<span>· ${ago(n.published)}</span></div><div class="nt">${esc(n.title)}</div><div class="more">Читать оригинал →</div></a>`).join("")
-     :`<div class="card empty"><div class="eb">🗞️</div><h2>Пока пусто</h2><p class="muted">Новости подтягиваются из источников, которые добавляет администратор. Выдуманных новостей здесь не будет.</p></div>`;
+     :`<div class="card empty"><div class="eb">🗞️</div><h2>Пока пусто</h2><p class="muted">Новости загружаются раз в час из научных и официальных источников. Выдуманных новостей здесь не будет.</p></div>`;
     stag(box);
   };
   const b=$("#rf");b.onclick=async()=>{b.disabled=true;$("#nw").innerHTML=sk(2);await swr("news","news",{},draw,my,true);b.disabled=false};
