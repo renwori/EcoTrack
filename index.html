@@ -9,7 +9,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--bg:#f2f7f3;--bgt:rgba(242,247,243,.72);--card:rgba(255,255,255,.68);--solid:#fff;--text:#12211a;--muted:#5f7168;
 --pri:#16a34a;--pri-d:#0f7a37;--pri2:rgba(22,163,74,.12);--on:#fff;--line:rgba(18,33,26,.09);--err:#dc2626;--hi:rgba(255,255,255,.7);
@@ -412,19 +413,27 @@ let token=localStorage.getItem("tk"), me=null, tab=localStorage.getItem("tab")||
 let X=null, CH=null, poll=null, chatsDraw=null;
 const AV=ls.get("av")||{}, AVF=new Set();
 
+// Запросы, которые только читают данные, при сбое сети или Google повторяются ещё раз.
+// Остальные (сообщения, реакции, удаление…) не повторяем: при сбое они могли уже выполниться.
+const SAFE=new Set(["me","extra","avatars","friends","search","chats","chatMessages","news","profile","classForest","classInfo","studentBadges","tasks"]);
 async function api(action,d={}){
-  try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,token,...d})});return await r.json()}
-  catch{return{ok:false,error:"Нет соединения с сервером. Проверьте интернет."}}
+  for(let i=0;;i++){
+    try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,token,...d})});return await r.json()}
+    catch{if(i>=1||!SAFE.has(action)||!navigator.onLine)return{ok:false,error:"Нет соединения с сервером. Проверьте интернет."};await new Promise(r=>setTimeout(r,900))}
+  }
 }
 // Кэш ответов: экран сразу показывает сохранённые данные, а свежие подгружаются в фоне.
 const ck=k=>"c:"+(me?me.username:"")+":"+k;
 const cget=k=>ls.get(ck(k)), cset=(k,v)=>ls.set(ck(k),v);
 const cclear=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("c:")).forEach(k=>localStorage.removeItem(k))}catch{}ls.del("me")};
 const saveMe=()=>ls.set("me",me);
+// Данные моложе 15 секунд не запрашиваются повторно - вкладка открывается мгновенно и без запроса.
+const FRESH={},FRESH_MS=15000,isFresh=k=>Date.now()-(FRESH[k]||0)<FRESH_MS;
 async function swr(k,action,d,draw,my,force){
   const c=force?null:cget(k);if(c)draw(c);
+  if(c&&isFresh(k))return c;
   const r=await api(action,d);if(my!==vid||dead(r))return null;
-  if(r.ok){if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);else toast(r.error,"err");
+  if(r.ok){FRESH[k]=Date.now();if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);else toast(r.error,"err");
   return r;
 }
 const level=xp=>({lv:Math.floor(xp/100)+1,pct:xp%100});
@@ -479,8 +488,9 @@ function burst(x=innerWidth/2,y=innerHeight/3,n=30){
     document.body.append(e);setTimeout(()=>e.remove(),1300)}
 }
 const stag=el=>el.querySelectorAll(".card,.tile").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,10)));
-const put=html=>{const v=$("#view");if(!v)return;closePick();if(curMap){try{curMap.remove()}catch{}curMap=null}v.onclick=null;v.oncontextmenu=null;v.innerHTML=html;stag(v);if(!RM){v.classList.remove("vin");void v.offsetWidth;v.classList.add("vin")}};
-const stopPoll=()=>{clearInterval(poll);poll=null};
+const put=html=>{const v=$("#view");if(!v)return;closePick();if(curMap){try{curMap.stop();curMap.off();curMap.remove()}catch{}curMap=null}v.onclick=null;v.oncontextmenu=null;v.innerHTML=html;stag(v);if(!RM){v.classList.remove("vin");void v.offsetWidth;v.classList.add("vin")}};
+let chatTick=null;
+const stopPoll=()=>{clearInterval(poll);poll=null;chatTick=null};
 const dead=r=>{if(r&&r.error&&r.error.includes("Сессия")){vid++;stopPoll();document.body.classList.remove("chatting");localStorage.removeItem("tk");cclear();token=me=X=CH=null;authView(r.error);return true}};
 const logout=async()=>{vid++;stopPoll();await api("logout");localStorage.removeItem("tk");cclear();token=me=X=CH=null;tab="profile";mode="login";authView()};
 
@@ -614,7 +624,8 @@ async function pulse(){
   if(chatsDraw)chatsDraw(r);
 }
 setInterval(()=>{if(!document.hidden&&me)pulse()},30000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me)pulse()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me){pulse();if(chatTick)chatTick()}});
+addEventListener("focus",()=>{if(chatTick)chatTick()});
 
 /* ───────── серия дней, эко-сад, польза, лента ───────── */
 const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return n+" "+(m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c)};
@@ -732,10 +743,20 @@ const leaflet=()=>leafP||(leafP=new Promise((res,rej)=>{const l=document.createE
   const s=document.createElement("script");s.src=LEAF+"leaflet.js";s.onload=()=>res(window.L);s.onerror=()=>{leafP=null;s.remove();rej()};document.head.append(s)}));
 const RCAT=[["all","Все","♻️",[]],["batteries","Батарейки","🔋",["batteries"]],["plastic","Пластик","🧴",["plastic","plastic_bottles","plastic_packaging","PET"]],["glass","Стекло","🫙",["glass","glass_bottles"]],["paper","Бумага","📄",["paper","cardboard","newspaper","paper_packaging","magazines"]],["metal","Металл","🥫",["cans","scrap_metal","aluminium"]],["clothes","Одежда","👕",["clothes","shoes"]]];
 const accepts=t=>RCAT.slice(1).filter(c=>c[3].some(k=>t["recycling:"+k]==="yes"));
+// Бесплатные серверы OpenStreetMap часто перегружены (502, 504, 429), поэтому: несколько серверов
+// в случайном порядке, ограничение по времени на каждый и запоминание найденного на сутки.
+const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
 async function overpass(lat,lon,rad){
-  const q=`[out:json][timeout:25];(node["amenity"="recycling"](around:${rad},${lat},${lon});way["amenity"="recycling"](around:${rad},${lat},${lon}););out center 300;`;
-  for(const u of["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"]){
-    try{const r=await fetch(u,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)});if(r.ok)return(await r.json()).elements}catch{}}
+  const key=`${lat.toFixed(2)},${lon.toFixed(2)},${rad}`,store=ls.get("ovp")||{},hit=store[key];
+  if(hit&&Date.now()-hit.t<864e5)return hit.el;
+  const q=`[out:json][timeout:20];(node["amenity"="recycling"](around:${rad},${lat},${lon});way["amenity"="recycling"](around:${rad},${lat},${lon}););out center 200;`;
+  for(const u of OVERPASS.slice().sort(()=>Math.random()-.5)){
+    const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);
+    try{const r=await fetch(u,{method:"POST",signal:ac.signal,headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)});
+      if(r.ok){const el=(await r.json()).elements||[];const keys=Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,5),next={};
+        keys.forEach(k=>next[k]=store[k]);next[key]={t:Date.now(),el};ls.set("ovp",next);return el}}
+    catch{}finally{clearTimeout(tm)}}
+  if(hit)return hit.el;  // лучше вчерашние данные, чем пустая карта
   throw new Error("overpass");
 }
 const geoDist=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return 6371e3*Math.sqrt(x*x+y*y)};
@@ -756,7 +777,7 @@ async function mapV(){
   const g=ls.get("geo")||{lat:55.7558,lon:37.6173,z:12};
   map=curMap=L.map("map").setView([g.lat,g.lon],g.z);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
-  layer=L.layerGroup().addTo(map);setTimeout(()=>map.invalidateSize(),600);
+  layer=L.layerGroup().addTo(map);setTimeout(()=>{if(curMap===map)map.invalidateSize()},600);
   const ico=p=>L.divIcon({className:"",html:`<div class="pin"><span>${(p.acc[0]||RCAT[0])[2]}</span></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
   const popup=p=>`<b>${esc(p.name)}</b><br>${p.acc.length?"Принимают: "+p.acc.map(c=>c[2]+" "+c[1].toLowerCase()).join(", "):"Вид вторсырья не указан"}${p.hours?`<br>🕒 ${esc(p.hours)}`:""}<br><a href="https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=18/${p.lat}/${p.lon}" target="_blank" rel="noopener">Открыть на карте</a>`;
   const draw=()=>{layer.clearLayers();const f=cat==="all"?pts:pts.filter(p=>p.acc.some(c=>c[0]===cat));
@@ -766,15 +787,15 @@ async function mapV(){
     stag($("#ml"));$("#ml").querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const p=pts[+el.dataset.i];map.setView([p.lat,p.lon],17);scrollTo({top:0,behavior:"smooth"})});
     msg(!pts.length?"Здесь пока не отмечено ни одного пункта. Отдалите карту или найдите другой город.":f.length?"":"Для этого вида вторсырья здесь пунктов нет - попробуйте другой фильтр.");
   };
-  const load=async()=>{const c=map.getCenter(),rad=Math.min(8000,Math.max(800,Math.round(c.distanceTo(map.getBounds().getNorthEast()))));
+  const load=async()=>{const c=map.getCenter(),rad=Math.round(Math.min(5000,Math.max(800,c.distanceTo(map.getBounds().getNorthEast())))/100)*100;
     msg("Ищем пункты приёма…");$("#here").hidden=true;ls.set("geo",{lat:c.lat,lon:c.lng,z:map.getZoom()});
     try{const el=await overpass(c.lat,c.lng,rad);if(my!==vid)return;const o=here||{lat:c.lat,lon:c.lng};
       pts=el.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
         return{lat,lon,name:t.name||t.operator||(t.recycling_type==="centre"?"Пункт приёма":"Контейнер для вторсырья"),acc:accepts(t),hours:t.opening_hours||"",d:geoDist(o.lat,o.lon,lat,lon)}}).filter(p=>p.lat!=null);
       draw()}
-    catch{if(my===vid)msg("Сервис карты сейчас не отвечает. Попробуйте ещё раз через минуту.")}};
+    catch{if(my===vid){msg("Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
   let skip=true;map.on("moveend",()=>{if(skip){skip=false;return}$("#here").hidden=false});
-  const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z);load()};
+  const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z,{animate:false});load()};
   $("#here").onclick=()=>load();
   $("#mf").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=b.dataset.c;$("#mf").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));if(pts.length)draw()};
   const locate=()=>{if(!navigator.geolocation)return msg("Браузер не умеет определять место. Найдите город через поиск.");msg("Определяем, где вы…");
@@ -880,8 +901,16 @@ function shell(){
   $("#gear").onclick=()=>go(tab==="settings"?"profile":"settings");
   if(!VIEWS[tab]||(tab==="class"&&!isStaff(me)))tab="profile";
   chip();go(tab);
-  const c=cget("chats");if(c)dots(c);pulse();
-  if(tab!=="profile"&&!X)loadX();
+  const c=cget("chats");if(c)dots(c);prefetch();
+}
+// Сразу после входа одним запросом загружаем данные всех вкладок, чтобы они открывались мгновенно.
+async function prefetch(){
+  const r=await api("batch",{calls:[{action:"extra"},{action:"chats"},{action:"friends"},{action:"tasks"},{action:"news"}]});if(!me)return;
+  if(!r.ok){pulse();if(tab!=="profile"&&!X)loadX();return}
+  const R=r.results||{},keep=(k,v)=>{if(v&&v.ok){cset(k,v);FRESH[k]=Date.now()}};
+  keep("friends",R.friends);keep("tasks",R.tasks);keep("news",R.news);
+  if(R.chats&&R.chats.ok){CH=R.chats;keep("chats",CH);dots(CH);if(chatsDraw)chatsDraw(CH)}
+  if(R.extra&&R.extra.ok){X=R.extra;keep("x",X);if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}}
 }
 function go(t){
   stopPoll();chatsDraw=null;openChat=null;document.body.classList.remove("chatting");
@@ -1047,9 +1076,12 @@ async function chatV(key){
     if(JSON.stringify(r.messages)!==JSON.stringify(cached))full(r.messages);else{applyR(r.reacts||{},t00);last=Math.max(last,...r.messages.map(m=>m.ts),0)}
     save();
     if(CH){const c=CH.chats.find(x=>x.key===key);if(c){c.unread=0;cset("chats",CH);dots(CH)}}
-    poll=setInterval(async()=>{
+    // «есть новое?» каждые 1,5 секунды; если нового нет, сервер отвечает сразу, не читая Таблицу
+    let ver=r.v||"";
+    const tick=async()=>{
       if(document.hidden||busyPoll||my!==vid)return;busyPoll=true;
-      const t0=Date.now(),p=await api("chatMessages",{chat:key,after:last});busyPoll=false;if(my!==vid||!p.ok)return;
+      const t0=Date.now(),p=await api("chatMessages",{chat:key,after:last,v:ver});busyPoll=false;if(my!==vid||!p.ok)return;
+      if(p.v)ver=p.v;if(p.same)return;
       const near=nearBottom();let added=false;
       p.messages.forEach(m=>{last=Math.max(last,m.ts);
         const tmp=m.mine&&box.querySelector(`.msg.pending[data-txt="${CSS.escape(m.text)}"]`);
@@ -1057,7 +1089,8 @@ async function chatV(key){
       (p.gone||[]).forEach(id=>{box.querySelector(`[data-id="${CSS.escape(id)}"]`)?.remove();if(seen.has(id))list=list.filter(m=>m.id!==id)});
       applyR(p.reacts||{},t0);
       if(added){loadAv(p.messages.map(m=>m.from));if(near)bottom(true);save()}
-    },3000);
+    };
+    poll=setInterval(tick,1500);chatTick=tick;
   })();
 }
 
@@ -1247,7 +1280,8 @@ function studentModal(u,changed){
 
 /* ───────── профиль ───────── */
 async function loadX(){
-  const r=await api("extra");if(dead(r))return null;
+  if(X&&!X.off&&isFresh("x"))return X;
+  const r=await api("extra");if(r.ok)FRESH.x=Date.now();if(dead(r))return null;
   if(r.ok){X=r;cset("x",X)}else X=X&&!X.off?X:{avatar:"",badges:[],teachers:[],off:r.error};
   if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}
   return X;
