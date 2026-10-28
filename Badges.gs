@@ -7,10 +7,18 @@ Badges:["id","teacherId","studentId","emoji","color","title","description","crea
 Messages:["id","chat","userId","type","text","media","created"],ChatReads:["userId","chat","ts"],
 GamesPlayed:["userId","date","game"],DailyTasks:["userId","date","slot","taskId","done"],PlayDays:["userId","date"],
 Events:["id","userId","type","emoji","text","created"],Reactions:["msgId","chat","userId","emoji"],
-Profiles:["userId","cover","pattern","frame","status","emoji","showcase"]});
-function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+Profiles:["userId","cover","pattern","frame","status","emoji","showcase","grade","letter","consent"],
+NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"]});
+function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
+
+// Новости: запустите ecoCheckNews(), чтобы сразу скачать ленту и увидеть в листе NewsSources, какие источники работают.
+var ecoNewsRefresh_=null;
+function ecoCheckNews(){const n=ecoNewsRefresh_(true);console.log("Новостей в ленте: "+n.length+". Статус каждого источника - в листе NewsSources.")}
+// Для триггера по времени (Триггеры -> Добавить -> ecoNewsTick, по времени, каждые 30 минут): сервер заходит в источники сам,
+// даже когда сайт никто не открывает, и не пропускает новости из быстрых лент.
+function ecoNewsTick(){ecoNewsRefresh_(true)}
 
 // Всё остальное - внутри замкнутой области, чтобы имена не конфликтовали с Code.gs.
 (function(){
@@ -25,7 +33,7 @@ const delRows=(n,list)=>{const sh=SS().getSheetByName(n);list.map(r=>r._row).sor
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
-const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles"];
+const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive"];
 const ensured={};
 function ensure(n){if(ensured[n]||MY.indexOf(n)<0)return;
  if(!SS().getSheetByName(n)){const s=SS().insertSheet(n);s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -39,6 +47,9 @@ try{const _r0=rows;rows=function(n){ensure(n);const a=_r0(n);
 const rowsRaw=rows;  // чтение без кэша запроса
 let held=false;      // держит ли этот запрос общую блокировку
 function withLock(f){if(held)return f();const L=LockService.getScriptLock();L.waitLock(15000);held=true;try{return f()}finally{held=false;try{L.releaseLock()}catch(x){}}}
+function addManyT(n,list){if(!list.length)return;ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1,w=list[0].length;
+ if(r+list.length>sh.getMaxRows())sh.insertRowsAfter(sh.getMaxRows(),list.length+200);
+ sh.getRange(r,1,list.length,w).setNumberFormat("@").setValues(list.map(a=>a.map(String)))})}
 function addT(n,a){ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1;
  if(r>sh.getMaxRows())sh.insertRowsAfter(sh.getMaxRows(),200);
  sh.getRange(r,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])})}
@@ -55,13 +66,23 @@ const isStaff=u=>u.role==="teacher"||u.role==="admin"||isDev(u);
 try{const _pub=pub;pub=function(u){const o=_pub(u);if(isDev(u))o.dev=true;const c=custOf(u.id);if(c)o.cust=c;return o}}catch(e){}
 
 /* ───── оформление профиля ───── */
-const COVERS=["default","forest","ocean","sunset","aurora","meadow","night","berry"];
-const PATTERNS=["none","leaves","waves","stars","dots"];
+const COVERS=["default","forest","ocean","sunset","aurora","meadow","night","berry","dev"];
+const PATTERNS=["none","leaves","waves","stars","dots","binary"];
+const DEV_ONLY={cover:"dev",pattern:"binary",emoji:"</>"};  // украшения только для разработчика
+// свой эмодзи: только символы эмодзи (с модификаторами и склейками), не длиннее 16 знаков
+const EMOJI_RE=/^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|\u200d|\ufe0f|\u20e3)+$/u;
+const okEmoji=e=>P_EMOJI.indexOf(e)>=0||(e.length<=16&&EMOJI_RE.test(e)&&/\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(e));
+// класс ученика: цифра 1-11 и буква (её ученик вписывает сам)
+function gradeOf(grade,letter,required){const g=String(grade??"").trim(),l=String(letter??"").trim().toUpperCase();
+ if(!g){if(required)throw"Выберите свой класс";return{grade:"",letter:""}}
+ if(!/^([1-9]|10|11)$/.test(g))throw"Класс - число от 1 до 11";
+ if(l&&!/^[А-ЯЁA-Z]{1,2}$/.test(l))throw"Буква класса - одна или две буквы";
+ return{grade:g,letter:l}}
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
 const FRAMES={none:()=>true,leaf:()=>true,ocean:x=>x.lv>=3,fire:x=>x.best>=7,rainbow:x=>x.lv>=5,medal:x=>x.badges>=3,gold:x=>x.lv>=10,dev:x=>x.dev};
 let CU=null;
 function custOf(uid){if(!CU){CU={};const bs=rows("Badges");rows("Profiles").forEach(p=>{let sc=[];try{sc=JSON.parse(p.showcase||"[]")}catch(e){}
-  CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,
+  CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,grade:p.grade||"",letter:p.letter||"",
    sc:sc.map(id=>bs.find(b=>b.id===id&&b.studentId===p.userId)).filter(Boolean).map(b=>({id:b.id,emoji:b.emoji,color:b.color,title:b.title}))}})}
  return CU[uid]||null}
 function bestStreak(uid,pd){const ds=pd.filter(r=>r.userId===uid).map(r=>r.date).sort();let best=0,run=0,prev=null;
@@ -285,17 +306,19 @@ extra(d){const u=who(d),av=rows("Avatars").find(a=>a.userId===u.id),users=rows("
  const pd=rows("PlayDays");o.streak=streakOf(u.id,pd);o.playedToday=playedToday(u.id,pd);o.bestStreak=bestStreak(u.id,pd);
  o.impact=impactOf(new Set([u.id]),rows("DailyTasks"));o.events=eventsOf(u.id);
  return o},
-profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id)};
- if(d.cover!==undefined){if(COVERS.indexOf(d.cover)<0)throw"Неизвестная обложка";v.cover=d.cover}
- if(d.pattern!==undefined){if(PATTERNS.indexOf(d.pattern)<0)throw"Неизвестный узор";v.pattern=d.pattern}
- if(d.emoji!==undefined){if(P_EMOJI.indexOf(d.emoji)<0)throw"Такого эмодзи нет в списке";v.emoji=d.emoji}
+profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id),grade:c.grade||"",letter:c.letter||""};
+ const dev=isDev(u),devOnly=(k,val)=>{if(DEV_ONLY[k]===val&&!dev)throw"Это украшение есть только у разработчика"};
+ if(d.cover!==undefined){if(COVERS.indexOf(d.cover)<0)throw"Неизвестная обложка";devOnly("cover",d.cover);v.cover=d.cover}
+ if(d.pattern!==undefined){if(PATTERNS.indexOf(d.pattern)<0)throw"Неизвестный узор";devOnly("pattern",d.pattern);v.pattern=d.pattern}
+ if(d.emoji!==undefined){const e=String(d.emoji).trim();devOnly("emoji",e);if(e!=="</>"&&!okEmoji(e))throw"Здесь можно поставить только эмодзи";v.emoji=e}
+ if(d.grade!==undefined){const g=gradeOf(d.grade,d.letter,false);v.grade=g.grade;v.letter=g.letter}
  if(d.status!==undefined){const st=String(d.status).trim();if(st.length>60)throw"Статус не длиннее 60 символов";v.status=st}
  if(d.frame!==undefined){const f=FRAMES[d.frame];if(!f)throw"Неизвестная рамка";
   const pd=rows("PlayDays"),xs={lv:Math.floor((Number(u.xp)||0)/100)+1,best:bestStreak(u.id,pd),badges:rows("Badges").filter(b=>b.studentId===u.id).length,dev:isDev(u)};
   if(!f(xs))throw"Эта рамка пока закрыта";v.frame=d.frame}
  if(d.showcase!==undefined){const ids=(Array.isArray(d.showcase)?d.showcase:[]).map(String).slice(0,3),own=rows("Badges").filter(b=>b.studentId===u.id).map(b=>b.id);
   if(ids.some(id=>own.indexOf(id)<0))throw"В витрину можно поставить только свои бейджи";v.showcase=ids}
- const row=[u.id,v.cover,v.pattern,v.frame,v.status,v.emoji,JSON.stringify(v.showcase)],old=rowsRaw("Profiles").find(p=>p.userId===u.id);
+ const old=rowsRaw("Profiles").find(p=>p.userId===u.id),row=[u.id,v.cover,v.pattern,v.frame,v.status,v.emoji,JSON.stringify(v.showcase),v.grade,v.letter,old?old.consent||"":""];
  if(old)setRow("Profiles",old._row,row);else addT("Profiles",row);
  CU=null;return{cust:custOf(u.id)}},
 profile(d){const me_=who(d),t=byName(d.username);if(!t)throw"Пользователь не найден";
@@ -422,10 +445,65 @@ gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная 
  if(first&&[3,7,14,30,50,100,200,365].indexOf(streak)>=0)addEvent(u.id,"streak","🔥",plural(streak,"день","дня","дней")+" подряд в мини-играх");
  return{score,total,xp,results,streak,newDay:first}}});
 
+/* ───── регистрация: класс ученика и согласие с политикой конфиденциальности ───── */
+const POLICY_VER="2026-10-28";
+const _register=A.register;
+A.register=function(d){
+ if(d.consent!==true)throw"Чтобы зарегистрироваться, примите политику конфиденциальности";
+ const g=gradeOf(d.grade,d.letter,!d.teacherCode),r=_register(d),u=rowsRaw("Users").find(x=>x.username===r.user.username);
+ if(u){addT("Profiles",[u.id,"default","none","none","","","[]",g.grade,g.letter,"принята версия "+POLICY_VER+", "+now()]);CU=null;r.user=pub(u)}
+ return r};
+
+/* ───── новости об экологии из RSS ───── */
+// Источники - в листе NewsSources (название, адрес RSS, фильтр «да»/«нет»). Их можно менять прямо в Таблице.
+// Фильтр «да» пропускает только новости про природу - нужен для общих научных и новостных лент.
+// Адреса ниже - стартовый список; работают ли они, сервер пишет в колонку status.
+const NEWS_SEED=[["N+1","https://nplus1.ru/rss","да"],["Naked Science","https://naked-science.ru/feed","да"],
+ ["РИА Новости: Наука","https://ria.ru/export/rss2/science/index.xml","да"],["ТАСС","https://tass.ru/rss/v2.xml","да"],
+ ["Минприроды России","https://www.mnr.gov.ru/press/news/rss/","нет"]];
+const ECO_RE=/эколог|климат|природ|отход|мусор|переработ|вторсыр|загрязн|выброс|заповедн|нацпарк|национальн\S* парк|красн\S* книг|вымира|редк\S* вид|биоразнообраз|экосистем|углекисл|парников|возобновля|пластик|животн|птиц|лесн|лесов|океан|пресн\S* вод|засух|ледник|наводнен|потеплен/i;
+const unent=s=>s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/<[^>]+>/g," ").replace(/&#x([0-9a-f]+);/gi,(m,h)=>String.fromCharCode(parseInt(h,16)))
+ .replace(/&#(\d+);/g,(m,d)=>String.fromCharCode(+d)).replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,"<").replace(/&gt;/g,">")
+ .replace(/&nbsp;/g," ").replace(/&laquo;/g,"«").replace(/&raquo;/g,"»").replace(/&mdash;|&ndash;/g,"-").replace(/&amp;/g,"&").replace(/[—–]/g,"-").replace(/\s+/g," ").trim();
+// RSS 2.0 и Atom; разбор без строгого XML, чтобы не падать на чуть «кривых» лентах
+function parseFeed(xml){const out=[];
+ (xml.match(/<(item|entry)[\s>][\s\S]*?<\/\1>/g)||[]).forEach(b=>{
+  const tag=n=>{const m=b.match(new RegExp("<"+n+"(?:\\s[^>]*)?>([\\s\\S]*?)</"+n+">","i"));return m?unent(m[1]):""};
+  let link=tag("link");if(!/^https?:\/\//.test(link)){const m=b.match(/<link[^>]*href=["']([^"']+)["']/i);link=m?unent(m[1]):""}
+  if(!/^https?:\/\//.test(link)){const g=tag("guid");link=/^https?:\/\//.test(g)?g:""}
+  const d=new Date(tag("pubDate")||tag("published")||tag("updated")||tag("dc:date")),title=tag("title");
+  if(title&&link)out.push({title:title.slice(0,200),url:link,published:isNaN(d)?"":d.toISOString(),text:(tag("description")||tag("summary")).slice(0,500)})});
+ return out}
+// Найденные новости копятся в листе NewsArchive и держатся в ленте 14 дней, даже когда пропали из RSS источника.
+const NEWS_DAYS=14,NEWS_MAX=60,NEWS_TTL=1500;
+function newsRefresh(force){const c=CacheService.getScriptCache(),hit=c.get("eco_news");
+ if(hit&&!force)return JSON.parse(hit);
+ if(!force&&c.get("eco_news_busy")){const old=c.get("eco_news_old");return old?JSON.parse(old):[]}
+ c.put("eco_news_busy","1",90);
+ let src=rows("NewsSources");if(!src.length){NEWS_SEED.forEach(x=>addT("NewsSources",[x[0],x[1],x[2],"",""]));src=rowsRaw("NewsSources")}
+ let all=[];
+ src.filter(x=>/^https?:\/\//.test(x.url)).forEach(x=>{let st;
+  try{const r=UrlFetchApp.fetch(x.url,{muteHttpExceptions:true,followRedirects:true}),code=r.getResponseCode();
+   if(code!==200)st="не работает: сайт ответил кодом "+code;
+   else{const items=parseFeed(r.getContentText()),eco=/^да/i.test(x.filter)?items.filter(i=>ECO_RE.test(i.title+" "+i.text)):items;
+    eco.forEach(i=>all.push({title:i.title,url:i.url,source:x.name,published:i.published}));
+    st=items.length?"работает: "+plural(items.length,"новость","новости","новостей")+", про экологию "+eco.length:"не работает: по адресу нет RSS"}}
+  catch(e){st="не работает: "+String(e).slice(0,100)}
+  try{upd("NewsSources",x._row,"status",st);upd("NewsSources",x._row,"checked",now())}catch(e){}});
+ const arch=rowsRaw("NewsArchive"),have={};arch.forEach(a=>have[a.url]=1);
+ const fresh=[];all.forEach(n=>{if(!have[n.url]){have[n.url]=1;fresh.push(n)}});
+ addManyT("NewsArchive",fresh.map(n=>[n.url,n.title,n.source,n.published,now()]));
+ const since=new Date(Date.now()-NEWS_DAYS*864e5).toISOString();
+ all=arch.map(a=>({title:a.title,url:a.url,source:a.source,published:a.published||a.found})).concat(fresh.map(n=>({...n,published:n.published||now()})))
+  .filter(n=>n.published>=since).sort((a,b)=>b.published.localeCompare(a.published)).slice(0,NEWS_MAX);
+ const js=JSON.stringify(all);c.put("eco_news",js,NEWS_TTL);c.put("eco_news_old",js,21600);c.remove("eco_news_busy");return all}
+ecoNewsRefresh_=newsRefresh;
+A.news=d=>{who(d);return{news:newsRefresh(false)}};
+
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */
 // Раньше каждый запрос ждал, пока закончится предыдущий. Теперь очередь только у действий,
 // которые меняют данные; чтения выполняются параллельно и читают каждый лист один раз.
-const FAST={me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
+const FAST={news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
 const reply=o=>ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 try{doPost=function(e){
  let d,lock=null,orig=null;
