@@ -382,6 +382,17 @@ button.rc b{font-size:12px}
 .ores:first-of-type{border-top:0}
 .ores .num2{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;background:var(--pri2);color:var(--pri)}
 .ores.bad .num2{background:rgba(239,68,68,.15);color:var(--err)}
+/* украшения разработчика, класс, согласие */
+.hero.cv-dev{background:linear-gradient(135deg,#030604,#0a120d 60%,#050a07),var(--card);color:#d1fae5;border-color:rgba(34,197,94,.35)}
+.hero.cv-dev .muted{color:rgba(209,250,229,.7)}
+.pt-binary .pat{background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='150'%20height='60'%3E%3Cg%20font-family='monospace'%20font-size='11'%20fill='%2322c55e'%3E%3Ctext%20x='2'%20y='14'%3E01010111%200101%3C/text%3E%3Ctext%20x='14'%20y='34'%3E1101%2000101101%3C/text%3E%3Ctext%20x='4'%20y='54'%3E0110%201001%200111%3C/text%3E%3C/g%3E%3C/svg%3E");filter:none!important;opacity:.34!important}
+select{width:100%;padding:14px 16px;margin:6px 0;border-radius:14px;border:1.5px solid var(--line);background:var(--solid);color:var(--text);font:inherit;font-weight:600}
+select:focus{outline:0;border-color:var(--pri);box-shadow:0 0 0 4px var(--pri2)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;margin:10px 2px 4px;color:var(--muted);cursor:pointer}
+.consent input{width:20px;height:20px;margin:1px 0 0;padding:0;flex:none;accent-color:var(--pri)}
+.consent a,.links a{color:var(--pri);font-weight:800}
+.links{margin:6px 0 20px}
+.policy h3{margin:14px 0 4px;font-size:15px}.policy p,.policy li{font-size:14px;margin:4px 0}.policy ul{padding-left:20px;margin:4px 0}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -646,8 +657,8 @@ async function forestModal(un){
 }
 
 /* ───────── оформление профиля ───────── */
-const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Аврора"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"]];
-const PATTERNS=[["none","Без узора"],["leaves","Листья"],["waves","Волны"],["stars","Звёзды"],["dots","Точки"]];
+const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Аврора"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["dev","Код",1]];
+const PATTERNS=[["none","Без узора"],["leaves","Листья"],["waves","Волны"],["stars","Звёзды"],["dots","Точки"],["binary","01010",1]];
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
 function customize(){
   const lv=level(me.xp).lv,best=(X&&X.bestStreak)||0,nb=((X&&X.badges)||[]).length,c=custOf(me);
@@ -656,10 +667,11 @@ function customize(){
   const st={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",emoji:c.emoji||"",status:c.status||"",showcase:(c.sc||[]).map(b=>b.id)};
   const B=(X&&X.badges)||[];
   const m=modal(`<h2 style="padding-right:40px">🎨 Оформление профиля</h2><div id="cpv"></div>
-    <label class="lbl">Обложка</label><div class="sw" id="cco">${COVERS.map(([k,n])=>`<button type="button" data-v="${k}" class="hero cv-${k}"><span>${n}</span></button>`).join("")}</div>
-    <label class="lbl">Узор</label><div class="sw" id="cpt">${PATTERNS.map(([k,n])=>`<button type="button" data-v="${k}" class="hero pt-${k}"><i class="pat"></i><span>${n}</span></button>`).join("")}</div>
+    <label class="lbl">Обложка</label><div class="sw" id="cco">${COVERS.filter(x=>!x[2]||me.dev).map(([k,n])=>`<button type="button" data-v="${k}" class="hero cv-${k}"><span>${n}</span></button>`).join("")}</div>
+    <label class="lbl">Узор</label><div class="sw" id="cpt">${PATTERNS.filter(x=>!x[2]||me.dev).map(([k,n])=>`<button type="button" data-v="${k}" class="hero pt-${k}"><i class="pat"></i><span>${n}</span></button>`).join("")}</div>
     <label class="lbl">Рамка аватарки</label><div class="frs" id="cfr">${FR.map(([k,n,ok,req])=>`<button type="button" data-v="${k}" ${ok?"":"disabled"}>${avatar(me,1,k)}<span>${ok?"":"🔒 "}${n}</span>${ok?"":`<small>${req}</small>`}</button>`).join("")}</div>
-    <label class="lbl">Эмодзи рядом с именем</label><div class="egrid" id="cem">${P_EMOJI.map(e=>`<button type="button" data-v="${e}">${e||"✕"}</button>`).join("")}</div>
+    <label class="lbl">Эмодзи рядом с именем</label><div class="egrid" id="cem">${P_EMOJI.concat(me.dev?["</>"]:[]).map(e=>`<button type="button" data-v="${esc(e)}" ${e==="</>"?'style="font:800 15px ui-monospace,monospace"':""}>${esc(e)||"✕"}</button>`).join("")}</div>
+    <input id="cec" maxlength="16" placeholder="…или вставьте свой эмодзи" autocomplete="off">
     <label class="lbl" for="cst">Статус <span class="cnt" id="csc">0/60</span></label><input id="cst" maxlength="60" placeholder="Например: «Сортирую мусор с 2025 🌍»">
     ${B.length?`<label class="lbl">Витрина бейджей <span class="cnt">до 3</span></label><div class="scpick" id="csp">${B.map(b=>`<button type="button" data-v="${esc(b.id)}">${medal(b)}<span>${esc(b.title)}</span></button>`).join("")}</div>`:`<p class="muted sm">Витрина появится, когда у вас будут бейджи.</p>`}
     <div class="err" id="cer"></div><button class="btn-full" id="csv">Сохранить</button>`);
@@ -673,6 +685,8 @@ function customize(){
   if(q("#csp"))q("#csp").onclick=e=>{const b=e.target.closest("button");if(!b)return;const id=b.dataset.v;
     if(st.showcase.includes(id))st.showcase=st.showcase.filter(x=>x!==id);else if(st.showcase.length<3)st.showcase.push(id);else return toast("В витрине максимум 3 бейджа","err");mark()};
   const si=q("#cst");si.value=st.status;si.oninput=()=>{st.status=si.value;mark()};
+  const ce=q("#cec");if(st.emoji&&!P_EMOJI.includes(st.emoji)&&st.emoji!=="</>")ce.value=st.emoji;
+  ce.oninput=()=>{const v=ce.value.trim();if(v){st.emoji=v;mark()}};q("#cem").addEventListener("click",()=>{ce.value=""});
   mark();
   const sb=q("#csv");sb.onclick=busy(sb,async()=>{
     const r=await api("profileSet",st);if(dead(r))return m.close();
@@ -691,7 +705,7 @@ function userV(un,back){
     if((AV[u.username]||"")!==(r.avatar||"")){AV[u.username]=r.avatar||"";saveAV()}
     box.innerHTML=`<div class="${heroCls(u)}"><i class="pat"></i><div class="row"><div class="ring">${ring("fg")}${avatar(u,1)}<span class="lvb">${lv}</span></div>
       <div class="grow"><h2>${nameH(u)}</h2><div class="muted">@${esc(u.username)}</div>${statusH(u)}
-      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(u)}${isT(u)?`<span class="tag t">🧑‍🏫 Учитель</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span>${flame(r.streak)}</div></div></div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(u)}${isT(u)?`<span class="tag t">🧑‍🏫 Учитель</span>`:""}${gradeTag(u)}<span class="tag">${rk[2]} ${rk[1]}</span>${flame(r.streak)}</div></div></div>
       ${showcaseH(u)}${u.bio?`<p class="bio">${esc(u.bio)}</p>`:""}
       ${r.self?`<button class="ghost btn-full" id="mine" style="margin-top:12px">Это вы - открыть свой профиль</button>`:r.friend?`<button class="btn-full" id="wr" style="margin-top:12px">💬 Написать</button>`:""}</div>
       ${gardenCard(u.xp,r.streak,false)}
@@ -775,6 +789,26 @@ async function mapV(){
   locate();
 }
 
+/* ───────── политика конфиденциальности и обратная связь ───────── */
+const FEEDBACK="renwori1@gmail.com";
+function policyModal(){modal(`<div class="policy"><h2 style="padding-right:40px">Политика конфиденциальности</h2><p class="muted sm">Версия от 28 октября 2026 года</p>
+  <h3>1. Кто обрабатывает данные</h3><p>Создатель сайта ЭкоТрек (далее - администратор). Связаться: <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
+  <h3>2. Какие данные мы собираем</h3><ul><li>имя, фамилия и юзернейм;</li><li>класс и его буква (для учеников);</li><li>пароль - только в зашифрованном виде (хэш), сам пароль никто не видит;</li>
+  <li>фото профиля, статус, «о себе» и оформление профиля - если вы их добавили;</li><li>сообщения и реакции в чатах;</li><li>результаты игр и заданий, опыт, бейджи, классы и друзья.</li></ul>
+  <h3>3. Зачем</h3><p>Только чтобы сайт работал: вход в аккаунт, профиль, игры и задания, чаты, классы и бейджи. Мы не показываем рекламу и не продаём данные.</p>
+  <h3>4. Кто видит данные</h3><ul><li>имя, юзернейм, фото, класс, уровень, бейджи, эко-сад и ленту достижений - все пользователи сайта;</li>
+  <li>сообщения - только участники конкретного чата;</li><li>учитель видит учеников своего класса и их бейджи.</li></ul>
+  <h3>5. Где хранятся данные</h3><p>В Google Таблице администратора на серверах Google. Третьим лицам данные не передаются, кроме Google как площадки хранения.</p>
+  <h3>6. Сколько хранятся</h3><p>Пока существует аккаунт. Удалить аккаунт и все данные можно по письму на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
+  <h3>7. Дети</h3><p>Если вам меньше 14 лет, регистрироваться можно только с согласия родителей или законных представителей.</p>
+  <h3>8. Ваши права</h3><p>Вы можете узнать, какие данные о вас хранятся, исправить их, удалить или отозвать согласие - напишите на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
+  <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих cookies нет.</p></div>`)}
+const feedbackCard=()=>`<div class="card"><b>📮 Обратная связь</b><p class="muted sm" style="margin:4px 0 10px">Нашли ошибку, есть идея или вопрос? Напишите нам: <b>${FEEDBACK}</b></p>
+  <a class="btn-full" href="mailto:${FEEDBACK}?subject=${encodeURIComponent("ЭкоТрек: обратная связь")}" style="display:block;text-align:center;padding:12px;border-radius:14px;background:var(--pri2);color:var(--pri);font-weight:800;text-decoration:none">✉️ Написать письмо</a>
+  <p class="sm center" style="margin:10px 0 0"><a href="#" data-pol style="color:var(--pri);font-weight:800">Политика конфиденциальности</a></p></div>`;
+document.addEventListener("click",e=>{const a=e.target.closest("[data-pol]");if(a){e.preventDefault();policyModal()}});
+const gradeTag=u=>{const c=custOf(u);return c.grade?`<span class="tag">🎒 ${esc(c.grade)}${c.letter?" «"+esc(c.letter)+"»":""} класс</span>`:""};
+
 /* ───────── вход и регистрация ───────── */
 function authView(msg=""){
   document.body.classList.remove("chatting");
@@ -783,7 +817,8 @@ function authView(msg=""){
   <div class="feat">${["🎮 Игры","🏅 Бейджи","💬 Чаты","🌱 Задания"].map((t,i)=>`<span style="animation-delay:${200+i*90}ms">${t}</span>`).join("")}</div>
   <div class="card"><div class="seg" id="sg" style="--n:2;--k:${mode==="register"?1:0};margin-bottom:10px"><i></i>
   <button type="button" data-m="login" class="${mode==="login"?"on":""}">Вход</button><button type="button" data-m="register" class="${mode==="register"?"on":""}">Регистрация</button></div>
-  <form id="af" novalidate></form></div></div>`;
+  <form id="af" novalidate></form></div>
+  <p class="muted sm links"><a href="#" data-pol>Политика конфиденциальности</a> · <a href="mailto:${FEEDBACK}">Обратная связь</a></p></div>`;
   const sg=$("#sg");
   sg.querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;sg.style.setProperty("--k",mode==="register"?1:0);
     sg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));drawForm()});
@@ -794,15 +829,19 @@ function drawForm(msg=""){
   const pw=(id,ph,ac)=>`<div class="pw"><input id="${id}" type="password" placeholder="${ph}" autocomplete="${ac}"><button type="button" class="eye" tabindex="-1" aria-label="Показать пароль">👁</button></div>`;
   f.innerHTML=(reg?`<div class="seg" id="rs" style="--n:2;--k:${regRole==="teacher"?1:0};margin:4px 0 8px"><i></i><button type="button" data-r="student" class="${regRole==="student"?"on":""}">🎒 Я ученик</button><button type="button" data-r="teacher" class="${regRole==="teacher"?"on":""}">🧑‍🏫 Я учитель</button></div>
     <div class="coll ${regRole==="teacher"?"open":""}" id="tcw"><div>${pw("tc","Код учителя","off")}<p class="hint">Код выдаёт администратор ЭкоТрека. Учителя создают класс и выдают ученикам бейджи.</p></div></div>
+    <div class="coll ${regRole==="student"?"open":""}" id="scw"><div><div class="row" style="gap:8px"><select id="gr" aria-label="Класс" style="flex:1"><option value="">Класс</option>${Array.from({length:11},(_,i)=>`<option value="${i+1}">${i+1} класс</option>`).join("")}</select>
+      <input id="gl" maxlength="2" placeholder="Буква" aria-label="Буква класса" autocomplete="off" style="flex:1;text-transform:uppercase"></div></div></div>
     <input id="fn" placeholder="Имя" maxlength="40" autocomplete="given-name"><input id="ln" placeholder="Фамилия" maxlength="40" autocomplete="family-name">`:"")+
    `<input id="un" placeholder="Юзернейм (a-z, 0-9, _)" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">`+
-   pw("pw","Пароль (от 8 символов)",reg?"new-password":"current-password")+(reg?pw("pw2","Повторите пароль","new-password"):"")+
+   pw("pw","Пароль (от 8 символов)",reg?"new-password":"current-password")+(reg?pw("pw2","Повторите пароль","new-password")+
+   `<label class="consent"><input type="checkbox" id="agr"><span>Принимаю <a href="#" data-pol>политику конфиденциальности</a> и даю согласие на обработку моих персональных данных. Если мне меньше 14 лет - с согласия родителей.</span></label>`:"")+
    `<div class="err" id="er" role="alert">${esc(msg)}</div><button class="btn-full" id="go" type="submit">${reg?"Зарегистрироваться":"Войти"}</button>`;
   f.classList.remove("swap");void f.offsetWidth;f.classList.add("swap");
   f.querySelectorAll(".eye").forEach(b=>b.onclick=()=>{const i=b.previousElementSibling;i.type=i.type==="password"?"text":"password"});
-  if(reg){const rs=$("#rs"),w=$("#tcw");w.inert=regRole!=="teacher";
+  if(reg){const rs=$("#rs"),w=$("#tcw"),sw=$("#scw");w.inert=regRole!=="teacher";sw.inert=regRole!=="student";
     rs.querySelectorAll("button").forEach((b,j)=>b.onclick=()=>{regRole=b.dataset.r;rs.style.setProperty("--k",j);
-      rs.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));w.classList.toggle("open",j===1);w.inert=j!==1;if(j===1)setTimeout(()=>$("#tc").focus(),200)})}
+      rs.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));w.classList.toggle("open",j===1);w.inert=j!==1;sw.classList.toggle("open",j===0);sw.inert=j!==0;
+      if(j===1)setTimeout(()=>$("#tc").focus(),200)})}
   f.onsubmit=async e=>{
     e.preventDefault();
     const er=$("#er"),b=$("#go"),username=$("#un").value.trim().toLowerCase().replace(/^@/,""),password=$("#pw").value;
@@ -814,7 +853,12 @@ function drawForm(msg=""){
       if(!$("#fn").value.trim()||!$("#ln").value.trim())return er.textContent="Укажите имя и фамилию";
       if(password.length<8)return er.textContent="Пароль должен быть не короче 8 символов";
       if(password!==$("#pw2").value)return er.textContent="Пароли не совпадают";
-      body={...body,firstName:$("#fn").value.trim(),lastName:$("#ln").value.trim()};
+      const gl=$("#gl").value.trim().toUpperCase();
+      if(!tch()&&!$("#gr").value)return er.textContent="Выберите свой класс";
+      if(!tch()&&gl&&!/^[А-ЯЁA-Z]{1,2}$/.test(gl))return er.textContent="Буква класса - одна или две буквы";
+      if(!$("#agr").checked)return er.textContent="Чтобы зарегистрироваться, примите политику конфиденциальности";
+      body={...body,firstName:$("#fn").value.trim(),lastName:$("#ln").value.trim(),consent:true};
+      if(!tch()){body.grade=$("#gr").value;body.letter=gl}
       if(tch())body.teacherCode=$("#tc").value.trim();
     }
     b.disabled=true;b.textContent="Подождите…";
@@ -864,7 +908,7 @@ function feedV(){
 }
 
 /* ───────── друзья ───────── */
-const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${isT(u)?"🧑‍🏫 учитель":rank(level(u.xp).lv)[2]+" ур. "+level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
+const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${isT(u)?"🧑‍🏫 учитель":(custOf(u).grade?esc(custOf(u).grade+(custOf(u).letter||""))+" класс · ":"")+rank(level(u.xp).lv)[2]+" ур. "+level(u.xp).lv}</div></div><div class="acts">${btns}</div></div>`;
 const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
 function friendsV(){
   const my=++vid;let users=[];
@@ -1247,18 +1291,25 @@ async function profileV(){
   if(!X)X=cget("x");
   put(`<div class="${heroCls(me)}"><i class="pat"></i><button class="ghost edit" id="cust" aria-label="Оформление профиля" title="Оформление профиля">🎨</button><div class="row"><div class="ring">${ring("fg")}${avatar(me,1)}<span class="lvb">${lv}</span><button class="cam" id="cam" aria-label="Сменить фото">📷</button></div>
     <div class="grow"><h2 style="padding-right:34px">${nameH(me)}</h2><div class="muted">@${esc(me.username)}</div>${statusH(me)}
-    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(me)}${isT(me)?`<span class="tag t">🧑‍🏫 ${me.role==="admin"?"Администратор":"Учитель"}</span>`:""}<span class="tag">${rk[2]} ${rk[1]}</span><span id="flm" style="display:contents">${X?flame(X.streak||0):""}</span></div></div></div>
+    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(me)}${isT(me)?`<span class="tag t">🧑‍🏫 ${me.role==="admin"?"Администратор":"Учитель"}</span>`:""}${gradeTag(me)}<span class="tag">${rk[2]} ${rk[1]}</span><span id="flm" style="display:contents">${X?flame(X.streak||0):""}</span></div></div></div>
     ${showcaseH(me)}${me.bio?`<p class="bio">${esc(me.bio)}</p>`:""}</div>
   <div class="card"><div class="row"><div class="grow"><div class="muted sm">Уровень ${lv}</div><div class="xpn"><span id="xn">0</span> XP</div></div><div class="eb" style="font-size:34px">${rk[2]}</div></div><div class="prog" style="margin-top:10px"><i id="pb" style="width:0"></i></div>
   <div class="muted sm" style="margin-top:8px">До следующего уровня: ${100-pct} XP</div></div>
   <div id="px">${X?"":sk(2)}</div>
   <div class="card"><b>Редактировать профиль</b><input id="fn" value="${esc(me.firstName)}" maxlength="40" placeholder="Имя"><input id="ln" value="${esc(me.lastName)}" maxlength="40" placeholder="Фамилия">
+  ${isT(me)?"":`<div class="row" style="gap:8px"><select id="pg" aria-label="Класс" style="flex:1"><option value="">Класс не указан</option>${Array.from({length:11},(_,i)=>`<option value="${i+1}" ${custOf(me).grade==String(i+1)?"selected":""}>${i+1} класс</option>`).join("")}</select>
+  <input id="pl2" maxlength="2" placeholder="Буква" aria-label="Буква класса" value="${esc(custOf(me).letter||"")}" style="flex:1;text-transform:uppercase"></div>`}
   <textarea id="bio" rows="3" maxlength="200" placeholder="О себе">${esc(me.bio)}</textarea><div class="err" id="er"></div><button class="btn-full" id="sv">Сохранить</button></div>`);
   raf2(()=>{const f=$("#fg"),p=$("#pb");if(f)f.style.strokeDashoffset=289*(1-pct/100);if(p)p.style.width=pct+"%"});countUp($("#xn"),me.xp);
   $("#cam").onclick=$(".ring .ava").onclick=avatarMenu;$("#cust").onclick=customize;
   $("#sv").onclick=busy($("#sv"),async()=>{
     const r=await api("update",{firstName:$("#fn").value,lastName:$("#ln").value,bio:$("#bio").value});
-    if(dead(r))return;if(r.ok){me=r.user;saveMe();toast("Сохранено ✓");profileV()}else $("#er").textContent=r.error;
+    if(dead(r))return;if(!r.ok)return $("#er").textContent=r.error;
+    const cust=custOf(me);me=r.user;me.cust=me.cust||cust;
+    if($("#pg")){const g=$("#pg").value,l=$("#pl2").value.trim().toUpperCase();
+      if(g!==(cust.grade||"")||l!==(cust.letter||"")){const p=await api("profileSet",{grade:g,letter:l});if(dead(p))return;
+        if(!p.ok){saveMe();return $("#er").textContent=p.error}me.cust=p.cust}}
+    saveMe();toast("Сохранено ✓");profileV();
   });
   if(X)drawX();
   const old=JSON.stringify(X),x=await loadX();if(my!==vid||!x)return;
@@ -1278,6 +1329,7 @@ function settingsV(){
   <div class="err" id="e1"></div><button class="btn-full" id="b1">Сменить юзернейм</button></div>
   <div class="card"><b>Сменить пароль</b><input id="op" type="password" placeholder="Текущий пароль" autocomplete="current-password"><input id="np" type="password" placeholder="Новый пароль (от 8 символов)" autocomplete="new-password"><input id="np2" type="password" placeholder="Повторите новый пароль" autocomplete="new-password">
   <div class="err" id="e2"></div><button class="btn-full" id="b2">Сменить пароль</button></div>
+  ${feedbackCard()}
   <div class="card"><button class="ghost btn-full" id="out">Выйти из аккаунта</button></div>`);
   const th=$("#th");
   th.querySelectorAll("button").forEach((b,j)=>b.onclick=async()=>{

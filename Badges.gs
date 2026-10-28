@@ -7,7 +7,7 @@ Badges:["id","teacherId","studentId","emoji","color","title","description","crea
 Messages:["id","chat","userId","type","text","media","created"],ChatReads:["userId","chat","ts"],
 GamesPlayed:["userId","date","game"],DailyTasks:["userId","date","slot","taskId","done"],PlayDays:["userId","date"],
 Events:["id","userId","type","emoji","text","created"],Reactions:["msgId","chat","userId","emoji"],
-Profiles:["userId","cover","pattern","frame","status","emoji","showcase"],
+Profiles:["userId","cover","pattern","frame","status","emoji","showcase","grade","letter","consent"],
 NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"]});
 function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -66,13 +66,23 @@ const isStaff=u=>u.role==="teacher"||u.role==="admin"||isDev(u);
 try{const _pub=pub;pub=function(u){const o=_pub(u);if(isDev(u))o.dev=true;const c=custOf(u.id);if(c)o.cust=c;return o}}catch(e){}
 
 /* ───── оформление профиля ───── */
-const COVERS=["default","forest","ocean","sunset","aurora","meadow","night","berry"];
-const PATTERNS=["none","leaves","waves","stars","dots"];
+const COVERS=["default","forest","ocean","sunset","aurora","meadow","night","berry","dev"];
+const PATTERNS=["none","leaves","waves","stars","dots","binary"];
+const DEV_ONLY={cover:"dev",pattern:"binary",emoji:"</>"};  // украшения только для разработчика
+// свой эмодзи: только символы эмодзи (с модификаторами и склейками), не длиннее 16 знаков
+const EMOJI_RE=/^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|\u200d|\ufe0f|\u20e3)+$/u;
+const okEmoji=e=>P_EMOJI.indexOf(e)>=0||(e.length<=16&&EMOJI_RE.test(e)&&/\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(e));
+// класс ученика: цифра 1-11 и буква (её ученик вписывает сам)
+function gradeOf(grade,letter,required){const g=String(grade??"").trim(),l=String(letter??"").trim().toUpperCase();
+ if(!g){if(required)throw"Выберите свой класс";return{grade:"",letter:""}}
+ if(!/^([1-9]|10|11)$/.test(g))throw"Класс - число от 1 до 11";
+ if(l&&!/^[А-ЯЁA-Z]{1,2}$/.test(l))throw"Буква класса - одна или две буквы";
+ return{grade:g,letter:l}}
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
 const FRAMES={none:()=>true,leaf:()=>true,ocean:x=>x.lv>=3,fire:x=>x.best>=7,rainbow:x=>x.lv>=5,medal:x=>x.badges>=3,gold:x=>x.lv>=10,dev:x=>x.dev};
 let CU=null;
 function custOf(uid){if(!CU){CU={};const bs=rows("Badges");rows("Profiles").forEach(p=>{let sc=[];try{sc=JSON.parse(p.showcase||"[]")}catch(e){}
-  CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,
+  CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,grade:p.grade||"",letter:p.letter||"",
    sc:sc.map(id=>bs.find(b=>b.id===id&&b.studentId===p.userId)).filter(Boolean).map(b=>({id:b.id,emoji:b.emoji,color:b.color,title:b.title}))}})}
  return CU[uid]||null}
 function bestStreak(uid,pd){const ds=pd.filter(r=>r.userId===uid).map(r=>r.date).sort();let best=0,run=0,prev=null;
@@ -296,17 +306,19 @@ extra(d){const u=who(d),av=rows("Avatars").find(a=>a.userId===u.id),users=rows("
  const pd=rows("PlayDays");o.streak=streakOf(u.id,pd);o.playedToday=playedToday(u.id,pd);o.bestStreak=bestStreak(u.id,pd);
  o.impact=impactOf(new Set([u.id]),rows("DailyTasks"));o.events=eventsOf(u.id);
  return o},
-profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id)};
- if(d.cover!==undefined){if(COVERS.indexOf(d.cover)<0)throw"Неизвестная обложка";v.cover=d.cover}
- if(d.pattern!==undefined){if(PATTERNS.indexOf(d.pattern)<0)throw"Неизвестный узор";v.pattern=d.pattern}
- if(d.emoji!==undefined){if(P_EMOJI.indexOf(d.emoji)<0)throw"Такого эмодзи нет в списке";v.emoji=d.emoji}
+profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id),grade:c.grade||"",letter:c.letter||""};
+ const dev=isDev(u),devOnly=(k,val)=>{if(DEV_ONLY[k]===val&&!dev)throw"Это украшение есть только у разработчика"};
+ if(d.cover!==undefined){if(COVERS.indexOf(d.cover)<0)throw"Неизвестная обложка";devOnly("cover",d.cover);v.cover=d.cover}
+ if(d.pattern!==undefined){if(PATTERNS.indexOf(d.pattern)<0)throw"Неизвестный узор";devOnly("pattern",d.pattern);v.pattern=d.pattern}
+ if(d.emoji!==undefined){const e=String(d.emoji).trim();devOnly("emoji",e);if(e!=="</>"&&!okEmoji(e))throw"Здесь можно поставить только эмодзи";v.emoji=e}
+ if(d.grade!==undefined){const g=gradeOf(d.grade,d.letter,false);v.grade=g.grade;v.letter=g.letter}
  if(d.status!==undefined){const st=String(d.status).trim();if(st.length>60)throw"Статус не длиннее 60 символов";v.status=st}
  if(d.frame!==undefined){const f=FRAMES[d.frame];if(!f)throw"Неизвестная рамка";
   const pd=rows("PlayDays"),xs={lv:Math.floor((Number(u.xp)||0)/100)+1,best:bestStreak(u.id,pd),badges:rows("Badges").filter(b=>b.studentId===u.id).length,dev:isDev(u)};
   if(!f(xs))throw"Эта рамка пока закрыта";v.frame=d.frame}
  if(d.showcase!==undefined){const ids=(Array.isArray(d.showcase)?d.showcase:[]).map(String).slice(0,3),own=rows("Badges").filter(b=>b.studentId===u.id).map(b=>b.id);
   if(ids.some(id=>own.indexOf(id)<0))throw"В витрину можно поставить только свои бейджи";v.showcase=ids}
- const row=[u.id,v.cover,v.pattern,v.frame,v.status,v.emoji,JSON.stringify(v.showcase)],old=rowsRaw("Profiles").find(p=>p.userId===u.id);
+ const old=rowsRaw("Profiles").find(p=>p.userId===u.id),row=[u.id,v.cover,v.pattern,v.frame,v.status,v.emoji,JSON.stringify(v.showcase),v.grade,v.letter,old?old.consent||"":""];
  if(old)setRow("Profiles",old._row,row);else addT("Profiles",row);
  CU=null;return{cust:custOf(u.id)}},
 profile(d){const me_=who(d),t=byName(d.username);if(!t)throw"Пользователь не найден";
@@ -432,6 +444,15 @@ gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная 
  const streak=streakOf(u.id,rows("PlayDays"));
  if(first&&[3,7,14,30,50,100,200,365].indexOf(streak)>=0)addEvent(u.id,"streak","🔥",plural(streak,"день","дня","дней")+" подряд в мини-играх");
  return{score,total,xp,results,streak,newDay:first}}});
+
+/* ───── регистрация: класс ученика и согласие с политикой конфиденциальности ───── */
+const POLICY_VER="2026-10-28";
+const _register=A.register;
+A.register=function(d){
+ if(d.consent!==true)throw"Чтобы зарегистрироваться, примите политику конфиденциальности";
+ const g=gradeOf(d.grade,d.letter,!d.teacherCode),r=_register(d),u=rowsRaw("Users").find(x=>x.username===r.user.username);
+ if(u){addT("Profiles",[u.id,"default","none","none","","","[]",g.grade,g.letter,"принята версия "+POLICY_VER+", "+now()]);CU=null;r.user=pub(u)}
+ return r};
 
 /* ───── новости об экологии из RSS ───── */
 // Источники - в листе NewsSources (название, адрес RSS, фильтр «да»/«нет»). Их можно менять прямо в Таблице.
