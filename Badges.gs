@@ -378,6 +378,25 @@ badgeGive(d){const t=who(d);needTeacher(t);const s=studentOf(t,d.username);
  return{badge:badgeOut(rows("Badges").find(b=>b.id===id),[t]),user:pub(s)}},
 badgeRevoke(d){const t=who(d);needTeacher(t);const b=rows("Badges").find(x=>x.id===String(d.id||""));
  if(!b||(b.teacherId!==t.id&&!isDev(t)))throw"Можно отозвать только свой бейдж";delRows("Badges",[b]);return{}},
+// Удаление аккаунта: стираются профиль, фото, бейджи, задания, лента, классы учителя и строки пользователя
+// во всех листах Code.gs (друзья, сессии и т.п.). В листах чатов строки не удаляются, а очищаются:
+// их меняют запросы без общей очереди, и сдвиг строк мог бы задеть чужие сообщения.
+deleteAccount(d){const u=who(d),id=u.id,dev=isDev(u);
+ if(typeof verify==="function")verify(u,d.password);else if(hashPw(String(d.password||""),u.salt)!==u.hash)throw"Неверный пароль";
+ ["Avatars","Profiles","DailyTasks","PlayDays","GamesPlayed","Events"].forEach(n=>delRows(n,rowsRaw(n).filter(r=>r.userId===id)));
+ delRows("Members",rowsRaw("Members").filter(r=>r.studentId===id||r.teacherId===id));
+ delRows("Classes",rowsRaw("Classes").filter(r=>r.teacherId===id));
+ delRows("Badges",rowsRaw("Badges").filter(r=>r.studentId===id));
+ rowsRaw("Badges").filter(r=>r.teacherId===id).forEach(r=>upd("Badges",r._row,"teacherId",""));  // выданные бейджи остаются у учеников
+ const scrub=(n,col,f)=>{ensure(n);const sh=SS().getSheetByName(n),last=sh.getLastRow();if(last<2)return;
+  const rg=sh.getRange(2,1,last-1,H[n].length),v=rg.getValues();let ch=false;
+  v.forEach(r=>{if(String(r[col])===id){f(r);ch=true}});if(ch)rg.setNumberFormat("@").setValues(v.map(r=>r.map(String)))};
+ scrub("Messages",2,r=>{r[2]="";r[3]="del";r[4]=""});scrub("Reactions",2,r=>{r[2]="";r[3]=""});scrub("ChatReads",0,r=>{r[0]=""});
+ SS().getSheets().forEach(sh=>{const n=sh.getName();if(MY.indexOf(n)>=0||n==="Users")return;
+  const v=sh.getDataRange().getValues();for(let i=v.length-1;i>=1;i--)if(v[i].some(c=>String(c)===id))sh.deleteRow(i+1)});
+ const ur=rowsRaw("Users").find(x=>x.id===id);if(ur)SS().getSheetByName("Users").deleteRow(ur._row);
+ if(dev)PropertiesService.getScriptProperties().deleteProperty("DEV_ID");
+ CU=null;return{}},
 badgesSeen(d){const u=who(d);rows("Badges").filter(b=>b.studentId===u.id&&b.seen!=="1").forEach(b=>upd("Badges",b._row,"seen","1"));return{}},
 
 chats(d){const u=who(d),F=friendsOf(d),users=rows("Users"),classes=rows("Classes"),list=[];

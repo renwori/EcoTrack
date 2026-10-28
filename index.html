@@ -799,7 +799,7 @@ function policyModal(){modal(`<div class="policy"><h2 style="padding-right:40px"
   <h3>4. Кто видит данные</h3><ul><li>имя, юзернейм, фото, класс, уровень, бейджи, эко-сад и ленту достижений - все пользователи сайта;</li>
   <li>сообщения - только участники конкретного чата;</li><li>учитель видит учеников своего класса и их бейджи.</li></ul>
   <h3>5. Где хранятся данные</h3><p>В Google Таблице администратора на серверах Google. Третьим лицам данные не передаются, кроме Google как площадки хранения.</p>
-  <h3>6. Сколько хранятся</h3><p>Пока существует аккаунт. Удалить аккаунт и все данные можно по письму на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
+  <h3>6. Сколько хранятся</h3><p>Пока существует аккаунт. Удалить аккаунт и все данные можно самостоятельно: Настройки → «Удалить аккаунт», или по письму на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
   <h3>7. Дети</h3><p>Если вам меньше 14 лет, регистрироваться можно только с согласия родителей или законных представителей.</p>
   <h3>8. Ваши права</h3><p>Вы можете узнать, какие данные о вас хранятся, исправить их, удалить или отозвать согласие - напишите на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
   <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих cookies нет.</p></div>`)}
@@ -1330,7 +1330,9 @@ function settingsV(){
   <div class="card"><b>Сменить пароль</b><input id="op" type="password" placeholder="Текущий пароль" autocomplete="current-password"><input id="np" type="password" placeholder="Новый пароль (от 8 символов)" autocomplete="new-password"><input id="np2" type="password" placeholder="Повторите новый пароль" autocomplete="new-password">
   <div class="err" id="e2"></div><button class="btn-full" id="b2">Сменить пароль</button></div>
   ${feedbackCard()}
-  <div class="card"><button class="ghost btn-full" id="out">Выйти из аккаунта</button></div>`);
+  <div class="card"><button class="ghost btn-full" id="out">Выйти из аккаунта</button></div>
+  <div class="card"><b>🗑 Удалить аккаунт</b><p class="muted sm" style="margin:4px 0 8px">Удалятся профиль, фото, бейджи, опыт, серия дней, эко-сад, друзья и ваши сообщения в чатах.${isStaff(me)?" Ваш класс и его чат тоже удалятся, а выданные вами бейджи останутся у учеников.":""} Восстановить аккаунт будет нельзя.</p>
+  <input id="dpw" type="password" placeholder="Пароль для подтверждения" autocomplete="current-password"><div class="err" id="e3"></div><button class="danger btn-full" id="b3">Удалить аккаунт навсегда</button></div>`);
   const th=$("#th");
   th.querySelectorAll("button").forEach((b,j)=>b.onclick=async()=>{
     theme(b.dataset.v);me.theme=b.dataset.v;saveMe();th.style.setProperty("--k",j);th.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
@@ -1352,6 +1354,14 @@ function settingsV(){
     if(r.ok){$("#e2").textContent="";toast("Пароль изменён ✓");$("#op").value=$("#np").value=$("#np2").value=""}else $("#e2").textContent=r.error;
   });
   $("#out").onclick=logout;
+  $("#b3").onclick=busy($("#b3"),async()=>{
+    const pw=$("#dpw").value;if(!pw)return $("#e3").textContent="Введите пароль";
+    if(!await ask("Удалить аккаунт навсегда? Это нельзя отменить.","Удалить",1))return;
+    const r=await api("deleteAccount",{password:pw});
+    if(!r.ok){if(/Неизвестное действие/.test(r.error))return $("#e3").textContent="Удаление заработает после обновления серверной части (Badges.gs).";
+      if(dead(r))return;return $("#e3").textContent=r.error}
+    vid++;stopPoll();localStorage.removeItem("tk");cclear();ls.del("av");token=me=X=CH=null;tab="profile";mode="login";authView();toast("Аккаунт удалён. Спасибо, что были с нами 🌱");
+  });
 }
 
 /* ───────── запуск ───────── */
