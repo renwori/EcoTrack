@@ -9,7 +9,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--bg:#f2f7f3;--bgt:rgba(242,247,243,.72);--card:rgba(255,255,255,.68);--solid:#fff;--text:#12211a;--muted:#5f7168;
 --pri:#16a34a;--pri-d:#0f7a37;--pri2:rgba(22,163,74,.12);--on:#fff;--line:rgba(18,33,26,.09);--err:#dc2626;--hi:rgba(255,255,255,.7);
@@ -426,10 +427,13 @@ const ck=k=>"c:"+(me?me.username:"")+":"+k;
 const cget=k=>ls.get(ck(k)), cset=(k,v)=>ls.set(ck(k),v);
 const cclear=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("c:")).forEach(k=>localStorage.removeItem(k))}catch{}ls.del("me")};
 const saveMe=()=>ls.set("me",me);
+// Данные моложе 15 секунд не запрашиваются повторно - вкладка открывается мгновенно и без запроса.
+const FRESH={},FRESH_MS=15000,isFresh=k=>Date.now()-(FRESH[k]||0)<FRESH_MS;
 async function swr(k,action,d,draw,my,force){
   const c=force?null:cget(k);if(c)draw(c);
+  if(c&&isFresh(k))return c;
   const r=await api(action,d);if(my!==vid||dead(r))return null;
-  if(r.ok){if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);else toast(r.error,"err");
+  if(r.ok){FRESH[k]=Date.now();if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);else toast(r.error,"err");
   return r;
 }
 const level=xp=>({lv:Math.floor(xp/100)+1,pct:xp%100});
@@ -485,7 +489,8 @@ function burst(x=innerWidth/2,y=innerHeight/3,n=30){
 }
 const stag=el=>el.querySelectorAll(".card,.tile").forEach((c,i)=>c.style.setProperty("--i",Math.min(i,10)));
 const put=html=>{const v=$("#view");if(!v)return;closePick();if(curMap){try{curMap.stop();curMap.off();curMap.remove()}catch{}curMap=null}v.onclick=null;v.oncontextmenu=null;v.innerHTML=html;stag(v);if(!RM){v.classList.remove("vin");void v.offsetWidth;v.classList.add("vin")}};
-const stopPoll=()=>{clearInterval(poll);poll=null};
+let chatTick=null;
+const stopPoll=()=>{clearInterval(poll);poll=null;chatTick=null};
 const dead=r=>{if(r&&r.error&&r.error.includes("Сессия")){vid++;stopPoll();document.body.classList.remove("chatting");localStorage.removeItem("tk");cclear();token=me=X=CH=null;authView(r.error);return true}};
 const logout=async()=>{vid++;stopPoll();await api("logout");localStorage.removeItem("tk");cclear();token=me=X=CH=null;tab="profile";mode="login";authView()};
 
@@ -619,7 +624,8 @@ async function pulse(){
   if(chatsDraw)chatsDraw(r);
 }
 setInterval(()=>{if(!document.hidden&&me)pulse()},30000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me)pulse()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me){pulse();if(chatTick)chatTick()}});
+addEventListener("focus",()=>{if(chatTick)chatTick()});
 
 /* ───────── серия дней, эко-сад, польза, лента ───────── */
 const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return n+" "+(m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c)};
@@ -771,7 +777,7 @@ async function mapV(){
   const g=ls.get("geo")||{lat:55.7558,lon:37.6173,z:12};
   map=curMap=L.map("map").setView([g.lat,g.lon],g.z);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
-  layer=L.layerGroup().addTo(map);setTimeout(()=>map.invalidateSize(),600);
+  layer=L.layerGroup().addTo(map);setTimeout(()=>{if(curMap===map)map.invalidateSize()},600);
   const ico=p=>L.divIcon({className:"",html:`<div class="pin"><span>${(p.acc[0]||RCAT[0])[2]}</span></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
   const popup=p=>`<b>${esc(p.name)}</b><br>${p.acc.length?"Принимают: "+p.acc.map(c=>c[2]+" "+c[1].toLowerCase()).join(", "):"Вид вторсырья не указан"}${p.hours?`<br>🕒 ${esc(p.hours)}`:""}<br><a href="https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=18/${p.lat}/${p.lon}" target="_blank" rel="noopener">Открыть на карте</a>`;
   const draw=()=>{layer.clearLayers();const f=cat==="all"?pts:pts.filter(p=>p.acc.some(c=>c[0]===cat));
@@ -895,8 +901,16 @@ function shell(){
   $("#gear").onclick=()=>go(tab==="settings"?"profile":"settings");
   if(!VIEWS[tab]||(tab==="class"&&!isStaff(me)))tab="profile";
   chip();go(tab);
-  const c=cget("chats");if(c)dots(c);pulse();
-  if(tab!=="profile"&&!X)loadX();
+  const c=cget("chats");if(c)dots(c);prefetch();
+}
+// Сразу после входа одним запросом загружаем данные всех вкладок, чтобы они открывались мгновенно.
+async function prefetch(){
+  const r=await api("batch",{calls:[{action:"extra"},{action:"chats"},{action:"friends"},{action:"tasks"},{action:"news"}]});if(!me)return;
+  if(!r.ok){pulse();if(tab!=="profile"&&!X)loadX();return}
+  const R=r.results||{},keep=(k,v)=>{if(v&&v.ok){cset(k,v);FRESH[k]=Date.now()}};
+  keep("friends",R.friends);keep("tasks",R.tasks);keep("news",R.news);
+  if(R.chats&&R.chats.ok){CH=R.chats;keep("chats",CH);dots(CH);if(chatsDraw)chatsDraw(CH)}
+  if(R.extra&&R.extra.ok){X=R.extra;keep("x",X);if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}}
 }
 function go(t){
   stopPoll();chatsDraw=null;openChat=null;document.body.classList.remove("chatting");
@@ -1062,9 +1076,12 @@ async function chatV(key){
     if(JSON.stringify(r.messages)!==JSON.stringify(cached))full(r.messages);else{applyR(r.reacts||{},t00);last=Math.max(last,...r.messages.map(m=>m.ts),0)}
     save();
     if(CH){const c=CH.chats.find(x=>x.key===key);if(c){c.unread=0;cset("chats",CH);dots(CH)}}
-    poll=setInterval(async()=>{
+    // «есть новое?» каждые 1,5 секунды; если нового нет, сервер отвечает сразу, не читая Таблицу
+    let ver=r.v||"";
+    const tick=async()=>{
       if(document.hidden||busyPoll||my!==vid)return;busyPoll=true;
-      const t0=Date.now(),p=await api("chatMessages",{chat:key,after:last});busyPoll=false;if(my!==vid||!p.ok)return;
+      const t0=Date.now(),p=await api("chatMessages",{chat:key,after:last,v:ver});busyPoll=false;if(my!==vid||!p.ok)return;
+      if(p.v)ver=p.v;if(p.same)return;
       const near=nearBottom();let added=false;
       p.messages.forEach(m=>{last=Math.max(last,m.ts);
         const tmp=m.mine&&box.querySelector(`.msg.pending[data-txt="${CSS.escape(m.text)}"]`);
@@ -1072,7 +1089,8 @@ async function chatV(key){
       (p.gone||[]).forEach(id=>{box.querySelector(`[data-id="${CSS.escape(id)}"]`)?.remove();if(seen.has(id))list=list.filter(m=>m.id!==id)});
       applyR(p.reacts||{},t0);
       if(added){loadAv(p.messages.map(m=>m.from));if(near)bottom(true);save()}
-    },3000);
+    };
+    poll=setInterval(tick,1500);chatTick=tick;
   })();
 }
 
@@ -1262,7 +1280,8 @@ function studentModal(u,changed){
 
 /* ───────── профиль ───────── */
 async function loadX(){
-  const r=await api("extra");if(dead(r))return null;
+  if(X&&!X.off&&isFresh("x"))return X;
+  const r=await api("extra");if(r.ok)FRESH.x=Date.now();if(dead(r))return null;
   if(r.ok){X=r;cset("x",X)}else X=X&&!X.off?X:{avatar:"",badges:[],teachers:[],off:r.error};
   if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}
   return X;
