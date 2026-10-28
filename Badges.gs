@@ -1,7 +1,6 @@
 // ЭкоТрек: учителя, классы, бейджи, аватарки, чаты, мини-игры и ускорение сервера.
 // Дополнение к Code.gs — отдельный файл НИЖЕ Code.gs. После каждого обновления этого файла
-// один раз запустить setupBadges() (он же попросит доступ к Google Диску для фото и видео в чатах)
-// и развернуть новую версию. Код учителя: Настройки проекта -> Свойства скрипта -> TEACHER_CODE.
+// один раз запустить setupBadges() и развернуть новую версию. Код учителя: Настройки проекта -> Свойства скрипта -> TEACHER_CODE.
 Object.assign(H,{Avatars:["userId","data","updated"],Classes:["teacherId","code","name"],
 Members:["teacherId","studentId","created"],
 Badges:["id","teacherId","studentId","emoji","color","title","description","created","seen"],
@@ -9,10 +8,7 @@ Messages:["id","chat","userId","type","text","media","created"],ChatReads:["user
 GamesPlayed:["userId","date","game"]});
 function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
- s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)});ecoMediaFolder_()}
-function ecoMediaFolder_(){const p=PropertiesService.getScriptProperties(),id=p.getProperty("MEDIA_FOLDER");
- if(id){try{return DriveApp.getFolderById(id)}catch(e){}}
- const f=DriveApp.createFolder("ЭкоТрек — файлы чатов");p.setProperty("MEDIA_FOLDER",f.getId());return f}
+ s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
 
 // Всё остальное — внутри замкнутой области, чтобы имена не конфликтовали с Code.gs.
 (function(){
@@ -68,11 +64,10 @@ function chatOf(u,d,key){key=String(key||"");
   if(!c||(t.id!==u.id&&!isMember(t.id,u.id)))throw"Вы не состоите в этом классе";
   return{id:"c:"+t.id,kind:"c",teacher:t,cls:c}}
  throw"Чат не найден"}
-const msgOut=(m,u,users)=>({id:m.id,type:m.type,text:m.text,media:m.media,ts:Number(m.created),mine:m.userId===u.id,from:mini(users.find(x=>x.id===m.userId))});
+const msgOut=(m,u,users)=>({id:m.id,type:m.type,text:m.text,ts:Number(m.created),mine:m.userId===u.id,from:mini(users.find(x=>x.id===m.userId))});
 function spam(u){const c=CacheService.getScriptCache(),k="ms_"+u.id,n=Number(c.get(k)||0);if(n>=30)throw"Слишком много сообщений. Подождите минуту";c.put(k,String(n+1),60)}
 function markRead(u,chat){const r=rows("ChatReads").find(x=>x.userId===u.id&&x.chat===chat);
  if(r)upd("ChatReads",r._row,"ts",Date.now());else add("ChatReads",[u.id,chat,Date.now()])}
-const MEDIA={image:{mimes:["image/jpeg","image/png","image/webp","image/gif"],max:4e6},video:{mimes:["video/mp4","video/webm","video/quicktime"],max:15.5e6}};
 
 /* ───── мини-игры ───── */
 const BINS=["Бумага","Пластик","Стекло","Металл","Опасные отходы"];
@@ -202,21 +197,11 @@ chatMessages(d){const u=who(d),c=chatOf(u,d,d.chat),users=rows("Users"),after=Nu
 chatSend(d){const u=who(d),c=chatOf(u,d,d.chat),text=String(d.text||"").trim();
  if(!text)throw"Пустое сообщение";if(text.length>1000)throw"Сообщение не длиннее 1000 символов";spam(u);
  const m=[Utilities.getUuid(),c.id,u.id,"text",text,"",Date.now()];add("Messages",m);
- return{message:msgOut({id:m[0],type:"text",text,media:"",created:String(m[6]),userId:u.id},u,[u])}},
-chatUpload(d){const u=who(d),c=chatOf(u,d,d.chat),M=MEDIA[d.kind],text=String(d.text||"").trim().slice(0,1000);
- if(!M||M.mimes.indexOf(d.mime)<0)throw"Можно отправлять только фото и видео (JPG, PNG, GIF, MP4, WEBM, MOV)";
- const data=String(d.data||"");if(!/^[A-Za-z0-9+/=]+$/.test(data))throw"Файл повреждён";
- if(data.length*0.75>M.max)throw d.kind==="video"?"Видео больше 15 МБ":"Фото слишком большое";spam(u);
- const ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif","video/mp4":"mp4","video/webm":"webm","video/quicktime":"mov"}[d.mime];
- const f=ecoMediaFolder_().createFile(Utilities.newBlob(Utilities.base64Decode(data),d.mime,u.username+"_"+Date.now()+"."+ext));
- f.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
- const m=[Utilities.getUuid(),c.id,u.id,d.kind,text,f.getId(),Date.now()];add("Messages",m);
- return{message:msgOut({id:m[0],type:d.kind,text,media:m[5],created:String(m[6]),userId:u.id},u,[u])}},
+ return{message:msgOut({id:m[0],type:"text",text,created:String(m[6]),userId:u.id},u,[u])}},
 chatDelete(d){const u=who(d),c=chatOf(u,d,d.chat),m=msgTail(3000).find(x=>x.id===String(d.id||"")&&x.chat===c.id);
  if(!m||m.type==="del")throw"Сообщение не найдено";
  if(m.userId!==u.id&&!(c.kind==="c"&&(c.teacher.id===u.id||isDev(u))))throw"Можно удалить только своё сообщение";
- if(m.media)try{DriveApp.getFileById(m.media).setTrashed(true)}catch(e){}
- upd("Messages",m._row,"type","del");upd("Messages",m._row,"text","");upd("Messages",m._row,"media","");return{}},
+ upd("Messages",m._row,"type","del");upd("Messages",m._row,"text","");return{}},
 
 gameStart(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная игра";
  const picked=shuffle(G.q.map((q,i)=>i)).slice(0,5);
@@ -238,7 +223,7 @@ gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная 
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */
 // Раньше каждый запрос ждал, пока закончится предыдущий. Теперь очередь только у действий,
 // которые меняют данные; чтения выполняются параллельно и читают каждый лист один раз.
-const FAST={me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatUpload:1,studentBadges:1};
+const FAST={me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,studentBadges:1};
 const reply=o=>ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 try{doPost=function(e){
  let d,lock=null,orig=null;

@@ -252,13 +252,9 @@ button.chi{display:flex;gap:12px;align-items:center;width:100%;text-align:left;c
 .msg.new{animation:min .4s var(--spring)}
 @keyframes min{from{opacity:0;transform:translateY(14px) scale(.92)}}
 .msg.pending{opacity:.65}.msg.fail .bub{outline:2px solid var(--err)}
-.mimg{display:block;max-width:min(260px,62vw);max-height:340px;min-width:140px;min-height:100px;border-radius:12px;margin:3px 0 4px;cursor:zoom-in;background:var(--pri2);object-fit:cover}
-button.mvid{display:flex;align-items:center;gap:8px;margin:3px 0 4px;background:rgba(0,0,0,.22);color:inherit;box-shadow:none}
 .composer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(536px,calc(100% - 24px));z-index:10;display:flex;gap:6px;align-items:flex-end;padding:6px;background:var(--card);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--line);border-radius:26px;box-shadow:0 18px 40px -16px rgba(0,0,0,.4);animation:rise .5s var(--ease)}
 .composer textarea{margin:0;min-height:44px;max-height:140px;resize:none;border-radius:20px;padding:11px 14px;line-height:1.4}
 .composer button{flex:none;width:44px;height:44px;min-height:0;padding:0;border-radius:50%;font-size:18px}
-.viewer img{display:block;width:100%;border-radius:16px;margin-top:20px}
-.viewer iframe{display:block;width:100%;aspect-ratio:9/12;max-height:70vh;border:0;border-radius:16px;background:#000;margin-top:20px}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.lf{display:none}}
 </style>
@@ -592,8 +588,7 @@ function friendsV(){
 
 /* ───────── чаты ───────── */
 const prevText=c=>{if(!c.last)return c.kind==="c"?"Напишите классу первым!":"Скажите привет 👋";
-  const l=c.last,who=l.mine?"Вы: ":c.kind==="c"?l.from+": ":"",media={image:"📷 Фото",video:"🎬 Видео"}[l.type];
-  return esc(who+(media?media+(l.text?" · ":""):"")+(l.text||""))};
+  const l=c.last;return esc((l.mine?"Вы: ":c.kind==="c"?l.from+": ":"")+l.text)};
 const chatIcon=c=>c.kind==="f"&&c.user?avatar(c.user):`<div class="ava cls">🏫</div>`;
 function chatsV(){
   const my=++vid;
@@ -610,19 +605,13 @@ function chatsV(){
   pulse();
 }
 const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
-const thumb=(id,w)=>`https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${w}`;
-function shrink(file,max=1600,q=.82){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),i=new Image();
-  i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);
-    c.getContext("2d").drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",q))};
-  i.onerror=()=>{URL.revokeObjectURL(u);rej()};i.src=u})}
-const readUrl=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
 async function chatV(key){
   const my=++vid;stopPoll();chatsDraw=null;openChat=key;document.body.classList.add("chatting");
   const meta=((CH||cget("chats")||{}).chats||[]).find(c=>c.key===key)||{key,kind:key[0],title:"Чат"},grp=meta.kind==="c";
   const canMod=grp&&(key==="c:"+me.username||me.dev);
   put(`<div class="chead"><button class="ghost sm" id="cb" aria-label="Назад">←</button>${chatIcon(meta)}<div class="grow" style="min-width:0"><b class="el" id="ctt">${esc(meta.title)}</b><div class="muted sm el" id="csub">${meta.user?"@"+esc(meta.user.username):esc(meta.sub||"Чат класса")}</div></div></div>
    <div class="msgs" id="ms"></div>
-   <form class="composer" id="cf"><button type="button" class="ghost" id="att" aria-label="Отправить фото или видео">📎</button><textarea id="mt" rows="1" maxlength="1000" placeholder="Сообщение…" enterkeyhint="send"></textarea><button type="submit" id="snd" aria-label="Отправить">➤</button></form>`);
+   <form class="composer" id="cf"><textarea id="mt" rows="1" maxlength="1000" placeholder="Сообщение…" enterkeyhint="send"></textarea><button type="submit" id="snd" aria-label="Отправить">➤</button></form>`);
   document.documentElement.style.setProperty("--toph",($(".top")?.offsetHeight||62)+"px");
   if(meta.user)loadAv([meta.user]);
   $("#cb").onclick=()=>go("chats");
@@ -630,10 +619,8 @@ async function chatV(key){
   const empty=`<div class="empty muted" id="me0"><div class="eb">👋</div><p>Здесь пока пусто — напишите первым!</p></div>`;
   const nearBottom=()=>innerHeight+scrollY>=document.documentElement.scrollHeight-200;
   const bottom=smooth=>requestAnimationFrame(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:smooth&&!RM?"smooth":"auto"}));
-  const media=m=>m.type==="image"?`<img class="mimg" src="${esc(m.local||thumb(m.media,800))}" data-m="${esc(m.media||"")}" alt="Фото" loading="lazy">`
-    :m.type==="video"?(m.media?`<button type="button" class="mvid" data-v="${esc(m.media)}">▶ Видео</button>`:`<div class="mvid">🎬 Загружается видео…</div>`):"";
   const html=(m,anim)=>{const other=grp&&!m.mine;
-    return`<div class="msg ${m.mine?"mine":""} ${anim?"new":""} ${m.pending?"pending":""}" data-id="${esc(m.id)}">${other?avatar(m.from):""}<div class="bub">${other?`<div class="nm">${esc(m.from.firstName+" "+m.from.lastName)}${m.from.dev?" 💜":""}</div>`:""}${media(m)}${m.text?`<div class="tx">${linkify(esc(m.text))}</div>`:""}<span class="tm">${m.pending?"⏳":hhmm(m.ts)}</span></div></div>`};
+    return`<div class="msg ${m.mine?"mine":""} ${anim?"new":""} ${m.pending?"pending":""}" data-id="${esc(m.id)}">${other?avatar(m.from):""}<div class="bub">${other?`<div class="nm">${esc(m.from.firstName+" "+m.from.lastName)}${m.from.dev?" 💜":""}</div>`:""}<div class="tx">${linkify(esc(m.text))}</div><span class="tm">${m.pending?"⏳":hhmm(m.ts)}</span></div></div>`};
   const append=(m,anim)=>{$("#me0")?.remove();const d=dayKey(m.ts);let h="";if(d!==lastDay){h=`<div class="day">${dayLabel(m.ts)}</div>`;lastDay=d}box.insertAdjacentHTML("beforeend",h+html(m,anim))};
   const full=ms=>{box.innerHTML="";lastDay="";seen.clear();list=ms.slice();ms.forEach(m=>{seen.add(m.id);append(m,false);last=Math.max(last,m.ts)});if(!ms.length)box.innerHTML=empty;loadAv(ms.map(m=>m.from));bottom()};
   const save=()=>cset("m:"+key,list.filter(m=>!m.pending).slice(-80));
@@ -656,43 +643,24 @@ async function chatV(key){
     if(added){loadAv(p.messages.map(m=>m.from));if(near)bottom(true);save()}
   },3000);
   // отправка
-  const send=async(payload,local)=>{
-    const id="tmp"+(++tmpN),m={id,mine:true,pending:true,ts:Date.now(),from:me,...local};
-    append(m,true);const el=box.querySelector(`[data-id="${id}"]`);if(m.text&&m.type==="text")el.dataset.txt=m.text;bottom(true);
-    const res=await api(payload.kind?"chatUpload":"chatSend",{chat:key,...payload});
+  const send=async text=>{
+    const id="tmp"+(++tmpN),m={id,mine:true,pending:true,ts:Date.now(),from:me,type:"text",text};
+    append(m,true);const el=box.querySelector(`[data-id="${id}"]`);el.dataset.txt=text;bottom(true);
+    const res=await api("chatSend",{chat:key,text});
     if(my!==vid)return;if(dead(res))return;
     if(!res.ok){el.classList.add("fail");el.querySelector(".tm").textContent="⚠️ не отправлено";toast(res.error,"err");return}
     if(seen.has(res.message.id)){el.remove();return}
-    seen.add(res.message.id);list.push(res.message);el.outerHTML=html({...res.message,local:local.local},false);save();
+    seen.add(res.message.id);list.push(res.message);el.outerHTML=html(res.message,false);save();
   };
   const ta=$("#mt");
   ta.oninput=()=>{ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,140)+"px"};
   ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&HOVER){e.preventDefault();$("#cf").requestSubmit()}};
-  $("#cf").onsubmit=e=>{e.preventDefault();const text=ta.value.trim();if(!text)return;ta.value="";ta.oninput();ta.focus();send({text},{type:"text",text})};
-  $("#att").onclick=()=>{const inp=document.createElement("input");inp.type="file";inp.accept="image/*,video/*";
-    inp.onchange=async()=>{const f=inp.files[0];if(!f)return;const text=ta.value.trim();
-      try{
-        if(f.type.startsWith("image/")){
-          const gif=f.type==="image/gif"&&f.size<=3e6,url=gif?await readUrl(f):await shrink(f);ta.value="";ta.oninput();
-          send({kind:"image",mime:gif?"image/gif":"image/jpeg",data:url.split(",")[1],text},{type:"image",local:url,text});
-        }else if(f.type.startsWith("video/")){
-          if(f.size>15e6)return toast("Видео должно быть не больше 15 МБ","err");
-          const mime=f.type==="video/quicktime"?"video/quicktime":f.type==="video/webm"?"video/webm":"video/mp4";
-          const url=await readUrl(f);ta.value="";ta.oninput();
-          send({kind:"video",mime,data:url.split(",")[1],text},{type:"video",text});
-        }else toast("Можно отправлять только фото и видео","err");
-      }catch{toast("Не удалось открыть файл","err")}};
-    inp.click()};
-  // просмотр фото и видео, удаление
-  box.addEventListener("error",e=>{const i=e.target;if(i.tagName!=="IMG"||!i.classList.contains("mimg")||!i.dataset.m)return;const n=+(i.dataset.r||0);
-    if(n<5){i.dataset.r=n+1;setTimeout(()=>{i.src=thumb(i.dataset.m,800)+"&r="+(n+1)},2500*(n+1))}},true);
+  $("#cf").onsubmit=e=>{e.preventDefault();const text=ta.value.trim();if(!text)return;ta.value="";ta.oninput();ta.focus();send(text)};
+  // удаление сообщения
   const del=async el=>{const id=el.dataset.id,m=list.find(x=>x.id===id);if(!m||(!m.mine&&!canMod))return;
     if(!await ask("Удалить сообщение?","Удалить",1))return;
     const r=await api("chatDelete",{chat:key,id});if(dead(r))return;if(!r.ok)return toast(r.error,"err");
     el.remove();list=list.filter(x=>x.id!==id);save();toast("Сообщение удалено")};
-  $("#view").onclick=e=>{const i=e.target.closest(".mimg"),v=e.target.closest("[data-v]");
-    if(i&&i.dataset.m)modal(`<div class="viewer"><img src="${esc(thumb(i.dataset.m,2000))}" alt="Фото"></div><p class="center sm"><a href="https://drive.google.com/file/d/${esc(i.dataset.m)}/view" target="_blank" rel="noopener">Открыть оригинал</a></p>`);
-    if(v)modal(`<div class="viewer"><iframe src="https://drive.google.com/file/d/${esc(v.dataset.v)}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe></div><p class="muted sm center">Если видео не показывается, подождите минуту: Google Диск его обрабатывает. <a href="https://drive.google.com/file/d/${esc(v.dataset.v)}/view" target="_blank" rel="noopener">Открыть на Диске</a></p>`)};
   $("#view").oncontextmenu=e=>{const el=e.target.closest(".msg[data-id]");if(!el||el.classList.contains("pending"))return;e.preventDefault();del(el)};
 }
 
