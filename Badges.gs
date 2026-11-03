@@ -8,8 +8,12 @@ Messages:["id","chat","userId","type","text","media","created"],ChatReads:["user
 GamesPlayed:["userId","date","game"],GameQueue:["userId","game","order","pos"],DailyTasks:["userId","date","slot","taskId","done"],PlayDays:["userId","date"],
 Events:["id","userId","type","emoji","text","created"],Reactions:["msgId","chat","userId","emoji"],
 Profiles:["userId","cover","pattern","frame","status","emoji","showcase","grade","letter","consent"],
-NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"]});
-function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"],
+XpLog:["userId","date","xp","src"],GameLog:["userId","date","game","score","total"],
+Counters:["userId","games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy"],
+Qotd:["date","userId","answer","ok"],Challenges:["id","teacherId","title","unit","goal","status","created","deadline"],
+Contrib:["chId","userId","amount","created"],Bans:["userId","until","reason","by","created"]});
+function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
 
@@ -19,6 +23,15 @@ function ecoCheckNews(){const n=ecoNewsRefresh_(true);console.log("Новост�
 // Для триггера по времени (Триггеры -> Добавить -> ecoNewsTick, по времени, каждые 30 минут): сервер заходит в источники сам,
 // даже когда сайт никто не открывает, и не пропускает новости из быстрых лент.
 function ecoNewsTick(){ecoNewsRefresh_(true)}
+// Резервная копия Таблицы: триггер по времени раз в сутки -> ecoBackup. Хранятся 7 последних копий
+// в папке «ЭкоТрек - резервные копии». Нужно разрешение https://www.googleapis.com/auth/drive в appsscript.json.
+function ecoBackup(){const p=PropertiesService.getScriptProperties();let folder=null;const fid=p.getProperty("BACKUP_FOLDER");
+ if(fid)try{folder=DriveApp.getFolderById(fid)}catch(e){}
+ if(!folder){folder=DriveApp.createFolder("ЭкоТрек - резервные копии");p.setProperty("BACKUP_FOLDER",folder.getId())}
+ DriveApp.getFileById(SS().getId()).makeCopy("ЭкоТрек "+Utilities.formatDate(new Date(),"Europe/Moscow","yyyy-MM-dd HH:mm"),folder);
+ const files=[],it=folder.getFiles();while(it.hasNext())files.push(it.next());
+ files.sort((a,b)=>b.getDateCreated()-a.getDateCreated());files.slice(7).forEach(f=>f.setTrashed(true));
+ console.log("Резервная копия готова. Копий в папке: "+Math.min(files.length,7))}
 
 // Всё остальное - внутри замкнутой области, чтобы имена не конфликтовали с Code.gs.
 (function(){
@@ -33,7 +46,7 @@ const delRows=(n,list)=>{const sh=SS().getSheetByName(n);list.map(r=>r._row).sor
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
-const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue"];
+const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans"];
 const ensured={};
 function ensure(n){if(ensured[n]||MY.indexOf(n)<0)return;
  if(!SS().getSheetByName(n)){const s=SS().insertSheet(n);s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -81,7 +94,7 @@ function gradeOf(grade,letter,required){const g=String(grade??"").trim(),l=Strin
  if(l&&!/^[А-ЯЁA-Z]{1,2}$/.test(l))throw"Буква класса - одна или две буквы";
  return{grade:g,letter:l}}
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
-const FRAMES={none:()=>true,leaf:()=>true,ocean:x=>x.lv>=3,fire:x=>x.best>=7,rainbow:x=>x.lv>=5,medal:x=>x.badges>=3,gold:x=>x.lv>=10,dev:x=>x.dev};
+const FRAMES={none:()=>true,leaf:()=>true,ocean:x=>x.lv>=3,fire:x=>x.best>=7,rainbow:x=>x.lv>=5,medal:x=>x.badges>=3,gold:x=>x.lv>=10,season:x=>x.season,dev:x=>x.dev};
 let CU=null;
 function custOf(uid){if(!CU){CU={};const bs=rows("Badges");rows("Profiles").forEach(p=>{let sc=[];try{sc=JSON.parse(p.showcase||"[]")}catch(e){}
   CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,grade:p.grade||"",letter:p.letter||"",
@@ -104,7 +117,7 @@ function classOf(t){let c=rows("Classes").find(x=>x.teacherId===t.id);
 const isMember=(tid,sid)=>rows("Members").some(m=>m.teacherId===tid&&m.studentId===sid);
 function badgeOut(b,users){const t=users.find(u=>u.id===b.teacherId);
  return{id:b.id,emoji:b.emoji,color:b.color,title:b.title,description:b.description,created:b.created,seen:b.seen==="1",
-  from:t?{username:t.username,firstName:t.firstName,lastName:t.lastName,dev:isDev(t)}:null}}
+  from:b.teacherId==="system"?{system:true,username:"",firstName:"ЭкоТрек",lastName:""}:t?{username:t.username,firstName:t.firstName,lastName:t.lastName,dev:isDev(t)}:null}}
 const sortNew=(a,b)=>a.created<b.created?1:-1;
 function studentOf(t,username){const s=byName(username);if(!s)throw"Пользователь не найден";
  if(isDev(t))return s;if(!isMember(t.id,s.id))throw"Этого ученика нет в вашем классе";return s}
@@ -398,18 +411,18 @@ const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return n+" "+(m===1&&h!==11?a:m>=2
 const STAGES=[[0,"Семечко"],[30,"Росток"],[100,"Саженец"],[250,"Молодое дерево"],[500,"Дерево"],[900,"Могучее дерево"]];
 const stageOf=xp=>STAGES.filter(s=>xp>=s[0]).length-1;
 function addEvent(uid,type,emoji,text){addT("Events",[Utilities.getUuid(),uid,type,emoji,text,now()])}
-function giveXp(u,n){const old=Number(u.xp)||0,nw=old+n;upd("Users",u._row,"xp",nw);u.xp=String(nw);
+function giveXp(u,n,src){const old=Number(u.xp)||0,nw=old+n;upd("Users",u._row,"xp",nw);u.xp=String(nw);addT("XpLog",[u.id,today(),n,src||""]);
  if(Math.floor(nw/100)>Math.floor(old/100))addEvent(u.id,"level","⭐","Достигнут "+(Math.floor(nw/100)+1)+" уровень");
  if(stageOf(nw)>stageOf(old))addEvent(u.id,"tree","🌳","Эко-сад вырос: "+STAGES[stageOf(nw)][1].toLowerCase())}
 function impactOf(ids,dt){const o={water:0,plastic:0,paper:0,co2:0,energy:0};
  dt.forEach(r=>{if(r.done==="1"&&ids.has(r.userId)){const t=TASKS.find(x=>x.id==r.taskId);if(t)for(const k in t.imp)o[k]+=t.imp[k]}});
  for(const k in o)o[k]=Math.round(o[k]*100)/100;return o}
-const eventsOf=uid=>rows("Events").filter(e=>e.userId===uid).sort((a,b)=>a.created<b.created?1:-1).slice(0,30)
+const eventsOf=uid=>tail("Events",10000).filter(e=>e.userId===uid).sort((a,b)=>a.created<b.created?1:-1).slice(0,30)
  .map(e=>({type:e.type,emoji:e.emoji,text:e.text,created:e.created}));
-function forestOf(t){const users=rows("Users"),pd=rows("PlayDays");
+function forestOf(t){const users=rows("Users"),pd=tail("PlayDays",30000);
  const ms=rows("Members").filter(m=>m.teacherId===t.id).map(m=>users.find(u=>u.id===m.studentId)).filter(Boolean);
  return{trees:[t].concat(ms).map(u=>({user:mini(u),xp:Number(u.xp)||0,streak:streakOf(u.id,pd),teacher:u.id===t.id})),
-  impact:impactOf(new Set([t.id].concat(ms.map(u=>u.id))),rows("DailyTasks"))}}
+  impact:impactSum([t].concat(ms))}}
 
 /* ───── реакции ───── */
 const REACTS=["👍","❤️","😂","😮","😢","🔥","🌱"];
@@ -432,8 +445,11 @@ extra(d){const u=who(d),av=rows("Avatars").find(a=>a.userId===u.id),users=rows("
  o.teachers=rows("Members").filter(m=>m.studentId===u.id).map(m=>users.find(x=>x.id===m.teacherId)).filter(Boolean).map(pub);
  if(isStaff(u)){const c=rows("Classes").find(x=>x.teacherId===u.id);
   o.class=c?{code:c.code,name:c.name,count:rows("Members").filter(m=>m.teacherId===u.id).length}:null}
- const pd=rows("PlayDays");o.streak=streakOf(u.id,pd);o.playedToday=playedToday(u.id,pd);o.bestStreak=bestStreak(u.id,pd);
- o.impact=impactOf(new Set([u.id]),rows("DailyTasks"));o.events=eventsOf(u.id);
+ const pd=tail("PlayDays",30000),cn=counters(u),w7=dayShift(today(),-6),dt=tail("DailyTasks",30000).filter(r=>r.userId===u.id&&r.done==="1"&&r.date>=w7);
+ o.streak=streakOf(u.id,pd);o.playedToday=playedToday(u.id,pd);o.bestStreak=Math.max(cn.best,o.streak);
+ o.impact=impactOfC(cn);o.events=eventsOf(u.id);o.counters={games:cn.games,perfect:cn.perfect,correct:cn.correct,tasks:cn.tasks,qotd:cn.qotd};
+ o.week={days:pd.filter(r=>r.userId===u.id&&r.date>=w7).length,tasks:dt.length,impact:impactOf(new Set([u.id]),dt),
+  xp:tail("XpLog",30000).filter(r=>r.userId===u.id&&r.date>=w7).reduce((s,r)=>s+(Number(r.xp)||0),0)};
  return o},
 profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id),grade:c.grade||"",letter:c.letter||""};
  const dev=isDev(u),devOnly=(k,val)=>{if(DEV_ONLY[k]===val&&!dev)throw"Это украшение есть только у разработчика"};
@@ -443,7 +459,7 @@ profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",patt
  if(d.grade!==undefined){const g=gradeOf(d.grade,d.letter,false);v.grade=g.grade;v.letter=g.letter}
  if(d.status!==undefined){const st=String(d.status).trim();if(st.length>60)throw"Статус не длиннее 60 символов";v.status=st}
  if(d.frame!==undefined){const f=FRAMES[d.frame];if(!f)throw"Неизвестная рамка";
-  const pd=rows("PlayDays"),xs={lv:Math.floor((Number(u.xp)||0)/100)+1,best:bestStreak(u.id,pd),badges:rows("Badges").filter(b=>b.studentId===u.id).length,dev:isDev(u)};
+  const mb=rows("Badges").filter(b=>b.studentId===u.id),xs={lv:Math.floor((Number(u.xp)||0)/100)+1,best:counters(u).best,badges:mb.length,dev:isDev(u),season:mb.some(b=>b.id.indexOf("ach_event_")===0)};
   if(!f(xs))throw"Эта рамка пока закрыта";v.frame=d.frame}
  if(d.showcase!==undefined){const ids=(Array.isArray(d.showcase)?d.showcase:[]).map(String).slice(0,3),own=rows("Badges").filter(b=>b.studentId===u.id).map(b=>b.id);
   if(ids.some(id=>own.indexOf(id)<0))throw"В витрину можно поставить только свои бейджи";v.showcase=ids}
@@ -451,21 +467,26 @@ profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",patt
  if(old)setRow("Profiles",old._row,row);else addT("Profiles",row);
  CU=null;return{cust:custOf(u.id)}},
 profile(d){const me_=who(d),t=byName(d.username);if(!t)throw"Пользователь не найден";
- const users=rows("Users"),av=rows("Avatars").find(a=>a.userId===t.id),pd=rows("PlayDays");
- return{user:pub(t),avatar:av?av.data:"",streak:streakOf(t.id,pd),bestStreak:bestStreak(t.id,pd),impact:impactOf(new Set([t.id]),rows("DailyTasks")),
+ const users=rows("Users"),av=rows("Avatars").find(a=>a.userId===t.id),pd=tail("PlayDays",30000),cn=counters(t);
+ return{user:pub(t),avatar:av?av.data:"",streak:streakOf(t.id,pd),bestStreak:Math.max(cn.best,streakOf(t.id,pd)),impact:impactOfC(cn),
   badges:rows("Badges").filter(b=>b.studentId===t.id).sort(sortNew).map(b=>badgeOut(b,users)),events:eventsOf(t.id),
   self:t.id===me_.id,friend:t.id!==me_.id&&(friendsOf(d).friends||[]).some(f=>f.username===t.username)}},
 classForest(d){const u=who(d),t=byName(d.username),c=t&&rows("Classes").find(x=>x.teacherId===t.id);
  if(!c||(t.id!==u.id&&!isMember(t.id,u.id)))throw"Вы не состоите в этом классе";
  return Object.assign({name:c.name},forestOf(t))},
-tasks(d){const u=who(d),date=today();let mine=rows("DailyTasks").filter(t=>t.userId===u.id&&t.date===date);
+tasks(d){const u=who(d),date=today(),ev=activeEvent();let mine=tail("DailyTasks",5000).filter(t=>t.userId===u.id&&t.date===date);
  if(!mine.length){mine=shuffle(TASKS).slice(0,3).map((t,i)=>({slot:String(i+1),taskId:String(t.id),done:""}));mine.forEach(r=>addT("DailyTasks",[u.id,date,r.slot,r.taskId,""]))}
+ if(ev&&!mine.some(r=>r.slot==="4")){const r={slot:"4",taskId:"e:"+ev.id+":"+ev.year,done:""};mine.push(r);addT("DailyTasks",[u.id,date,r.slot,r.taskId,""])}
  const seen={};mine=mine.filter(r=>!seen[r.slot]&&(seen[r.slot]=1));
- return{tasks:mine.map(r=>{const t=TASKS.find(x=>x.id==r.taskId)||TASKS[0];
-  return{slot:Number(r.slot),done:r.done==="1",icon:t.icon,title:t.title,description:t.description,xp:t.xp,imp:t.imp,map:!!t.map}}).sort((a,b)=>a.slot-b.slot)}},
-complete(d){const u=who(d),r=rows("DailyTasks").find(x=>x.userId===u.id&&x.date===today()&&x.slot==String(d.slot));
- if(!r||r.done==="1")return{gained:0};const t=TASKS.find(x=>x.id==r.taskId);upd("DailyTasks",r._row,"done","1");
- const xp=t?t.xp:0;if(xp)giveXp(u,xp);return{gained:xp}},
+ return{event:ev?{id:ev.id,name:ev.name,emoji:ev.emoji,date:ev.date,until:ev.until}:null,
+  tasks:mine.map(r=>{const t=taskById(r.taskId)||TASKS[0];
+  return{slot:Number(r.slot),done:r.done==="1",icon:t.icon,title:t.title,description:t.description,xp:t.xp,imp:t.imp,map:!!t.map,event:t.event?t.eventName:""}}).sort((a,b)=>a.slot-b.slot)}},
+complete(d){const u=who(d),r=tail("DailyTasks",5000).find(x=>x.userId===u.id&&x.date===today()&&x.slot==String(d.slot));
+ if(!r||r.done==="1")return{gained:0};const t=taskById(r.taskId),cn=counters(u);upd("DailyTasks",r._row,"done","1");
+ const xp=t?t.xp:0;if(xp)giveXp(u,xp,t.event?"event":"task");bumpCounters(u,Object.assign({tasks:1},t?t.imp:{}),cn);
+ if(t&&t.event){const y=String(r.taskId).split(":")[2]||today().slice(0,4);
+  grant(u.id,"ach_event_"+t.event+"_"+y+"_"+u.id,t.eventEmoji,"gold",t.eventName,"Участие в эко-празднике "+y+" года")}
+ return{gained:xp,ach:checkAch(u)}},
 avatarSet(d){const u=who(d),data=String(d.data||""),old=rows("Avatars").find(a=>a.userId===u.id);
  if(data&&!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(data))throw"Неверный формат картинки";
  if(data.length>AV_MAX)throw"Картинка слишком большая";
@@ -491,7 +512,7 @@ classJoin(d){const u=who(d);if(u.role!=="student")throw"Присоединять
  if(c.teacherId===u.id)throw"Это ваш собственный класс";
  if(isMember(c.teacherId,u.id))throw"Вы уже в этом классе";
  if(rows("Members").filter(m=>m.studentId===u.id).length>=10)throw"Можно состоять не более чем в 10 классах";
- addT("Members",[c.teacherId,u.id,now()]);const t=byId(c.teacherId);return{teacher:pub(t),className:c.name}},
+ addT("Members",[c.teacherId,u.id,now()]);const t=byId(c.teacherId);checkAch(u);return{teacher:pub(t),className:c.name}},
 classLeave(d){const u=who(d),t=byName(d.username);if(!t)throw"Учитель не найден";
  delRows("Members",rows("Members").filter(m=>m.teacherId===t.id&&m.studentId===u.id));return{}},
 studentBadges(d){const t=who(d);needTeacher(t);const s=studentOf(t,d.username),users=rows("Users");
@@ -593,14 +614,213 @@ gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная 
  else{results=ids.map(i=>{const q=G.q[i],right=gameRight(G,q),a=ans.find(x=>Number(x.id)===i);
    return{id:i,ok:!!a&&typeof a.a==="number"&&a.a===right,right,e:q[2]}});
   score=results.filter(r=>r.ok).length;total=ids.length}
- const was=played(u,d.game),xp=was?0:score*G.per;
+ const was=played(u,d.game),xp=was?0:score*G.per,cn=counters(u);
  if(xp)addT("GamesPlayed",[u.id,today(),d.game]);  // попытка без правильных ответов не сгорает
- if(xp)giveXp(u,xp);
+ if(xp)giveXp(u,xp,"game:"+d.game);
+ addT("GameLog",[u.id,today(),d.game,score,total]);
  // серия дней: засчитывается любая сыгранная мини-игра
- const pd=rows("PlayDays"),first=!playedToday(u.id,pd);if(first)addT("PlayDays",[u.id,today()]);
- const streak=streakOf(u.id,rows("PlayDays"));
+ const pd=tail("PlayDays",30000),first=!playedToday(u.id,pd);if(first)addT("PlayDays",[u.id,today()]);
+ const streak=streakOf(u.id,tail("PlayDays",30000));
  if(first&&[3,7,14,30,50,100,200,365].indexOf(streak)>=0)addEvent(u.id,"streak","🔥",plural(streak,"день","дня","дней")+" подряд в мини-играх");
- return{score,total,xp,results,streak,newDay:first}}});
+ bumpCounters(u,{games:1,perfect:total&&score===total?1:0,correct:G.order?0:score,best:streak},cn);
+ return{score,total,xp,results,streak,newDay:first,ach:checkAch(u)}}});
+
+
+/* ───── журналы, счётчики, недели ───── */
+// Большие листы читаются с конца: свежие строки всегда внизу, а вся история не нужна.
+function tail(n,count){ensure(n);const sh=SS().getSheetByName(n),last=sh.getLastRow();if(last<2)return[];
+ const from=Math.max(2,last-count+1);
+ return sh.getRange(from,1,last-from+1,H[n].length).getValues().map((r,i)=>{const o={_row:from+i};
+  H[n].forEach((k,j)=>{const v=r[j];o[k]=v instanceof Date?(k==="date"?Utilities.formatDate(v,tz(),"yyyy-MM-dd"):v.toISOString()):(k==="date"||k==="created"||k==="updated"?fixD(k,String(v)):String(v))});return o})}
+const weekStart=()=>{const t=today(),wd=new Date(t+"T12:00:00Z").getUTCDay();return dayShift(t,-((wd+6)%7))};
+const monthStart=off=>{const t=today(),d=new Date(Date.UTC(+t.slice(0,4),+t.slice(5,7)-1+(off||0),1));return d.toISOString().slice(0,10)};
+const MONTHS=["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+// Счётчики: сыгранные игры, игры без ошибок, верные ответы, задания, вопросы дня, лучшая серия и польза.
+const CNT=["games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy"];
+function counters(u,list){const r=(list||rowsRaw("Counters")).find(x=>x.userId===u.id);
+ if(r){const o={_row:r._row};CNT.forEach(k=>o[k]=Number(r[k])||0);return o}
+ const dt=rowsRaw("DailyTasks").filter(x=>x.userId===u.id&&x.done==="1"),o=impactOf(new Set([u.id]),dt);  // первый раз - из истории
+ Object.assign(o,{games:rowsRaw("GamesPlayed").filter(x=>x.userId===u.id).length,perfect:0,correct:0,tasks:dt.length,qotd:0,best:bestStreak(u.id,rowsRaw("PlayDays"))});
+ addT("Counters",[u.id].concat(CNT.map(k=>o[k])));o._row=SS().getSheetByName("Counters").getLastRow();return o}
+function bumpCounters(u,delta,pre){const c=pre||counters(u);  // pre - счётчики, прочитанные до записи действия в историю
+ for(const k in delta)c[k]=k==="best"?Math.max(c[k],delta[k]):Math.round((c[k]+(Number(delta[k])||0))*100)/100;
+ setRow("Counters",c._row,[u.id].concat(CNT.map(k=>c[k])));return c}
+const IMPK=["water","plastic","paper","co2","energy"];
+const impactOfC=c=>{const o={};IMPK.forEach(k=>o[k]=c[k]||0);return o};
+function impactSum(list){const all=rowsRaw("Counters"),o={water:0,plastic:0,paper:0,co2:0,energy:0};
+ list.forEach(u=>{const c=counters(u,all);IMPK.forEach(k=>o[k]+=c[k])});IMPK.forEach(k=>o[k]=Math.round(o[k]*100)/100);return o}
+
+/* ───── автоматические достижения ───── */
+const ACH=[["streak3","🔥","orange","Три дня подряд","Играть в мини-игры 3 дня подряд",x=>x.best>=3],
+ ["streak7","🔥","orange","Неделя без перерыва","Играть в мини-игры 7 дней подряд",x=>x.best>=7],
+ ["streak30","🏆","gold","Месяц без перерыва","Играть в мини-игры 30 дней подряд",x=>x.best>=30],
+ ["games10","🎮","blue","10 игр","Сыграть 10 мини-игр",x=>x.games>=10],
+ ["games100","🕹️","purple","100 игр","Сыграть 100 мини-игр",x=>x.games>=100],
+ ["perfect1","⭐","gold","Без единой ошибки","Пройти мини-игру без ошибок",x=>x.perfect>=1],
+ ["perfect10","🧠","purple","Знаток","Пройти 10 мини-игр без ошибок",x=>x.perfect>=10],
+ ["correct100","💯","green","100 верных ответов","Дать 100 правильных ответов в мини-играх",x=>x.correct>=100],
+ ["tasks10","✅","green","10 полезных дел","Выполнить 10 заданий дня",x=>x.tasks>=10],
+ ["tasks50","🌱","green","50 полезных дел","Выполнить 50 заданий дня",x=>x.tasks>=50],
+ ["paper10","📄","blue","Первые 10 кг макулатуры","Собрать 10 кг макулатуры в заданиях дня",x=>x.paper>=10],
+ ["water100","💧","blue","100 литров воды","Сберечь 100 литров воды в заданиях дня",x=>x.water>=100],
+ ["plastic20","🧴","pink","Меньше пластика","20 пластиковых вещей не стали мусором",x=>x.plastic>=20],
+ ["level5","⭐","gold","5 уровень","Достичь 5 уровня",x=>x.lv>=5],
+ ["level10","🌟","gold","10 уровень","Достичь 10 уровня",x=>x.lv>=10],
+ ["tree","🌳","green","Выросло дерево","Вырастить в эко-саду дерево",x=>x.xp>=500],
+ ["team","🤝","pink","В команде","Вступить в класс",x=>x.team],
+ ["qotd7","❓","purple","Знаток дня","Дать 7 верных ответов на вопрос дня",x=>x.qotd>=7]];
+function grant(uid,id,emoji,color,title,desc){addT("Badges",[id,"system",uid,emoji,color,title.slice(0,40),desc.slice(0,200),now(),""]);
+ addEvent(uid,"badge",emoji,"Получено достижение «"+title.slice(0,40)+"»")}
+function checkAch(u){const c=counters(u),xp=Number(u.xp)||0,x=Object.assign({},c,{xp,lv:Math.floor(xp/100)+1,team:rowsRaw("Members").some(m=>m.studentId===u.id)});
+ const have=new Set(rowsRaw("Badges").filter(b=>b.studentId===u.id).map(b=>b.id)),got=[];
+ ACH.forEach(a=>{const id="ach_"+a[0]+"_"+u.id;if(!have.has(id)&&a[5](x)){grant(u.id,id,a[1],a[2],a[3],a[4]);got.push(a[3])}});return got}
+
+/* ───── эко-праздники: особое задание дня и рамка ───── */
+const lastSat=(y,m)=>{const d=new Date(Date.UTC(y,m+1,0));while(d.getUTCDay()!==6)d.setUTCDate(d.getUTCDate()-1);return d.toISOString().slice(0,10)};
+const SEASON=[["recycling","Всемирный день вторичной переработки","♻️",y=>y+"-03-18",{title:"Сдай вторсырьё",description:"Отнеси в пункт приёма пластик, стекло или бумагу. Найти пункт поможет эко-карта.",icon:"♻️",xp:20,imp:{plastic:2},map:1}],
+ ["water","Всемирный день водных ресурсов","💧",y=>y+"-03-22",{title:"День без лишней воды",description:"Прими короткий душ и закрывай кран, пока чистишь зубы.",icon:"💧",xp:20,imp:{water:60}}],
+ ["earthhour","Час Земли","🕯️",y=>lastSat(y,2),{title:"Час без света",description:"Выключи вечером свет и лишние приборы на один час.",icon:"🕯️",xp:20,imp:{energy:0.5}}],
+ ["ecoknow","День экологических знаний","📚",y=>y+"-04-15",{title:"Узнай новое о природе",description:"Прочитай новость в ленте ЭкоТрека и расскажи о ней другу.",icon:"📚",xp:20,imp:{}}],
+ ["earth","День Земли","🌍",y=>y+"-04-22",{title:"Подарок Земле",description:"Посади растение или убери мусор во дворе вместе с друзьями.",icon:"🌍",xp:25,imp:{plastic:3}}],
+ ["env","Всемирный день окружающей среды","🌳",y=>y+"-06-05",{title:"Зелёный день",description:"Проведи весь день без одноразового пластика.",icon:"🌳",xp:20,imp:{plastic:3}}],
+ ["carfree","Всемирный день без автомобиля","🚲",y=>y+"-09-22",{title:"День без машины",description:"Доберись до школы пешком, на велосипеде или на общественном транспорте.",icon:"🚲",xp:20,imp:{co2:1}}],
+ ["animals","Всемирный день животных","🐾",y=>y+"-10-04",{title:"Помоги животным",description:"Насыпь корм в кормушку или помоги приюту для животных.",icon:"🐾",xp:20,imp:{}}],
+ ["titmouse","Синичкин день","🐦",y=>y+"-11-12",{title:"Кормушка для птиц",description:"Сделай или повесь кормушку и насыпь несолёных семечек.",icon:"🐦",xp:20,imp:{}}]];
+function activeEvent(){const t=today(),y=+t.slice(0,4);
+ for(const e of SEASON){const d=e[3](y);if(t>=dayShift(d,-3)&&t<=dayShift(d,3))
+  return{id:e[0],name:e[1],emoji:e[2],date:d,year:y,until:dayShift(d,3),task:e[4]}}return null}
+function taskById(id){id=String(id);if(id.indexOf("e:")===0){const e=SEASON.find(x=>x[0]===id.split(":")[1]);return e?Object.assign({event:e[0],eventName:e[1],eventEmoji:e[2]},e[4]):null}
+ return TASKS.find(x=>x.id==id)||null}
+
+/* ───── вопрос дня ───── */
+function seeded(arr,h){const a=arr.slice();let x=h||1;for(let i=a.length-1;i>0;i--){x=(x*1103515245+12345)%2147483648;const j=x%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function qotdItem(){const t=today(),nq=GAMES.quiz.q.length,pool=nq+GAMES.myth.q.length;let h=7;for(const ch of t+"qotd")h=(h*31+ch.charCodeAt(0))%1000003;
+ const i=h%pool;if(i<nq){const q=GAMES.quiz.q[i],ord=seeded([0,1,2,3],h);return{q:q[0],o:ord.map(k=>q[1][k]),ix:ord,right:0,e:q[2]}}
+ const q=GAMES.myth.q[i-nq];return{q:q[0],o:["Правда","Миф"],ix:[0,1],right:q[1],e:q[2]}}
+function qotdOut(u){const it=qotdItem(),all=rows("Qotd").filter(r=>r.date===today()),my=all.find(r=>r.userId===u.id);
+ const o={q:it.q,o:it.o,ix:it.ix,answered:null};
+ if(my)Object.assign(o,{answered:{a:Number(my.answer),ok:my.ok==="1",right:it.right,e:it.e},stats:{n:all.length,ok:all.filter(r=>r.ok==="1").length}});
+ return o}
+
+/* ───── рейтинги и соревнование классов ───── */
+function scoreMap(metric,ids,since){const m={};ids.forEach(id=>m[id]=0);
+ if(metric==="xp")tail("XpLog",30000).forEach(r=>{if(r.date>=since&&r.userId in m)m[r.userId]+=Number(r.xp)||0});
+ else if(metric==="tasks")tail("DailyTasks",30000).forEach(r=>{if(r.done==="1"&&r.date>=since&&r.userId in m)m[r.userId]++});
+ else{const pd=tail("PlayDays",30000);ids.forEach(id=>m[id]=streakOf(id,pd))}
+ return m}
+function classTeacherFor(u,name){if(name){const t=byName(name);if(t&&(t.id===u.id&&isStaff(u)||isMember(t.id,u.id)))return t;throw"Вы не состоите в этом классе"}
+ if(isStaff(u)&&rows("Classes").some(c=>c.teacherId===u.id))return u;
+ const m=rows("Members").find(x=>x.studentId===u.id);return m?byId(m.teacherId):null}
+function classesRating(u){const users=rows("Users"),cls=rows("Classes"),mem=rows("Members"),log=tail("XpLog",30000),dt=tail("DailyTasks",30000);
+ const ms=monthStart(0),pms=monthStart(-1);
+ const calc=(c,from,to)=>{const ids=mem.filter(m=>m.teacherId===c.teacherId).map(m=>m.studentId),set=new Set(ids);let xp=0,tasks=0;
+  log.forEach(r=>{if(set.has(r.userId)&&r.date>=from&&r.date<to)xp+=Number(r.xp)||0});
+  dt.forEach(r=>{if(set.has(r.userId)&&r.done==="1"&&r.date>=from&&r.date<to)tasks++});
+  return{count:ids.length,avg:ids.length?Math.round(xp/ids.length):0,tasks}};
+ const label=c=>{const t=users.find(x=>x.id===c.teacherId);return{name:c.name,teacher:t?mini(t):null}};
+ const list=cls.map(c=>Object.assign(label(c),calc(c,ms,"9999"),{mine:c.teacherId===u.id||mem.some(m=>m.teacherId===c.teacherId&&m.studentId===u.id)}))
+  .filter(c=>c.count>0).sort((a,b)=>b.avg-a.avg||b.tasks-a.tasks);
+ const prev=cls.map(c=>Object.assign(label(c),calc(c,pms,ms))).filter(c=>c.count>0&&c.avg>0).sort((a,b)=>b.avg-a.avg)[0]||null;
+ const mi=+today().slice(5,7)-1;
+ return{scope:"classes",classes:list.slice(0,50),prev,month:MONTHS[mi],prevMonth:MONTHS[(mi+11)%12]}}
+
+/* ───── эко-челленджи класса ───── */
+const UNITS=["кг","шт.","л","дел","раз","км"];
+function challengeOut(c,u,contrib,users){const cs=contrib.filter(x=>x.chId===c.id),sum=Math.round(cs.reduce((s,x)=>s+(Number(x.amount)||0),0)*100)/100;
+ const per={};cs.forEach(x=>per[x.userId]=(per[x.userId]||0)+(Number(x.amount)||0));
+ const top=Object.keys(per).sort((a,b)=>per[b]-per[a]).slice(0,3).map(id=>({user:mini(users.find(x=>x.id===id)),amount:Math.round(per[id]*100)/100}));
+ return{id:c.id,title:c.title,unit:c.unit,goal:Number(c.goal),sum,mine:Math.round((per[u.id]||0)*100)/100,people:Object.keys(per).length,top,
+  status:c.status,deadline:c.deadline||"",expired:!!c.deadline&&c.deadline<today()&&c.status==="open",created:c.created}}
+function challengesOf(u,t){const users=rows("Users"),contrib=rows("Contrib");
+ const list=rows("Challenges").filter(c=>c.teacherId===t.id&&c.status!=="closed").sort((a,b)=>a.created<b.created?1:-1);
+ const open=list.filter(c=>c.status==="open"),done=list.filter(c=>c.status==="done").slice(0,5);
+ return open.concat(done).map(c=>challengeOut(c,u,contrib,users))}
+
+/* ───── разработчик: блокировки ───── */
+const needDev=u=>{if(!isDev(u))throw"Это доступно только разработчику"};
+function activeBans(){const c=CacheService.getScriptCache(),hit=c.get("bans");if(hit)return JSON.parse(hit);
+ const n=new Date().toISOString(),b=rowsRaw("Bans").filter(x=>x.until>n).map(x=>({userId:x.userId,until:x.until,reason:x.reason}));
+ c.put("bans",JSON.stringify(b),600);return b}
+function banOf(uid){const n=new Date().toISOString();return activeBans().filter(b=>b.userId===uid&&b.until>n).pop()||null}
+const banText=b=>"Аккаунт заблокирован до "+Utilities.formatDate(new Date(b.until),"Europe/Moscow","dd.MM.yyyy HH:mm")+(b.reason?". Причина: "+b.reason:"");
+try{const _who=who;who=function(d){const u=_who(d),b=banOf(u.id);if(b)throw banText(b);return u}}catch(e){}
+const GNAME={sort:"Сортировка мусора",quiz:"Эко-викторина",myth:"Миф или правда",act:"Как поступить?",decay:"Что дольше разлагается"};
+function bumpChatId(id){const c=String(id);if(c.indexOf("f:")===0)return bump({kind:"f",id:c});const t=byId(c.slice(2));if(t)bump({kind:"c",id:c,teacher:t})}
+
+Object.assign(A,{
+qotd(d){return qotdOut(who(d))},
+qotdAnswer(d){const u=who(d),it=qotdItem();if(rows("Qotd").some(r=>r.date===today()&&r.userId===u.id))throw"На сегодняшний вопрос ответ уже дан";
+ const ok=typeof d.a==="number"&&d.a===it.right;addT("Qotd",[today(),u.id,d.a,ok?1:0]);let xp=0;
+ if(ok){xp=10;giveXp(u,xp,"qotd");bumpCounters(u,{qotd:1})}
+ const ach=checkAch(u);return Object.assign(qotdOut(u),{xp,ach})},
+rating(d){const u=who(d),scope=String(d.scope||"school"),metric=["xp","tasks","streak"].indexOf(d.metric)>=0?d.metric:"xp";
+ if(scope==="classes")return classesRating(u);
+ const users=rows("Users");let ids=[],t=null;
+ if(scope==="friends"){const fn=(friendsOf(d).friends||[]).map(f=>f.username);ids=users.filter(x=>x.id===u.id||fn.indexOf(x.username)>=0).map(x=>x.id)}
+ else if(scope==="class"){t=classTeacherFor(u,d.teacher);if(!t)throw"Вы пока не состоите в классе";ids=rows("Members").filter(m=>m.teacherId===t.id).map(m=>m.studentId)}
+ else ids=users.filter(x=>x.role==="student"||x.id===u.id).map(x=>x.id);
+ const m=scoreMap(metric,ids,weekStart()),list=ids.map(id=>({u:users.find(x=>x.id===id),v:m[id]})).filter(x=>x.u)
+  .sort((a,b)=>b.v-a.v||(a.u.firstName+a.u.lastName).localeCompare(b.u.firstName+b.u.lastName,"ru"));
+ const out=list.map((x,i)=>({user:Object.assign(mini(x.u),{xp:Number(x.u.xp)||0}),v:x.v,place:i+1,me:x.u.id===u.id}));
+ const meRow=out.find(x=>x.me)||null,cls=t?rows("Classes").find(c=>c.teacherId===t.id):null;
+ return{scope,metric,list:out.slice(0,50),me:meRow?{place:meRow.place,v:meRow.v}:null,total:out.length,className:cls?cls.name:"",teacher:t?t.username:""}},
+challengeList(d){const u=who(d),t=classTeacherFor(u,d.teacher);if(!t)throw"Вы пока не состоите в классе";
+ const c=rows("Classes").find(x=>x.teacherId===t.id);return{challenges:challengesOf(u,t),className:c?c.name:"",teacher:t.username,own:t.id===u.id}},
+challengeCreate(d){const t=who(d);needTeacher(t);const title=String(d.title||"").trim(),goal=Number(d.goal),dl=String(d.deadline||"").trim();
+ if(title.length<3||title.length>60)throw"Название челленджа: от 3 до 60 символов";
+ if(UNITS.indexOf(d.unit)<0)throw"Выберите единицу измерения";
+ if(!(goal>0&&goal<=100000))throw"Цель - число от 1 до 100000";
+ if(dl&&(!/^\d{4}-\d{2}-\d{2}$/.test(dl)||dl<today()))throw"Срок не может быть в прошлом";
+ if(rows("Challenges").filter(c=>c.teacherId===t.id&&c.status==="open").length>=5)throw"Одновременно можно вести не больше 5 челленджей";
+ addT("Challenges",[Utilities.getUuid(),t.id,title,d.unit,goal,"open",now(),dl]);return{challenges:challengesOf(t,t)}},
+challengeAdd(d){const u=who(d),c=rows("Challenges").find(x=>x.id===String(d.id||""));if(!c)throw"Челлендж не найден";
+ if(!isMember(c.teacherId,u.id))throw"Вклад могут вносить только ученики класса";
+ if(c.status!=="open")throw"Челлендж уже завершён";if(c.deadline&&c.deadline<today())throw"Время челленджа вышло";
+ const amount=Math.round(Number(d.amount)*100)/100;if(!(amount>0&&amount<=1000&&amount<=Number(c.goal)))throw"Вклад - число больше нуля и не больше 1000";
+ addT("Contrib",[c.id,u.id,amount,now()]);
+ const sum=rowsRaw("Contrib").filter(x=>x.chId===c.id).reduce((s,x)=>s+(Number(x.amount)||0),0);let done=false;
+ if(sum>=Number(c.goal)){done=true;upd("Challenges",c._row,"status","done");
+  rows("Members").filter(m=>m.teacherId===c.teacherId).forEach(m=>grant(m.studentId,"ach_ch_"+c.id+"_"+m.studentId,"🏁","gold","Челлендж: "+c.title,"Класс вместе выполнил челлендж: "+c.goal+" "+c.unit))}
+ const t=byId(c.teacherId);return{challenges:challengesOf(u,t),done}},
+challengeEnd(d){const t=who(d);needTeacher(t);const c=rows("Challenges").find(x=>x.id===String(d.id||"")&&x.teacherId===t.id);if(!c)throw"Челлендж не найден";
+ upd("Challenges",c._row,"status","closed");return{challenges:challengesOf(t,t)}},
+classStats(d){const t=who(d);needTeacher(t);const users=rows("Users"),ws=weekStart(),m30=dayShift(today(),-29);
+ const ms=rows("Members").filter(m=>m.teacherId===t.id).map(m=>users.find(u=>u.id===m.studentId)).filter(Boolean),ids=new Set(ms.map(u=>u.id));
+ const xl=tail("XpLog",30000).filter(r=>ids.has(r.userId)),gl=tail("GameLog",30000).filter(r=>ids.has(r.userId)),
+  dt=tail("DailyTasks",30000).filter(r=>ids.has(r.userId)&&r.done==="1"),pd=tail("PlayDays",30000).filter(r=>ids.has(r.userId)),
+  qa=tail("Qotd",30000).filter(r=>ids.has(r.userId)),cb=tail("Contrib",30000).filter(r=>ids.has(r.userId)).map(r=>({userId:r.userId,date:String(r.created).slice(0,10)}));
+ const students=ms.map(u=>{const mine=x=>x.userId===u.id,g30=gl.filter(r=>mine(r)&&r.date>=m30),sc=g30.reduce((s,r)=>s+Number(r.score),0),tt=g30.reduce((s,r)=>s+Number(r.total),0);
+  const last=[].concat(xl.filter(mine),gl.filter(mine),dt.filter(mine),pd.filter(mine),qa.filter(mine),cb.filter(mine)).map(r=>r.date).sort().pop()||"";
+  return{user:mini(u),last,streak:streakOf(u.id,pd),xpWeek:xl.filter(r=>mine(r)&&r.date>=ws).reduce((s,r)=>s+Number(r.xp),0),
+   gamesWeek:gl.filter(r=>mine(r)&&r.date>=ws).length,tasksWeek:dt.filter(r=>mine(r)&&r.date>=ws).length,acc:tt?Math.round(sc/tt*100):null}})
+  .sort((a,b)=>(b.last||"").localeCompare(a.last||""));
+ const topics=Object.keys(GNAME).map(g=>{const rs=gl.filter(r=>r.game===g&&r.date>=m30),sc=rs.reduce((s,r)=>s+Number(r.score),0),tt=rs.reduce((s,r)=>s+Number(r.total),0);
+  return{game:g,name:GNAME[g],plays:rs.length,pct:tt?Math.round(sc/tt*100):null}}).sort((a,b)=>(a.pct===null)-(b.pct===null)||a.pct-b.pct);
+ return{students,topics,week:ws}},
+devStats(d){needDev(who(d));const users=rows("Users"),t=today(),ws=weekStart(),act=(from)=>{const s=new Set();
+  [tail("XpLog",30000),tail("GameLog",30000),tail("PlayDays",30000)].forEach(rs=>rs.forEach(r=>{if(r.date>=from)s.add(r.userId)}));return s.size};
+ const msgs=msgTail(5000),day=Date.now()-864e5;
+ return{users:users.length,students:users.filter(u=>u.role==="student").length,teachers:users.filter(u=>u.role==="teacher"||u.role==="admin").length,
+  newWeek:users.filter(u=>String(u.created||"").slice(0,10)>=ws).length,activeToday:act(t),activeWeek:act(ws),
+  messagesDay:msgs.filter(m=>m.type!=="del"&&Number(m.created)>=day).length,gamesToday:tail("GameLog",30000).filter(r=>r.date===t).length,
+  classes:rows("Classes").length,badges:rows("Badges").length,bans:activeBans().length}},
+devUsers(d){needDev(who(d));const q=String(d.q||"").trim().toLowerCase(),bans=activeBans();
+ return{users:rows("Users").filter(u=>!q||(u.username+" "+u.firstName+" "+u.lastName).toLowerCase().indexOf(q)>=0).slice(-200).reverse().slice(0,60)
+  .map(u=>{const b=bans.filter(x=>x.userId===u.id).pop();return Object.assign(mini(u),{role:u.role,xp:Number(u.xp)||0,created:String(u.created||""),ban:b?{until:b.until,reason:b.reason}:null})})}},
+devBan(d){const u=who(d);needDev(u);const t=byName(d.username);if(!t)throw"Пользователь не найден";if(isDev(t))throw"Разработчика заблокировать нельзя";
+ const days=Number(d.days);if(!(days>=1&&days<=365))throw"Срок блокировки - от 1 до 365 дней";
+ const reason=String(d.reason||"").trim().slice(0,100);addT("Bans",[t.id,new Date(Date.now()+days*864e5).toISOString(),reason,u.id,now()]);
+ CacheService.getScriptCache().remove("bans");return{}},
+devUnban(d){const u=who(d);needDev(u);const t=byName(d.username);if(!t)throw"Пользователь не найден";const n=new Date().toISOString();
+ rowsRaw("Bans").filter(b=>b.userId===t.id&&b.until>n).forEach(b=>upd("Bans",b._row,"until",n));CacheService.getScriptCache().remove("bans");return{}},
+devMessages(d){needDev(who(d));const users=rows("Users"),cls=rows("Classes");
+ return{messages:msgTail(600).filter(m=>m.type!=="del").slice(-60).reverse().map(m=>{let chat="";
+  if(m.chat.indexOf("f:")===0)chat="Личный: "+m.chat.slice(2).split(":").map(id=>(users.find(x=>x.id===id)||{}).username||"?").join(" и ");
+  else{const c=cls.find(x=>x.teacherId===m.chat.slice(2));chat="Класс: "+(c?c.name:"?")}
+  return{id:m.id,text:m.text,ts:Number(m.created),chat,from:mini(users.find(x=>x.id===m.userId))}})}},
+devDeleteMessage(d){needDev(who(d));const m=msgTail(3000).find(x=>x.id===String(d.id||""));if(!m||m.type==="del")throw"Сообщение не найдено";
+ upd("Messages",m._row,"type","del");upd("Messages",m._row,"text","");bumpChatId(m.chat);return{}}});
+try{const _login=A.login;A.login=function(d){const r=_login(d),u=rowsRaw("Users").find(x=>x.username===r.user.username),b=u&&banOf(u.id);if(b)throw banText(b);return r}}catch(e){}
 
 /* ───── регистрация: класс ученика и согласие с политикой конфиденциальности ───── */
 const POLICY_VER="2026-10-28";
@@ -660,11 +880,11 @@ A.news=d=>{who(d);return{news:newsRefresh(false)}};
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */
 // Раньше каждый запрос ждал, пока закончится предыдущий. Теперь очередь только у действий,
 // которые меняют данные; чтения выполняются параллельно и читают каждый лист один раз.
-const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,classInfo:0};
+const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0};
 A.batch=d=>{const out={};(Array.isArray(d.calls)?d.calls:[]).slice(0,8).forEach(c=>{const a=c&&c.action;if(!BATCH[a]||!A[a])return;
  try{out[a]=Object.assign({ok:true},A[a](Object.assign({},c,{token:d.token})))}catch(e){out[a]={ok:false,error:typeof e==="string"?e:"Ошибка сервера: "+e}}});
  return{results:out}};
-const FAST={batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
+const FAST={qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
 const reply=o=>ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 try{doPost=function(e){
  let d,lock=null,orig=null;
