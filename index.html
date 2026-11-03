@@ -885,21 +885,33 @@ const leaflet=()=>leafP||(leafP=new Promise((res,rej)=>{const l=document.createE
   const s=document.createElement("script");s.src=LEAF+"leaflet.js";s.onload=()=>res(window.L);s.onerror=()=>{leafP=null;s.remove();rej()};document.head.append(s)}));
 const RCAT=[["all","Все","♻️",[]],["batteries","Батарейки","🔋",["batteries"]],["plastic","Пластик","🧴",["plastic","plastic_bottles","plastic_packaging","PET"]],["glass","Стекло","🫙",["glass","glass_bottles"]],["paper","Бумага","📄",["paper","cardboard","newspaper","paper_packaging","magazines"]],["metal","Металл","🥫",["cans","scrap_metal","aluminium"]],["clothes","Одежда","👕",["clothes","shoes"]]];
 const accepts=t=>RCAT.slice(1).filter(c=>c[3].some(k=>t["recycling:"+k]==="yes"));
-// Бесплатные серверы OpenStreetMap часто перегружены (502, 504, 429), поэтому: несколько серверов
-// в случайном порядке, ограничение по времени на каждый и запоминание найденного на сутки.
+// Бесплатные серверы OpenStreetMap часто перегружены (502, 504, 429). Поэтому: лёгкий запрос по прямоугольнику,
+// серверы спрашиваются «внахлёст» - если один молчит 4 секунды или ответил ошибкой, сразу спрашиваем следующий,
+// первым - тот, что ответил в прошлый раз; найденное запоминается, а при сбое показываются сохранённые пункты рядом.
 const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+function ovpAsk(urls,q){
+  return new Promise((res,rej)=>{let i=0,left=urls.length,done=false,timer=null;const acs=[];
+    const finish=v=>{done=true;clearTimeout(timer);acs.forEach(a=>a.abort());res(v)};
+    const next=()=>{clearTimeout(timer);if(done||i>=urls.length)return;const u=urls[i++],ac=new AbortController(),tm=setTimeout(()=>ac.abort(),15000);acs.push(ac);
+      timer=setTimeout(next,4000);
+      fetch(u,{method:"POST",signal:ac.signal,headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)})
+        .then(r=>r.ok?r.json():Promise.reject(r.status))
+        .then(j=>{if(!j||!Array.isArray(j.elements)||(/runtime error/i.test(j.remark||"")&&!j.elements.length))throw 0;if(!done){ls.set("ovpOk",u);finish(j.elements)}})
+        .catch(()=>{if(done)return;if(--left===0&&i>=urls.length){done=true;clearTimeout(timer);rej(new Error("overpass"))}else next()})
+        .finally(()=>clearTimeout(tm))};
+    next()})}
 async function overpass(lat,lon,rad){
   const key=`${lat.toFixed(2)},${lon.toFixed(2)},${rad}`,store=ls.get("ovp")||{},hit=store[key];
   if(hit&&Date.now()-hit.t<864e5)return hit.el;
-  const q=`[out:json][timeout:20];(node["amenity"="recycling"](around:${rad},${lat},${lon});way["amenity"="recycling"](around:${rad},${lat},${lon}););out center 200;`;
-  for(const u of OVERPASS.slice().sort(()=>Math.random()-.5)){
-    const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);
-    try{const r=await fetch(u,{method:"POST",signal:ac.signal,headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)});
-      if(r.ok){const el=(await r.json()).elements||[];const keys=Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,5),next={};
-        keys.forEach(k=>next[k]=store[k]);next[key]={t:Date.now(),el};ls.set("ovp",next);return el}}
-    catch{}finally{clearTimeout(tm)}}
-  if(hit)return hit.el;  // лучше вчерашние данные, чем пустая карта
-  throw new Error("overpass");
+  const dy=rad/111320,dx=rad/(111320*Math.cos(lat*Math.PI/180)),bb=[lat-dy,lon-dx,lat+dy,lon+dx].map(v=>v.toFixed(5)).join(",");
+  const q=`[out:json][timeout:12];(node["amenity"="recycling"](${bb});way["amenity"="recycling"](${bb}););out center qt 200;`;
+  const ok=ls.get("ovpOk"),urls=OVERPASS.filter(u=>u!==ok).sort(()=>Math.random()-.5);if(OVERPASS.includes(ok))urls.unshift(ok);
+  try{const el=await ovpAsk(urls,q);const next={};Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,9).forEach(k=>next[k]=store[k]);
+    next[key]={t:Date.now(),el};ls.set("ovp",next);return el}
+  catch(e){// лучше сохранённые пункты рядом (даже старые), чем пустая карта
+    const near=Object.keys(store).map(k=>{const [a,b]=k.split(",").map(Number);return{k,d:geoDist(lat,lon,a,b)}}).filter(x=>x.d<3000).sort((a,b)=>a.d-b.d)[0];
+    if(near){const el=store[near.k].el;el.stale=true;return el}
+    throw e}
 }
 const geoDist=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return 6371e3*Math.sqrt(x*x+y*y)};
 const fdist=m=>m<1000?Math.round(m/10)*10+" м":(m/1000).toFixed(1).replace(".",",")+" км";
@@ -934,7 +946,7 @@ async function mapV(){
     try{const el=await overpass(c.lat,c.lng,rad);if(my!==vid)return;const o=here||{lat:c.lat,lon:c.lng};
       pts=el.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
         return{lat,lon,name:t.name||t.operator||(t.recycling_type==="centre"?"Пункт приёма":"Контейнер для вторсырья"),acc:accepts(t),hours:t.opening_hours||"",d:geoDist(o.lat,o.lon,lat,lon)}}).filter(p=>p.lat!=null);
-      draw()}
+      draw();if(el.stale){msg("Серверы карты сейчас перегружены - показаны сохранённые пункты. Обновите позже.");$("#here").hidden=false}}
     catch{if(my===vid){msg("Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
   let skip=true;map.on("moveend",()=>{if(skip){skip=false;return}$("#here").hidden=false});
   const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z,{animate:false});load()};
