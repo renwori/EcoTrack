@@ -892,7 +892,7 @@ function drawQotd(r,my){const box=$("#qd");if(!box||my!==vid)return;if(!r.ok){bo
   if(!r.answered){
     box.innerHTML=`<div class="card"><div class="row"><b class="grow">❓ Вопрос дня</b><span class="tag">+10 XP</span></div><h3 class="qq">${esc(r.q)}</h3>
       ${r.o.map((o,k)=>`<button class="opt" data-qa="${k}"><b>${"ABCD"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}
-      <p class="muted sm" style="margin:6px 0 0">Один вопрос для всех. Ответить можно один раз.</p></div>`;
+      <p class="muted sm" style="margin:6px 0 0">${r.band?"Один вопрос для всех ребят "+esc(r.band.replace("класс","классов")):"Один вопрос для всех"}. Ответить можно один раз.</p></div>`;
     box.querySelectorAll("[data-qa]").forEach(b=>b.onclick=async()=>{box.querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");
       const res=await api("qotdAnswer",{a:r.ix[+b.dataset.qa]});if(dead(res))return;
       if(!res.ok){toast(res.error,"err");box.querySelectorAll(".opt").forEach(x=>x.disabled=false);b.classList.remove("sel");return}
@@ -1342,13 +1342,18 @@ const GAMES={
 const OI={"Бумага":"📄","Пластик":"🧴","Стекло":"🫙","Металл":"🥫","Опасные отходы":"☣️","Правда":"✅","Миф":"❌"};
 const optText=o=>((OI[o]||"")+" "+o).trim();
 
+// Возрастная группа для сложности вопросов - так же, как на сервере.
+const bandOf=g=>{g=+g||0;return!g?"":g<=4?"1-4 класс":g<=8?"5-8 класс":"9-11 класс"};
 function gamesV(){
   const my=++vid;
   put(`<h1>Игры и задания</h1><div id="evb"></div><div id="qd"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
   <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>`+
   Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
-  `<p class="muted sm">XP даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`);
+  `<p class="muted sm">XP даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`+
+  (isT(me)?"":bandOf(custOf(me).grade)?`<p class="muted sm">🎯 Вопросы подобраны для ${bandOf(custOf(me).grade).replace("класс","класса")}. Сложность зависит от класса в профиле.</p>`
+    :`<div class="card"><b>🎯 Укажи свой класс</b><p class="muted sm" style="margin:4px 0 8px">Тогда вопросы в играх и вопрос дня будут подходить тебе по сложности.</p><button class="ghost" id="setgr">Открыть профиль</button></div>`));
+  if($("#setgr"))$("#setgr").onclick=()=>go("profile");
   $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));$("#emap").onclick=mapV;$("#rtg").onclick=()=>ratingV();
   swr("qotd","qotd",{},r=>drawQotd(r,my),my);
   let T=null;
@@ -1596,10 +1601,12 @@ async function profileV(){
     const r=await api("update",{firstName:$("#fn").value,lastName:$("#ln").value,bio:$("#bio").value});
     if(dead(r))return;if(!r.ok)return $("#er").textContent=r.error;
     const cust=custOf(me);me=r.user;me.cust=me.cust||cust;
+    let bm="";
     if($("#pg")){const g=$("#pg").value,l=$("#pl2").value.trim().toUpperCase();
       if(g!==(cust.grade||"")||l!==(cust.letter||"")){const p=await api("profileSet",{grade:g,letter:l});if(dead(p))return;
-        if(!p.ok){saveMe();return $("#er").textContent=p.error}me.cust=p.cust}}
-    saveMe();toast("Сохранено ✓");profileV();
+        if(!p.ok){saveMe();return $("#er").textContent=p.error}me.cust=p.cust;
+        if(bandOf(g)!==bandOf(cust.grade)){cset("qotd",null);FRESH.qotd=0;bm=". Вопросы в играх теперь для "+(bandOf(g)?bandOf(g).replace("класс","класса"):"всех классов")}}}
+    saveMe();toast("Сохранено ✓"+bm);profileV();
   });
   if(X)drawX();
   const old=JSON.stringify(X),x=await loadX();if(my!==vid||!x)return;
