@@ -901,12 +901,19 @@ function ovpAsk(urls,q){
         .finally(()=>clearTimeout(tm))};
     next()})}
 async function overpass(lat,lon,rad){
+  // одна сетка для всех: соседние запросы совпадают и попадают в общий кэш на сервере ЭкоТрека
+  rad=[1000,2000,3000,5000].find(r=>r>=rad+700)||5000;lat=+lat.toFixed(2);lon=+lon.toFixed(2);
   const key=`${lat.toFixed(2)},${lon.toFixed(2)},${rad}`,store=ls.get("ovp")||{},hit=store[key];
   if(hit&&Date.now()-hit.t<864e5)return hit.el;
   const dy=rad/111320,dx=rad/(111320*Math.cos(lat*Math.PI/180)),bb=[lat-dy,lon-dx,lat+dy,lon+dx].map(v=>v.toFixed(5)).join(",");
   const q=`[out:json][timeout:12];(node["amenity"="recycling"](${bb});way["amenity"="recycling"](${bb}););out center qt 200;`;
   const ok=ls.get("ovpOk"),urls=OVERPASS.filter(u=>u!==ok).sort(()=>Math.random()-.5);if(OVERPASS.includes(ok))urls.unshift(ok);
-  try{const el=await ovpAsk(urls,q);const next={};Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,9).forEach(k=>next[k]=store[k]);
+  // сначала свой сервер: если кто-то из учеников уже смотрел это место, ответ придёт сразу,
+  // и перегруженные серверы карты не понадобятся; иначе спрашиваем их и сервер одновременно
+  const srv=api("mapPoints",{lat,lon,rad}).then(r=>r&&r.ok&&Array.isArray(r.el)?r.el:Promise.reject(new Error("srv")));
+  try{let el=await Promise.race([srv.catch(()=>null),new Promise(r=>setTimeout(()=>r(null),2500))]);
+    if(!el)el=await Promise.any([srv,ovpAsk(urls,q)]);
+    const next={};Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,9).forEach(k=>next[k]=store[k]);
     next[key]={t:Date.now(),el};ls.set("ovp",next);return el}
   catch(e){// лучше сохранённые пункты рядом (даже старые), чем пустая карта
     const near=Object.keys(store).map(k=>{const [a,b]=k.split(",").map(Number);return{k,d:geoDist(lat,lon,a,b)}}).filter(x=>x.d<3000).sort((a,b)=>a.d-b.d)[0];
@@ -943,11 +950,12 @@ async function mapV(){
   };
   const load=async()=>{const c=map.getCenter(),rad=Math.round(Math.min(5000,Math.max(800,c.distanceTo(map.getBounds().getNorthEast())))/100)*100;
     msg("Ищем пункты приёма…");$("#here").hidden=true;ls.set("geo",{lat:c.lat,lon:c.lng,z:map.getZoom()});
-    try{const el=await overpass(c.lat,c.lng,rad);if(my!==vid)return;const o=here||{lat:c.lat,lon:c.lng};
+    const slow=setTimeout(()=>{if(my===vid&&!pts.length)msg("Серверы карты отвечают медленно - ищем дальше, подождите…")},9000);
+    try{const el=await overpass(c.lat,c.lng,rad);clearTimeout(slow);if(my!==vid)return;const o=here||{lat:c.lat,lon:c.lng};
       pts=el.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
         return{lat,lon,name:t.name||t.operator||(t.recycling_type==="centre"?"Пункт приёма":"Контейнер для вторсырья"),acc:accepts(t),hours:t.opening_hours||"",d:geoDist(o.lat,o.lon,lat,lon)}}).filter(p=>p.lat!=null);
       draw();if(el.stale){msg("Серверы карты сейчас перегружены - показаны сохранённые пункты. Обновите позже.");$("#here").hidden=false}}
-    catch{if(my===vid){msg("Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
+    catch{clearTimeout(slow);if(my===vid){msg("Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
   let skip=true;map.on("moveend",()=>{if(skip){skip=false;return}$("#here").hidden=false});
   const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z,{animate:false});load()};
   $("#here").onclick=()=>load();
