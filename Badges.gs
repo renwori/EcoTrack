@@ -23,7 +23,11 @@ var ecoNewsRefresh_=null;
 function ecoCheckNews(){const n=ecoNewsRefresh_(true);console.log("Новостей в ленте: "+n.length+". Статус каждого источника - в листе NewsSources.")}
 // Для триггера по времени (Триггеры -> Добавить -> ecoNewsTick, по времени, каждые 30 минут): сервер заходит в источники сам,
 // даже когда сайт никто не открывает, и не пропускает новости из быстрых лент.
-function ecoNewsTick(){ecoNewsRefresh_(true)}
+function ecoNewsTick(){try{ecoNewsRefresh_(true)}finally{ecoMapTick()}}
+// Эко-карта: места, которые ученики открывали, а пунктов для них ещё нет, сервер запрашивает у OpenStreetMap
+// в фоне - этим же триггером ecoNewsTick. Запустите ecoMapTick() вручную, чтобы обработать очередь сразу.
+var ecoMapRefresh_=null;
+function ecoMapTick(){try{if(ecoMapRefresh_)console.log(ecoMapRefresh_())}catch(e){console.error(e)}}
 // Резервная копия Таблицы: триггер по времени раз в сутки -> ecoBackup. Хранятся 7 последних копий
 // в папке «ЭкоТрек - резервные копии». Нужно разрешение https://www.googleapis.com/auth/drive в appsscript.json.
 function ecoBackup(){const p=PropertiesService.getScriptProperties();let folder=null;const fid=p.getProperty("BACKUP_FOLDER");
@@ -457,17 +461,13 @@ profile(d){const me_=who(d),t=byName(d.username);if(!t)throw"Пользоват�
 // Эко-карта: запасной путь к серверам OpenStreetMap через Google и общий кэш на неделю для всех учеников
 mapPoints(d){who(d);const lat=Number(d.lat),lon=Number(d.lon),rad=Number(d.rad);
  if(!(Math.abs(lat)<=85&&Math.abs(lon)<=180)||MAP_RADS.indexOf(rad)<0)throw"Неверное место на карте";
- const la=lat.toFixed(2),lo=lon.toFixed(2),key="map_"+la+"_"+lo+"_"+rad,C=CacheService.getScriptCache(),c=C.get(key);
+ const key=mapKey(lat,lon,rad),C=CacheService.getScriptCache(),c=C.get(key);
  if(c)return{el:JSON.parse(c),cached:true};
- const hit=mapCacheFind(key);
- if(hit&&Date.now()-new Date(hit.updated).getTime()<7*864e5){C.put(key,hit.data,21600);return{el:JSON.parse(hit.data),cached:true}}
- const el=mapFetch(+la,+lo,rad);
- if(!el){if(hit)return{el:JSON.parse(hit.data),cached:true,stale:true};throw"Серверы карты сейчас перегружены"}
- const slim=el.map(slimPoint).filter(Boolean).slice(0,200);let data=JSON.stringify(slim);
- while(data.length>45000&&slim.length>10){slim.length=Math.floor(slim.length*0.8);data=JSON.stringify(slim)}
- C.put(key,data,21600);
- withLock(()=>{const h=mapCacheFind(key);if(h)setRow("MapCache",h.row,[key,data,now()]);else addT("MapCache",[key,data,now()]);mapCachePrune()});
- return{el:slim}},
+ const hit=mapCacheFind(key),fresh=hit&&Date.now()-new Date(hit.updated).getTime()<7*864e5;
+ if(fresh){C.put(key,hit.data,21600);return{el:JSON.parse(hit.data),cached:true}}
+ // серверы карты медленные: в запросе ученика к ним не ходим (Google оборвёт долгий ответ), ставим место в очередь
+ mapQueueAdd(key);
+ return hit?{el:JSON.parse(hit.data),cached:true,stale:true,queued:true}:{el:null,queued:true}},
 classForest(d){const u=who(d),t=byName(d.username),c=t&&rows("Classes").find(x=>x.teacherId===t.id);
  if(!c||(t.id!==u.id&&!isMember(t.id,u.id)))throw"Вы не состоите в этом классе";
  return Object.assign({name:c.name},forestOf(t))},
@@ -740,6 +740,22 @@ function mapFetch(lat,lon,rad){const dy=rad/111320,dx=rad/(111320*Math.cos(lat*M
  try{for(const r of UrlFetchApp.fetchAll(OVP_SRV.map(req))){const el=parse(r);if(el)return el}return null}catch(e){}
  for(const u of OVP_SRV){try{const el=parse(UrlFetchApp.fetch(u,req(u)));if(el)return el}catch(e){}}
  return null}
+const mapKey=(lat,lon,rad)=>"map_"+Number(lat).toFixed(2)+"_"+Number(lon).toFixed(2)+"_"+rad;
+function mapQueueAdd(key){const C=CacheService.getScriptCache();let q=[];try{q=JSON.parse(C.get("map_queue")||"[]")}catch(e){}
+ if(q.indexOf(key)<0){q.unshift(key);C.put("map_queue",JSON.stringify(q.slice(0,30)),21600)}}
+// Фоновая работа: берёт места из очереди и запрашивает пункты у серверов карты (не дольше ~4 минут за раз)
+function mapQueueRun(){const C=CacheService.getScriptCache(),t0=Date.now();let q=[];try{q=JSON.parse(C.get("map_queue")||"[]")}catch(e){}
+ const done=[],failed=[];
+ for(const key of q.slice()){if(Date.now()-t0>4*60e3)break;
+  const m=/^map_(-?[\d.]+)_(-?[\d.]+)_(\d+)$/.exec(key);if(!m){q=q.filter(k=>k!==key);continue}
+  const el=mapFetch(+m[1],+m[2],+m[3]);
+  if(el){mapSave(key,el);done.push(key);q=q.filter(k=>k!==key);C.put("map_queue",JSON.stringify(q),21600)}else failed.push(key)}
+ C.put("map_queue",JSON.stringify(q),21600);
+ return"Эко-карта: загружено мест - "+done.length+", не ответили серверы - "+failed.length+", в очереди - "+q.length}
+function mapSave(key,el){const slim=el.map(slimPoint).filter(Boolean).slice(0,200);let data=JSON.stringify(slim);
+ while(data.length>45000&&slim.length>10){slim.length=Math.floor(slim.length*0.8);data=JSON.stringify(slim)}
+ CacheService.getScriptCache().put(key,data,21600);
+ withLock(()=>{const h=mapCacheFind(key);if(h)setRow("MapCache",h.row,[key,data,now()]);else addT("MapCache",[key,data,now()]);mapCachePrune()});return slim}
 function mapCacheFind(key){ensure("MapCache");const sh=SS().getSheetByName("MapCache"),n=sh.getLastRow()-1;if(n<1)return null;
  const ks=sh.getRange(2,1,n,1).getValues();let i=-1;for(let k=0;k<ks.length;k++)if(String(ks[k][0])===key){i=k;break}
  if(i<0)return null;const v=sh.getRange(i+2,1,1,3).getValues()[0];return{row:i+2,data:String(v[1]),updated:String(v[2])}}
@@ -939,7 +955,7 @@ function newsRefresh(force){const c=CacheService.getScriptCache(),hit=c.get("eco
  all=arch.map(a=>({title:a.title,url:a.url,source:a.source,published:a.published||a.found})).concat(fresh.map(n=>({...n,published:n.published||now()})))
   .filter(n=>n.published>=since).sort((a,b)=>b.published.localeCompare(a.published)).slice(0,NEWS_MAX);
  const js=JSON.stringify(all);c.put("eco_news",js,NEWS_TTL);c.put("eco_news_old",js,21600);c.remove("eco_news_busy");return all}
-ecoNewsRefresh_=newsRefresh;
+ecoNewsRefresh_=newsRefresh;ecoMapRefresh_=mapQueueRun;
 A.news=d=>{who(d);return{news:newsRefresh(false)}};
 
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */

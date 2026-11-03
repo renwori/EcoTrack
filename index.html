@@ -910,7 +910,8 @@ async function overpass(lat,lon,rad){
   const ok=ls.get("ovpOk"),urls=OVERPASS.filter(u=>u!==ok).sort(()=>Math.random()-.5);if(OVERPASS.includes(ok))urls.unshift(ok);
   // сначала свой сервер: если кто-то из учеников уже смотрел это место, ответ придёт сразу,
   // и перегруженные серверы карты не понадобятся; иначе спрашиваем их и сервер одновременно
-  const srv=api("mapPoints",{lat,lon,rad}).then(r=>r&&r.ok&&Array.isArray(r.el)?r.el:Promise.reject(new Error("srv")));
+  let queued=false;
+  const srv=api("mapPoints",{lat,lon,rad}).then(r=>{if(r&&r.queued)queued=true;return r&&r.ok&&Array.isArray(r.el)?r.el:Promise.reject(new Error("srv"))});
   try{let el=await Promise.race([srv.catch(()=>null),new Promise(r=>setTimeout(()=>r(null),2500))]);
     if(!el)el=await Promise.any([srv,ovpAsk(urls,q)]);
     const next={};Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,9).forEach(k=>next[k]=store[k]);
@@ -918,7 +919,7 @@ async function overpass(lat,lon,rad){
   catch(e){// лучше сохранённые пункты рядом (даже старые), чем пустая карта
     const near=Object.keys(store).map(k=>{const [a,b]=k.split(",").map(Number);return{k,d:geoDist(lat,lon,a,b)}}).filter(x=>x.d<3000).sort((a,b)=>a.d-b.d)[0];
     if(near){const el=store[near.k].el;el.stale=true;return el}
-    throw e}
+    throw Object.assign(new Error("overpass"),{queued})}
 }
 const geoDist=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return 6371e3*Math.sqrt(x*x+y*y)};
 const fdist=m=>m<1000?Math.round(m/10)*10+" м":(m/1000).toFixed(1).replace(".",",")+" км";
@@ -955,7 +956,7 @@ async function mapV(){
       pts=el.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
         return{lat,lon,name:t.name||t.operator||(t.recycling_type==="centre"?"Пункт приёма":"Контейнер для вторсырья"),acc:accepts(t),hours:t.opening_hours||"",d:geoDist(o.lat,o.lon,lat,lon)}}).filter(p=>p.lat!=null);
       draw();if(el.stale){msg("Серверы карты сейчас перегружены - показаны сохранённые пункты. Обновите позже.");$("#here").hidden=false}}
-    catch{clearTimeout(slow);if(my===vid){msg("Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
+    catch(e){clearTimeout(slow);if(my===vid){msg(e&&e.queued?"Серверы карты сейчас перегружены. ЭкоТрек сам запросит пункты для этого места - загляните через полчаса.":"Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
   let skip=true;map.on("moveend",()=>{if(skip){skip=false;return}$("#here").hidden=false});
   const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z,{animate:false});load()};
   $("#here").onclick=()=>load();
