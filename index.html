@@ -495,6 +495,46 @@ button.bdg.lockd>b{color:var(--muted);font-weight:700}
 .sw button.lk,.frs button.lk,.ncl button.lk{opacity:.55;cursor:help}
 .sw button small,.ncl button small{display:block;position:relative;z-index:1;font-size:9px;font-weight:700;opacity:.9}
 .ncl button small{opacity:.75}
+/* ───── монеты, сундук, магазин ───── */
+.coin{font-size:18px}
+.ecc{background:linear-gradient(135deg,rgba(250,204,21,.18),rgba(34,197,94,.12)),var(--card)}
+.gdone{box-shadow:inset 0 0 0 2px var(--pri)}
+.chest{font-size:96px;line-height:1.2;display:inline-block;animation:shake .5s ease-in-out 2}
+.chest.open{animation:pop .6s var(--spring)}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg) scale(1.05)}75%{transform:rotate(12deg) scale(1.05)}}
+.shg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.shi{display:grid;justify-items:center;gap:8px;text-align:center;margin:0}
+.shi.own{box-shadow:inset 0 0 0 2px var(--pri)}
+.shp{position:relative;width:100%;height:54px;border-radius:14px;margin:0;padding:0;overflow:hidden}
+.shi .ava{width:54px;height:54px}.shn{font-size:20px;font-weight:900}
+.hero.cv-sky{background:linear-gradient(180deg,rgba(125,211,252,.75),rgba(224,242,254,.85)),var(--card)}
+.hero.cv-neon{background:linear-gradient(135deg,#0f0a1f,#1e0b3a 50%,#0b2a3a),var(--card);color:#f0abfc;box-shadow:inset 0 0 22px rgba(217,70,239,.45)}
+.hero.cv-neon .muted{color:rgba(240,171,252,.8)}
+.hero.cv-treasure{background:radial-gradient(circle at 80% 20%,rgba(253,224,71,.6),transparent 40%),linear-gradient(135deg,#78350f,#b45309 55%,#f59e0b),var(--card);color:#fff7ed}
+.hero.cv-treasure .muted{color:rgba(255,247,237,.82)}
+.pt-daisies .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='%2314532d'%3E%3Ccircle cx='14' cy='8' r='3.5'/%3E%3Ccircle cx='14' cy='20' r='3.5'/%3E%3Ccircle cx='8' cy='14' r='3.5'/%3E%3Ccircle cx='20' cy='14' r='3.5'/%3E%3C/g%3E%3Ccircle cx='14' cy='14' r='2.5' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-bubbles .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cg fill='none' stroke='%2314532d' stroke-width='2'%3E%3Ccircle cx='12' cy='14' r='7'/%3E%3Ccircle cx='34' cy='32' r='10'/%3E%3Ccircle cx='38' cy='9' r='3'/%3E%3C/g%3E%3C/svg%3E")}
+.f-neon{--fr:linear-gradient(135deg,#f0abfc,#22d3ee);box-shadow:0 0 16px -2px #e879f9,0 0 22px -6px #22d3ee}
+.f-royal{--fr:conic-gradient(#7c3aed,#fde047,#7c3aed,#fde047,#7c3aed);box-shadow:0 0 16px -3px #a855f7}
+.f-chest{--fr:repeating-conic-gradient(#b45309 0 15deg,#fde047 15deg 30deg);box-shadow:0 0 14px -3px #f59e0b}
+.nm.n-mint{color:#10b981}
+.nm.n-neon{color:#d946ef;text-shadow:0 0 8px rgba(217,70,239,.55)}
+.nm.n-emerald{-webkit-background-clip:text;background-clip:text;color:transparent;background-image:linear-gradient(90deg,#047857,#34d399,#047857)}
+/* ───── дневник, калькулятор, мероприятия, тесты ───── */
+.mbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:150px;margin-top:12px}
+.mbars div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.mbars i{display:block;width:70%;min-height:3px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#34d399,var(--pri))}
+.mbars b{font-size:12px}.mbars small{font-size:12px;color:var(--muted)}
+.fq .fqo{display:grid;gap:6px;margin-top:8px}.fq .opt{margin:0}
+.opt.sel{box-shadow:inset 0 0 0 2px var(--pri);background:var(--pri2)}
+.notice{border-left:4px solid #f59e0b}
+.evc.past{opacity:.75}
+.evd{display:grid;place-items:center;min-width:52px;padding:6px;border-radius:14px;background:var(--pri2);line-height:1.1}
+.evd b{font-size:22px}.evd small{font-size:12px;color:var(--muted)}
+.evp{display:grid;gap:6px;margin-top:10px;padding:10px;border-radius:12px;background:var(--pri2)}
+.evp label{gap:8px;align-items:center}
+.qed input{margin:6px 0 0}.qeo{gap:8px;align-items:center;margin-top:6px}.qeo input[type=radio]{width:20px;height:20px;flex:none;margin:0}
+.plink input{font-size:13px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -1116,6 +1156,8 @@ function studentClassV(){
     <div class="row hb3" style="margin-top:12px"><button class="grow" id="scc">💬 Чат</button><button class="ghost grow" id="scr">🏆 Рейтинг</button><button class="ghost grow" id="scf">🌲 Лес</button></div></div>`;
     $("#scc").onclick=()=>chatV("c:"+cur);$("#scr").onclick=()=>ratingV({scope:"class",teacher:cur,back:()=>go("class")});$("#scf").onclick=()=>forestModal(cur)};
   head("");challengesBox($("#schl"),cur,false,my,r=>head(r.className));
+  $("#schl").insertAdjacentHTML("afterend",`<div id="ntx2"></div><div id="qzx"></div><div id="evx"></div>`);
+  noticesBox($("#ntx2"),false,cur);quizBox($("#qzx"),cur,false,my);eventsBox($("#evx"),false,my);
 }
 
 /* ───────── статистика класса для учителя ───────── */
@@ -1300,6 +1342,8 @@ function feedV(){
   };
   const b=$("#rf");b.onclick=async()=>{b.disabled=true;$("#nw").innerHTML=sk(2);await swr("news","news",{},draw,my,true);b.disabled=false};
   $("#nw").insertAdjacentHTML("beforebegin",`<div class="card tip"><b>💡 Совет дня</b><p style="margin:6px 0 0">${esc(tipOfDay())}</p></div>`);
+  {const N=((X&&X.notices)||[]).filter(n=>!n.own&&Date.now()-new Date(n.created)<7*864e5)[0];
+   if(N)$("#nw").insertAdjacentHTML("beforebegin",`<div class="card notice lift" id="fnt"><div class="row"><b class="grow">📢 ${esc(N.teacher.firstName)} ${esc(N.teacher.lastName)}</b><span class="muted sm">${ago(N.created)}</span></div><p style="margin:6px 0 0;white-space:pre-wrap">${esc(N.text)}</p></div>`),$("#fnt").onclick=()=>go("class")}
   swr("news","news",{},draw,my);
 }
 
@@ -1475,8 +1519,12 @@ const optText=o=>((OI[o]||"")+" "+o).trim();
 const bandOf=g=>{g=+g||0;return!g?"":g<=4?"1-4 класс":g<=8?"5-8 класс":"9-11 класс"};
 function gamesV(){
   const my=++vid;
-  put(`<h1>Игры и задания</h1><div id="evb"></div><div id="qd"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
+  put(`<h1>Игры и задания</h1><div id="evb"></div><div id="qd"></div><div id="eco"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
+  <h2 class="sec">Полезное</h2>
+  <button class="tile" id="tdi" style="--g:linear-gradient(135deg,#22c55e,#0d9488)"><span class="te">📒</span><span class="tt"><b>Дневник вторсырья</b><span>Записывай, что сдал(а) на переработку, и смотри итоги по месяцам</span></span><span class="go">▶</span></button>
+  <button class="tile" id="tfp" style="--g:linear-gradient(135deg,#a3e635,#16a34a)"><span class="te">👣</span><span class="tt"><b>Калькулятор следа</b><span>Насколько твои привычки бережны к природе - и что улучшить</span></span><span class="go">▶</span></button>
+  <button class="tile" id="tev" style="--g:linear-gradient(135deg,#f472b6,#8b5cf6)"><span class="te">📅</span><span class="tt"><b>Мероприятия</b><span>Субботники, сборы макулатуры и другие дела школы</span></span><span class="go">▶</span></button>
   <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>`+
   Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
   `<p class="muted sm">Опыт даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`+
@@ -1484,6 +1532,7 @@ function gamesV(){
     :`<div class="card"><b>🎯 Укажи свой класс</b><p class="muted sm" style="margin:4px 0 8px">Тогда вопросы в играх и вопрос дня будут подходить тебе по сложности.</p><button class="ghost" id="setgr">Открыть профиль</button></div>`));
   if($("#setgr"))$("#setgr").onclick=()=>go("profile");
   $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));$("#emap").onclick=mapV;$("#rtg").onclick=()=>ratingV();
+  $("#tdi").onclick=diaryV;$("#tfp").onclick=footV;$("#tev").onclick=eventsV;ecoCard();loadX().then(()=>{if(my===vid)ecoCard()});
   swr("qotd","qotd",{},r=>drawQotd(r,my),my);
   let T=null;
   const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}T=r;
@@ -1498,7 +1547,7 @@ function gamesV(){
       const res=await api("complete",{slot});if(dead(res))return;
       if(!res.ok){card.classList.remove("done");st.innerHTML=`<button data-s="${slot}">Готово</button>`;toast(res.error,"err");if(my===vid)draw(T);return}
       if(t){t.done=true;cset("tasks",T)}
-      if(res.gained){toast(`+${res.gained} опыта 🌱`);addXp(res.gained)}achToast(res.ach);FRESH.x=0;
+      if(res.gained){toast(`+${res.gained} опыта 🌱`);addXp(res.gained)}achToast(res.ach);extraToasts(res);FRESH.x=0;
     });
   };
   swr("tasks","tasks",{},draw,my);
@@ -1527,7 +1576,7 @@ async function play(g){
     put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем ответы…</p></div>`);
     const s=await api("gameSubmit",{game:g,answers:ans});if(my!==vid||dead(s))return;
     if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
-    addXp(s.xp);achToast(s.ach);
+    addXp(s.xp);achToast(s.ach);extraToasts(s);
     if(s.streak!==undefined){if(X){X.streak=s.streak;X.playedToday=true;cset("x",X)}if(s.newDay)setTimeout(()=>toast(`🔥 ${plural(s.streak,"день","дня","дней")} подряд в мини-играх!`),900)}
     const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка - в следующий раз выйдет лучше!";
     const bad=s.results.filter(x=>!x.ok);
@@ -1563,7 +1612,7 @@ function playOrder(g,G,r,my){
     put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем ответы…</p></div>`);
     const s=await api("gameSubmit",{game:g,answers:ans});if(my!==vid||dead(s))return;
     if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
-    addXp(s.xp);achToast(s.ach);
+    addXp(s.xp);achToast(s.ach);extraToasts(s);
     if(s.streak!==undefined){if(X){X.streak=s.streak;X.playedToday=true;cset("x",X)}if(s.newDay)setTimeout(()=>toast(`🔥 ${plural(s.streak,"день","дня","дней")} подряд в мини-играх!`),900)}
     const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка - в следующий раз выйдет лучше!";
     put(`<div class="card center"><div class="ring" style="margin:6px auto 10px">${ring("fg")}<div class="num"><span id="cn">0</span><small>/${s.total}</small></div></div>
@@ -1586,6 +1635,8 @@ function classV(){
   put(`<h1>Мой класс</h1>${me.dev?`<div class="card"><b>💜 Выдать значок любому пользователю</b><p class="muted sm" style="margin:4px 0 0">Как разработчик вы можете наградить кого угодно, не только учеников класса.</p><form class="srch" id="dg"><input id="du" placeholder="@username" autocapitalize="none" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Выдать значок">🏅</button></form></div>`:""}<div id="cl">${sk(1)}</div><div id="st">${sk(3)}</div><div id="chs"></div><div id="fo"></div>`);
   if(me.dev)$("#cl").insertAdjacentHTML("beforebegin",`<button class="ghost btn-full" id="dvo" style="margin:8px 0">🛠 Панель разработчика</button>`),$("#dvo").onclick=()=>devV();
   challengesBox($("#chs"),me.username,true,my);
+  $("#chs").insertAdjacentHTML("afterend",`<div id="qzx"></div><div id="ntx2"></div><div id="evx"></div>`);
+  quizBox($("#qzx"),me.username,true,my);noticesBox($("#ntx2"),true);eventsBox($("#evx"),true,my);
   if(me.dev)$("#dg").onsubmit=e=>{e.preventDefault();const un=$("#du").value.trim().toLowerCase().replace(/^@/,"");if(!/^[a-z0-9_]{3,20}$/.test(un))return toast("Введите имя пользователя","err");
     giveBadge({username:un,firstName:"@"+un},()=>{$("#du").value=""})};
   const drawCl=()=>{$("#cl").innerHTML=`<div class="card hero"><div class="row"><div class="grow"><div class="muted sm">Класс</div><h2>${esc(C.name)}</h2></div><button class="ghost sm" data-c="rename" aria-label="Переименовать">✏️</button></div>
@@ -1757,7 +1808,7 @@ function settingsV(){
   <div class="card"><b>🔔 Напоминания</b><p class="muted sm" style="margin:4px 0 8px">Напомним вечером, если сегодня ещё не было мини-игры и серия может сгореть.</p>
   <div class="row"><select id="rmh" aria-label="Время напоминания" style="flex:1">${[16,17,18,19,20,21].map(h=>`<option value="${h}" ${remindCfg().hour===h?"selected":""}>после ${h}:00</option>`).join("")}</select>
   <button class="${remindCfg().on?"ghost":""}" id="rmb" style="flex:1">${remindCfg().on?"Выключить":"Включить"}</button></div>
-  <p class="muted sm" id="rmn" style="margin:8px 0 0">${remindNote()}</p></div>
+  <p class="muted sm" id="rmn" style="margin:8px 0 0">${remindNote()}</p></div>${isT(me)?"":`<div id="pcard"></div>`}
   <div class="card"><b>📱 Приложение на телефон</b><p class="muted sm" style="margin:4px 0 8px" id="apn">${appNote()}</p>${installEvt?`<button class="btn-full" id="apb">Установить ЭкоТрек</button>`:""}</div>
   ${me.dev?`<div class="card"><button class="btn-full" id="dvb">🛠 Панель разработчика</button></div>`:""}
   ${feedbackCard()}
@@ -1787,6 +1838,7 @@ function settingsV(){
   $("#out").onclick=logout;
   if($("#dvb"))$("#dvb").onclick=()=>devV();
   if($("#apb"))$("#apb").onclick=async()=>{installEvt.prompt();await installEvt.userChoice.catch(()=>{});installEvt=null;settingsV()};
+  parentCard($("#pcard"));
   $("#rmh").onchange=()=>{const c=remindCfg();c.hour=+$("#rmh").value;ls.set("remind",c);syncSW()};
   $("#rmb").onclick=async()=>{const c=remindCfg();
     if(c.on){c.on=false;ls.set("remind",c);syncSW();return settingsV()}
@@ -1803,8 +1855,260 @@ function settingsV(){
   });
 }
 
+/* ───────── эко-монеты, магазин, сундук, цель недели ───────── */
+const backBtn=(id,t)=>`<div class="row" style="margin-top:12px"><button class="ghost sm" id="${id}" aria-label="Назад">←</button><h1 class="grow" style="margin:0">${t}</h1></div>`;
+const extraToasts=s=>{if(!s)return;if(s.froze)toast("🧊 Заморозка сохранила серию дней!");
+  if(s.chest)setTimeout(()=>toast("🎁 Новый сундук! Открой его во вкладке «Игры»"),900);
+  if(s.goal&&s.goal.justDone)setTimeout(()=>toast(`🎯 Цель недели выполнена! +${s.goal.reward.coins} монет и +${s.goal.reward.xp} опыта`),1800);
+  if(s.chest||s.froze||s.goal)FRESH.x=0};
+function goalH(g){
+  if(!g)return`<div class="card"><b>🎯 Цель на неделю</b><p class="muted sm" style="margin:4px 0 8px">Сколько мини-игр и заданий дня сделать до воскресенья? За выполнение - монеты и опыт.</p>
+    <div class="row" style="gap:8px"><label class="grow sm">Игр<input id="gg" type="number" min="0" max="35" value="5" inputmode="numeric"></label><label class="grow sm">Заданий<input id="gt" type="number" min="0" max="21" value="7" inputmode="numeric"></label></div>
+    <button class="btn-full" id="gs" style="margin-top:8px">Поставить цель</button></div>`;
+  const bar=(d,n,t)=>n?`<div class="row sm" style="margin-top:8px"><b class="grow">${t}</b><span class="muted">${Math.min(d,n)} из ${n}</span></div><div class="prog"><i style="width:${Math.min(100,Math.round(d/n*100))}%"></i></div>`:"";
+  return`<div class="card ${g.done?"gdone":""}"><div class="row"><b class="grow">🎯 Цель на неделю</b>${g.done?`<span class="tag">✓ выполнена</span>`:`<button class="ghost sm" id="ge">Изменить</button>`}</div>
+    ${bar(g.doneGames,g.games,"🎮 Мини-игры")}${bar(g.doneTasks,g.tasks,"✅ Задания дня")}
+    <p class="muted sm" style="margin:8px 0 0">${g.done?`Награда получена: ${g.reward.coins} монет и ${g.reward.xp} опыта. Новую цель можно поставить с понедельника.`:`Награда: ${g.reward.coins} монет и ${g.reward.xp} опыта. Неделя - с понедельника по воскресенье.`}</p></div>`}
+function ecoCard(){const b=$("#eco");if(!b||!X||X.coins===undefined)return;
+  b.innerHTML=`<div class="card ecc"><b class="coin">🪙 ${X.coins} ${plural(X.coins,"монета","монеты","монет").replace(/^\d+ /,"")}</b>
+    <div class="muted sm">🧊 Заморозок: ${X.freeze} из 2${X.chests?` · 🎁 Сундуков: ${X.chests}`:""}</div>
+    <div class="row" style="margin-top:10px">${X.chests?`<button class="grow" id="chb">🎁 Открыть сундук</button>`:""}<button class="ghost grow" id="shb">🛒 Магазин</button></div>
+    <p class="muted sm" style="margin:6px 0 0">1 монета за каждые 5 опыта. Каждые 7 дней серии - сундук. Заморозка спасает серию, если пропустить день.</p></div>${goalH(X.goal)}`;
+  $("#shb").onclick=()=>shopV();if($("#chb"))$("#chb").onclick=chestModal;
+  const set=async(g,t,btn)=>{btn.disabled=true;const r=await api("goalSet",{games:g,tasks:t});btn.disabled=false;if(dead(r))return;if(!r.ok)return toast(r.error,"err");
+    X.goal=r.goal;cset("x",X);FRESH.x=0;toast(r.goal&&r.goal.justDone?"🎯 Цель уже выполнена!":"Цель поставлена 🎯");ecoCard()};
+  if($("#gs"))$("#gs").onclick=()=>set(+$("#gg").value,+$("#gt").value,$("#gs"));
+  if($("#ge"))$("#ge").onclick=()=>{const g=X.goal;const m=modal(`<h2 style="padding-right:40px">🎯 Изменить цель</h2><div class="row" style="gap:8px"><label class="grow sm">Игр<input id="mg" type="number" min="0" max="35" value="${g.games}"></label><label class="grow sm">Заданий<input id="mt2" type="number" min="0" max="21" value="${g.tasks}"></label></div><button class="btn-full" id="ms2" style="margin-top:10px">Сохранить</button>`);
+    m.el.querySelector("#ms2").onclick=()=>{set(+m.el.querySelector("#mg").value,+m.el.querySelector("#mt2").value,m.el.querySelector("#ms2"));m.close()}};
+}
+function chestModal(){
+  const m=modal(`<div class="center"><div class="chest" id="cht">🎁</div><h2 id="chh">Открываем сундук…</h2><p class="muted" id="chp"></p><button class="btn-full" id="chx" hidden>Отлично!</button></div>`);
+  const q=x=>m.el.querySelector(x);
+  api("chestOpen").then(r=>{if(dead(r))return m.close();if(!r.ok){m.close();return toast(r.error,"err")}
+    setTimeout(()=>{const w=r.reward,ic={coins:"🪙",xp:"⭐",freeze:"🧊",item:"🎨"}[w.type]||"🎁";q("#cht").textContent=ic;q("#cht").classList.add("open");
+      q("#chh").textContent=w.text;q("#chp").textContent=w.type==="item"?"Новое украшение уже в оформлении профиля 🎨":w.type==="freeze"?"Заморозка спасёт серию, если пропустишь день":"Награда уже начислена";
+      q("#chx").hidden=false;burst(innerWidth/2,innerHeight*.4,50);if(w.type==="xp")addXp(w.amount);
+      if(X){X.coins=r.coins;X.freeze=r.freeze;X.chests=r.chests;cset("x",X)}FRESH.x=0;ecoCard()},1300)});
+  q("#chx").onclick=()=>m.close();
+}
+const SHOP_KIND=[["cover","Обложки"],["pattern","Узоры"],["frame","Рамки фото"],["nameColor","Цвет имени"]];
+async function shopV(){
+  const my=++vid;put(backBtn("shb2","🛒 Магазин")+`<div id="shv">${sk(3)}</div>`);$("#shb2").onclick=()=>go(tab);
+  const r=await api("shop");if(my!==vid||dead(r))return;const box=$("#shv");if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+  const prev=(k,i)=>k==="cover"?`<div class="hero cv-${i.id} shp"></div>`:k==="pattern"?`<div class="hero pt-${i.id} shp"><i class="pat"></i></div>`:k==="frame"?avatar(me,1,i.id):`<span class="nm n-${i.id} shn">${esc(me.firstName)}</span>`;
+  const draw=()=>{box.innerHTML=`<div class="card hero"><b class="coin" style="font-size:22px">🪙 ${r.coins}</b><div class="muted sm">монет · 1 монета за каждые 5 опыта, бонусы - из сундуков, целей недели и мероприятий</div></div>
+    <div class="card"><div class="row"><div class="eb" style="font-size:34px">🧊</div><div class="grow"><b>Заморозка серии</b><div class="muted sm">Если пропустишь день, серия не сгорит. У тебя: ${r.freeze} из ${r.freezeMax}</div></div>
+      <button class="sm" data-buy="freeze" ${r.freeze>=r.freezeMax?"disabled":""}>🪙 ${r.freezePrice}</button></div></div>
+    ${SHOP_KIND.map(([k,t])=>{const its=(r.cosm[k]||[]).filter(i=>i.price||i.chest);return its.length?`<h2 class="sec">${t}</h2><div class="shg">${its.map(i=>`<div class="card shi ${i.open?"own":""}">${prev(k,i)}<b>${esc(i.name)}</b>
+      ${i.open?`<span class="tag">✓ есть</span>`:i.chest?`<span class="muted sm">🎁 только из сундука</span>`:`<button class="sm" data-buy="${k}:${i.id}" ${r.coins<i.price?"disabled":""}>🪙 ${i.price}</button>`}</div>`).join("")}</div>`:""}).join("")}
+    <p class="muted sm">Купленные украшения выбираются в профиле: кнопка 🎨.</p>`;
+    stag(box);box.querySelectorAll("[data-buy]").forEach(b=>b.onclick=async()=>{const it=b.dataset.buy,name=it==="freeze"?"заморозку серии":"это украшение";
+      if(!await ask("Купить "+name+"?","Купить"))return;b.disabled=true;const x=await api("shopBuy",{item:it});if(dead(x))return;if(!x.ok){b.disabled=false;return toast(x.error,"err")}
+      r.coins=x.coins;r.freeze=x.freeze;if(x.cosm)r.cosm=x.cosm;if(X){X.coins=x.coins;X.freeze=x.freeze;if(x.cosm)X.cosm=x.cosm;cset("x",X)}FRESH.x=0;
+      toast(it==="freeze"?"🧊 Заморозка куплена":"Куплено! Выбери его в оформлении профиля 🎨");burst();draw()})};
+  draw();
+}
+
+/* ───────── дневник вторсырья ───────── */
+const RK=[["paper","📄","Бумага","кг"],["plastic","🧴","Пластик","шт."],["glass","🫙","Стекло","шт."],["metal","🥫","Металл","шт."],["batteries","🔋","Батарейки","шт."],["electronics","📱","Техника","шт."],["clothes","👕","Одежда","кг"]];
+const MON=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+async function diaryV(){
+  const my=++vid;let R=null,sel="paper";const td=today0(),mn=new Date(Date.now()-30*864e5);const min=mn.getFullYear()+"-"+String(mn.getMonth()+1).padStart(2,"0")+"-"+String(mn.getDate()).padStart(2,"0");
+  put(backBtn("dib","📒 Дневник вторсырья")+`<p class="muted sm" style="margin:6px 0 10px">Записывай, что сдал(а) на переработку. За запись - 1 монета (до 5 в день). Это самоотчёт - записывай только правду.</p>
+    <div class="card"><form id="dif"><div class="row" style="gap:8px"><select id="dik" style="flex:1.3">${RK.map(k=>`<option value="${k[0]}">${k[1]} ${k[2]}</option>`).join("")}</select>
+    <input id="dia" type="number" step="any" min="0.01" max="500" inputmode="decimal" placeholder="Сколько" style="flex:1"><span id="diu" class="muted sm" style="align-self:center">кг</span></div>
+    <div class="row" style="gap:8px;margin-top:8px"><input id="did" type="date" value="${td}" max="${td}" min="${min}" style="flex:1"><button type="submit" style="flex:1">Записать</button></div></form></div><div id="dis">${sk(2)}</div>`);
+  $("#dib").onclick=()=>go(tab);const unit=()=>{$("#diu").textContent=RK.find(k=>k[0]===$("#dik").value)[3]};$("#dik").onchange=unit;
+  const draw=()=>{const b=$("#dis");if(!b||my!==vid)return;if(!R.ok){b.innerHTML=`<div class="card err">${esc(R.error)}</div>`;return}
+    const k=RK.find(x=>x[0]===sel),mx=Math.max(1,...R.months.map(m=>m[sel]));
+    b.innerHTML=`<div class="card"><b>Всего сдано</b><div class="impg">${RK.map(([id,e,n,u])=>`<div class="imp"><span>${e}</span><b>${fnum(R.total[id])}</b><small>${n.toLowerCase()}, ${u}</small></div>`).join("")}</div>
+      ${R.cls?`<p class="muted sm" style="margin:8px 0 0">Весь класс: ${RK.filter(([id])=>R.cls[id]>0).map(([id,e,n,u])=>`${e} ${fnum(R.cls[id])} ${u}`).join(" · ")||"пока ничего"}</p>`:""}</div>
+      <div class="card"><b>По месяцам</b><div class="chips" id="dic" style="margin-top:8px">${RK.map(x=>`<button data-k="${x[0]}" class="${x[0]===sel?"on":""}">${x[1]} ${x[2]}</button>`).join("")}</div>
+      <div class="mbars">${R.months.map(m=>`<div><b>${m[sel]?fnum(m[sel]):""}</b><i style="height:${Math.round(m[sel]/mx*100)}%"></i><small>${MON[+m.month.slice(5)-1]}</small></div>`).join("")}</div><p class="muted sm center" style="margin:4px 0 0">${k[2]}, ${k[3]}</p></div>
+      <div class="card"><b>Записи</b>${R.entries.length?R.entries.map(e=>{const x=RK.find(y=>y[0]===e.kind);return`<div class="item"><div class="evi">${x[1]}</div><div class="grow"><b>${x[2]} - ${fnum(e.amount)} ${x[3]}</b><div class="muted sm">${fdate(e.date+"T12:00:00")}</div></div><button class="ghost sm" data-del="${esc(e.id)}" aria-label="Удалить">🗑</button></div>`}).join(""):`<p class="muted sm" style="margin:6px 0 0">Пока записей нет. Сдал(а) бумагу или батарейки - запиши!</p>`}</div>`;
+    stag(b);b.querySelector("#dic").onclick=e=>{const x=e.target.closest("[data-k]");if(!x)return;sel=x.dataset.k;draw()};
+    b.querySelectorAll("[data-del]").forEach(x=>x.onclick=async()=>{if(!await ask("Удалить запись?","Удалить",1))return;const r=await api("recycleDel",{id:x.dataset.del});if(dead(r))return;if(!r.ok)return toast(r.error,"err");R=r;cset("rc",R);draw()})};
+  $("#dif").onsubmit=async e=>{e.preventDefault();const btn=$("#dif button");btn.disabled=true;
+    const r=await api("recycleAdd",{kind:$("#dik").value,amount:Number(String($("#dia").value).replace(",",".")),date:$("#did").value});btn.disabled=false;if(dead(r))return;
+    if(!r.ok)return toast(r.error,"err");R=r;sel=$("#dik").value;cset("rc",R);$("#dia").value="";toast("Записано ♻️");burst();FRESH.x=0;draw()};
+  swr("rc","recycleList",{},r=>{R=r;draw()},my);
+}
+
+/* ───────── калькулятор следа ───────── */
+// Это не точный расчёт выбросов, а оценка привычек: 0 - очень маленький след, 100 - очень большой.
+const FQ=[["transport","Как ты обычно добираешься до школы?",["Пешком или на велосипеде","На автобусе, трамвае или метро","На машине вместе с кем-то по пути","На машине - специально меня везут"]],
+ ["transport","Сколько раз в год семья летает на самолёте?",["Ни разу","Один раз","2-3 раза","4 раза и больше"]],
+ ["transport","Как часто семья ездит на машине по городу?",["Почти никогда","Раз в неделю","Несколько раз в неделю","Каждый день"]],
+ ["energy","Выключаешь ли ты свет и технику, когда уходишь из комнаты?",["Всегда","Обычно","Иногда","Почти никогда"]],
+ ["energy","Сколько обычно длится твой душ?",["До 5 минут","5-10 минут","10-20 минут","Чаще принимаю ванну"]],
+ ["energy","Какие лампы у вас дома?",["В основном светодиодные","Разные","В основном обычные лампы накаливания","Не знаю"]],
+ ["food","Как часто в твоей еде мясо?",["Редко","Несколько раз в неделю","Каждый день","Несколько раз в день"]],
+ ["food","Сколько еды у вас выбрасывается?",["Почти ничего","Немного","Заметно","Много"]],
+ ["things","Сортирует ли ваша семья мусор?",["Да, почти всё","Частично","Редко","Нет"]],
+ ["things","Как часто ты покупаешь новую одежду или вещи?",["Редко, когда нужно","Раз в месяц","Несколько раз в месяц","Почти каждую неделю"]],
+ ["things","Берёшь ли ты свою сумку и бутылку для воды?",["Всегда","Часто","Редко","Никогда"]]];
+const FSC=[0,1,2,3],FQ_ALT={5:[0,1,2,1]};  // «Не знаю» про лампы - как «разные»
+const FAREA={transport:["🚲","Транспорт",["Ходи пешком или езди на велосипеде на короткие расстояния.","Выбирай автобус, трамвай или метро вместо машины.","Предложи семье ездить вместе по пути, а не отдельными поездками."]],
+ energy:["💡","Энергия и вода",["Выключай свет и зарядки, когда выходишь из комнаты.","Принимай короткий душ вместо ванны.","Предложи родителям светодиодные лампы - они тратят меньше энергии."]],
+ food:["🥗","Еда",["Попробуй пару дней в неделю без мяса.","Бери столько еды, сколько съешь, и доедай остатки.","Составляйте список покупок, чтобы не покупать лишнее."]],
+ things:["♻️","Вещи и мусор",["Сортируй мусор: бумагу, пластик, стекло и батарейки.","Носи свою сумку и бутылку для воды.","Покупай вещи, когда они правда нужны, и отдавай ненужное."]]};
+const fLevel=s=>s<=25?["🌱","Маленький след","Отличные привычки!"]:s<=50?["🌿","Средний след","Хорошо, но есть что улучшить."]:s<=75?["🌳","Заметный след","Несколько простых шагов заметно его уменьшат."]:["🏭","Большой след","Начни с одного совета ниже - это уже много."];
+function footV(){
+  const my=++vid,ans=FQ.map(()=>-1);
+  put(backBtn("fpb","👣 Калькулятор следа")+`<p class="muted sm" style="margin:6px 0 10px">Ответь на ${FQ.length} вопросов про свои привычки и привычки семьи. Это не точный расчёт выбросов, а оценка: чем меньше число, тем меньше твой след на планете.</p>
+    <div id="fpq">${FQ.map((q,i)=>`<div class="card fq"><b>${i+1}. ${esc(q[1])}</b><div class="fqo">${q[2].map((o,k)=>`<button type="button" class="opt" data-q="${i}" data-o="${k}"><span>${esc(o)}</span></button>`).join("")}</div></div>`).join("")}</div>
+    <button class="btn-full" id="fpg" disabled>Узнать результат</button><div id="fpr"></div>`);
+  $("#fpb").onclick=()=>go(tab);
+  $("#fpq").onclick=e=>{const b=e.target.closest("[data-q]");if(!b)return;const i=+b.dataset.q;ans[i]=+b.dataset.o;
+    b.parentElement.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",x===b));$("#fpg").disabled=ans.some(a=>a<0);$("#fpg").textContent=ans.some(a=>a<0)?`Осталось ответить: ${ans.filter(a=>a<0).length}`:"Узнать результат"};
+  $("#fpg").textContent=`Осталось ответить: ${FQ.length}`;
+  $("#fpg").onclick=async()=>{const pts=ans.map((a,i)=>(FQ_ALT[i]||FSC)[a]),parts={};
+    Object.keys(FAREA).forEach(k=>{const ix=FQ.map((q,i)=>q[0]===k?i:-1).filter(i=>i>=0);parts[k]=Math.round(ix.reduce((s,i)=>s+pts[i],0)/(ix.length*3)*100)});
+    const score=Math.round(pts.reduce((s,x)=>s+x,0)/(FQ.length*3)*100),lv=fLevel(score),prev=X&&X.footprint&&X.footprint.find(f=>f.date!==today0());
+    const worst=Object.keys(parts).sort((a,b)=>parts[b]-parts[a]).slice(0,2);
+    $("#fpr").innerHTML=`<div class="card hero center" style="margin-top:12px"><div style="font-size:54px">${lv[0]}</div><h2>${lv[1]}: ${score} из 100</h2><p class="muted">${lv[2]}${prev?` В прошлый раз было ${prev.score}${prev.score>score?" - след стал меньше 🎉":""}.`:""}</p></div>
+      <div class="card"><b>По областям</b>${Object.keys(FAREA).map(k=>`<div class="row sm" style="margin-top:10px"><b class="grow">${FAREA[k][0]} ${FAREA[k][1]}</b><span class="muted">${parts[k]}</span></div><div class="tbar"><i style="width:${parts[k]}%"></i></div>`).join("")}</div>
+      <div class="card"><b>Что можно сделать</b>${worst.map(k=>`<p class="sm" style="margin:10px 0 4px"><b>${FAREA[k][0]} ${FAREA[k][1]}</b></p><ul class="sm" style="margin:0;padding-left:20px">${FAREA[k][2].map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`).join("")}
+      <p class="muted sm" style="margin:10px 0 0">Пройди тест снова через месяц и сравни результат.</p></div>`;
+    stag($("#fpr"));$("#fpr").scrollIntoView({behavior:"smooth"});
+    const r=await api("footprintSave",{score,parts});if(r&&r.ok&&X){X.footprint=r.footprint;cset("x",X)}};
+}
+
+/* ───────── объявления учителя ───────── */
+function noticesBox(box,own,teacher){if(!box)return;
+  const list=((X&&X.notices)||[]).filter(n=>own?n.own:(!teacher||n.teacher.username===teacher));
+  box.innerHTML=`<h2 class="sec">📢 Объявления</h2>${own?`<div class="card"><textarea id="ntx" rows="2" maxlength="500" placeholder="Например: «В пятницу субботник, приносите перчатки»"></textarea><button class="btn-full" id="nta" style="margin-top:8px">Опубликовать</button></div>`:""}
+    ${list.length?list.map(n=>`<div class="card notice"><div class="row"><b class="grow">📢 ${esc(n.teacher.firstName)} ${esc(n.teacher.lastName)}</b><span class="muted sm">${ago(n.created)}</span>${n.own?`<button class="ghost sm" data-nd="${esc(n.id)}" aria-label="Удалить">🗑</button>`:""}</div><p style="margin:6px 0 0;white-space:pre-wrap">${esc(n.text)}</p></div>`).join("")
+     :`<p class="muted sm">${own?"Объявления увидят все ученики класса - в ленте и во вкладке «Класс».":"Пока объявлений нет."}</p>`}`;
+  const upd=r=>{if(dead(r))return;if(!r.ok)return toast(r.error,"err");if(X){X.notices=r.notices;cset("x",X)}noticesBox(box,own,teacher)};
+  if(own)box.querySelector("#nta").onclick=async()=>{const t=box.querySelector("#ntx").value.trim();if(t.length<2)return toast("Напишите текст объявления","err");upd(await api("noticeAdd",{text:t}));toast("Объявление опубликовано 📢")};
+  box.querySelectorAll("[data-nd]").forEach(b=>b.onclick=async()=>{if(!await ask("Удалить объявление?","Удалить",1))return;upd(await api("noticeDel",{id:b.dataset.nd}))});
+}
+
+/* ───────── мероприятия ───────── */
+function eventsBox(box,own,my){if(!box)return;
+  const draw=r=>{if(!box.isConnected||my!==vid)return;if(!r.ok){box.innerHTML=/Неизвестное действие/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
+    const ev=r.events.filter(e=>own?e.own:true);
+    box.innerHTML=`<h2 class="sec">📅 Мероприятия</h2>${own?`<button class="btn-full" id="evn" style="margin:10px 0">+ Новое мероприятие</button>`:""}
+      ${ev.length?ev.map(e=>`<div class="card evc ${e.past?"past":""}"><div class="row"><div class="evd"><b>${+e.date.slice(8)}</b><small>${MON[+e.date.slice(5,7)-1]}</small></div><div class="grow"><b>${esc(e.title)}</b>
+        <div class="muted sm">${e.place?"📍 "+esc(e.place)+" · ":""}${e.scope==="school"?"вся школа":"класс"}${e.teacher&&!e.own?" · "+esc(e.teacher.firstName)+" "+esc(e.teacher.lastName):""} · записались: ${e.count}</div></div></div>
+        ${e.description?`<p class="sm" style="margin:8px 0 0">${esc(e.description)}</p>`:""}
+        ${e.own?`${e.people.length?`<div class="evp">${e.people.map(p=>`<label class="row sm"><input type="checkbox" value="${esc(p.user.username)}" ${p.attended?"checked disabled":""}${e.date>today0()?" disabled":""}> ${esc(p.user.firstName)} ${esc(p.user.lastName)}${p.attended?" ✓":""}</label>`).join("")}</div>`:`<p class="muted sm" style="margin:8px 0 0">Пока никто не записался.</p>`}
+          <div class="row" style="margin-top:8px">${e.date<=today0()&&e.people.some(p=>!p.attended)?`<button class="grow sm" data-att="${esc(e.id)}">✅ Отметить участие</button>`:""}${!e.past?`<button class="ghost sm" data-evx="${esc(e.id)}">Отменить</button>`:""}</div>`
+        :e.attended?`<p class="sm" style="margin:8px 0 0;color:var(--pri);font-weight:800">✅ Участие отмечено - значок уже в профиле</p>`:e.past?"":`<button class="${e.joined?"ghost ":""}btn-full" data-ej="${esc(e.id)}" style="margin-top:8px">${e.joined?"Отменить запись":"Записаться"}</button>`}</div>`).join("")
+      :`<div class="card empty"><div class="eb">📅</div><p class="muted">${own?"Создайте субботник, сбор макулатуры или экскурсию. Ученики запишутся, а после вы отметите, кто пришёл - они получат значок, опыт и монеты.":"Пока мероприятий нет."}</p></div>`}`;
+    stag(box);
+    const after=x=>{if(dead(x))return;if(!x.ok)return toast(x.error,"err");cset("ev",{ok:true,events:x.events});draw({ok:true,events:x.events})};
+    box.querySelectorAll("[data-ej]").forEach(b=>b.onclick=async()=>{b.disabled=true;after(await api("eventJoin",{id:b.dataset.ej}))});
+    box.querySelectorAll("[data-evx]").forEach(b=>b.onclick=async()=>{if(!await ask("Отменить мероприятие?","Отменить",1))return;after(await api("eventCancel",{id:b.dataset.evx}))});
+    box.querySelectorAll("[data-att]").forEach(b=>b.onclick=async()=>{const names=[...b.closest(".evc").querySelectorAll("input:checked:not(:disabled)")].map(i=>i.value);if(!names.length)return toast("Отметьте тех, кто пришёл","err");
+      const x=await api("eventAttend",{id:b.dataset.att,usernames:names});if(x&&x.ok)toast(`Отмечено: ${x.marked}. Ученики получили значок 🙌`);after(x)});
+    if($("#evn"))$("#evn").onclick=()=>eventModal(x=>draw({ok:true,events:x.events}))};
+  swr("ev","eventList",{},draw,my);
+}
+function eventModal(done){const td=today0();
+  const m=modal(`<h2 style="padding-right:40px">📅 Новое мероприятие</h2><input id="emt" maxlength="60" placeholder="Например: «Субботник в парке»">
+    <div class="row" style="gap:8px"><input id="emd" type="date" min="${td}" value="${td}" style="flex:1"><select id="ems" style="flex:1"><option value="class">Мой класс</option><option value="school">Вся школа</option></select></div>
+    <input id="emp" maxlength="80" placeholder="Место (необязательно)"><textarea id="emx" rows="2" maxlength="300" placeholder="Что взять с собой, во сколько сбор (необязательно)"></textarea>
+    <div class="err" id="eme"></div><button class="btn-full" id="emb">Создать</button>`);
+  const q=x=>m.el.querySelector(x),b=q("#emb");
+  b.onclick=busy(b,async()=>{const r=await api("eventCreate",{title:q("#emt").value,date:q("#emd").value,scope:q("#ems").value,place:q("#emp").value,description:q("#emx").value});
+    if(dead(r))return m.close();if(!r.ok)return q("#eme").textContent=r.error;m.close();toast("Мероприятие создано 📅");done(r)});
+}
+
+function eventsV(){const my=++vid;put(backBtn("evb2","📅 Мероприятия")+`<div id="evv"></div>`);$("#evb2").onclick=()=>go(tab);eventsBox($("#evv"),isStaff(me),my)}
+
+/* ───────── тесты от учителя ───────── */
+function quizBox(box,teacher,own,my){if(!box)return;
+  const draw=r=>{if(!box.isConnected||my!==vid)return;if(!r.ok){box.innerHTML=/Неизвестное действие|не в классе/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
+    box.innerHTML=`<h2 class="sec">📝 Тесты</h2>${own?`<button class="btn-full" id="qzn" style="margin:10px 0">+ Новый тест</button>`:""}
+      ${r.quizzes.length?r.quizzes.map(q=>`<div class="card qzc"><div class="row"><div class="grow"><b>${esc(q.title)}</b><div class="muted sm">${plural(q.count,"вопрос","вопроса","вопросов")}${own?` · ответили: ${q.answers}`:""}${q.status==="closed"?" · закрыт":""}</div></div>
+        ${own?`<button class="ghost sm" data-qr="${esc(q.id)}">Результаты</button>${q.status==="open"?`<button class="ghost sm" data-qe="${esc(q.id)}">Закрыть</button>`:""}`
+        :q.done?`<button class="ghost sm" data-qt="${esc(q.id)}">✓ ${q.done.score} из ${q.done.total}</button>`:`<button class="sm" data-qt="${esc(q.id)}">Пройти</button>`}</div></div>`).join("")
+      :`<p class="muted sm">${own?"Составьте тест по теме урока - ученики пройдут его, а вы увидите результаты каждого и сложные вопросы.":"Учитель пока не дал тестов."}</p>`}`;
+    stag(box);box.querySelectorAll("[data-qt]").forEach(b=>b.onclick=()=>quizTakeV(b.dataset.qt,teacher));box.querySelectorAll("[data-qr]").forEach(b=>b.onclick=()=>quizResultsModal(b.dataset.qr));
+    box.querySelectorAll("[data-qe]").forEach(b=>b.onclick=async()=>{if(!await ask("Закрыть тест? Ученики больше не смогут его пройти.","Закрыть",1))return;const x=await api("quizEnd",{id:b.dataset.qe});if(dead(x))return;if(!x.ok)return toast(x.error,"err");load(true)});
+    if($("#qzn"))$("#qzn").onclick=()=>quizEditV()};
+  const load=f=>swr("qz:"+teacher,"quizList",own?{}:{teacher},draw,my,f);load();
+}
+async function quizTakeV(id,teacher){
+  const my=++vid,back=()=>go("class");put(backBtn("qtb","📝 Тест")+`<div id="qtv">${sk(3)}</div>`);$("#qtb").onclick=back;
+  const r=await api("quizGet",{id});if(my!==vid||dead(r))return;const box=$("#qtv");if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+  const Q=r.quiz,ans=Q.questions.map(()=>-1);
+  const review=res=>{box.innerHTML=`<div class="card hero center"><h2>${esc(Q.title)}</h2><div style="font-size:40px;font-weight:900">${res.score} из ${res.total}</div><p class="muted">${res.score===res.total?"Без единой ошибки! 🎉":"Посмотри правильные ответы ниже"}</p></div>
+    ${Q.questions.map((q,i)=>`<div class="card"><b>${i+1}. ${esc(q.q)}</b>${q.o.map((o,k)=>`<div class="opt ${k===res.right[i]?"good2":k===res.answers[i]?"bad2":""}"><b>${k===res.right[i]?"✓":"ABCD"[k]}</b><span>${esc(o)}</span></div>`).join("")}${res.e[i]?`<p class="muted sm" style="margin:6px 0 0">${esc(res.e[i])}</p>`:""}</div>`).join("")}
+    <button class="btn-full" id="qtk">Готово</button>`;stag(box);$("#qtk").onclick=back};
+  if(Q.result)return review(Q.result);
+  box.innerHTML=`<div class="card hero"><h2>${esc(Q.title)}</h2><div class="muted">${plural(Q.questions.length,"вопрос","вопроса","вопросов")} · ответить можно один раз · 3 опыта за каждый верный ответ</div></div>
+    ${Q.questions.map((q,i)=>`<div class="card"><b>${i+1}. ${esc(q.q)}</b>${q.o.map((o,k)=>`<button class="opt" data-q="${i}" data-o="${k}"><b>${"ABCD"[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`).join("")}
+    <button class="btn-full" id="qts" disabled>Ответить на все вопросы</button>`;stag(box);
+  box.onclick=e=>{const b=e.target.closest("[data-q]");if(!b)return;const i=+b.dataset.q;ans[i]=+b.dataset.o;b.parentElement.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",x===b));
+    const left=ans.filter(a=>a<0).length;$("#qts").disabled=!!left;$("#qts").textContent=left?`Осталось ответить: ${left}`:"Отправить ответы"};
+  $("#qts").onclick=busy($("#qts"),async()=>{const s=await api("quizSubmit",{id,answers:ans});if(my!==vid||dead(s))return;if(!s.ok)return toast(s.error,"err");
+    box.onclick=null;if(s.xp){addXp(s.xp);toast(`+${s.xp} опыта 🎉`)}achToast(s.ach);if(s.result.score===s.result.total)burst();cset("qz:"+teacher,null);FRESH["qz:"+teacher]=0;review(s.result);scrollTo({top:0,behavior:"smooth"})});
+}
+function quizEditV(){
+  const my=++vid;let Q=[{q:"",o:["",""],a:0,e:""}];
+  put(backBtn("qeb","📝 Новый тест")+`<div class="card"><input id="qet" maxlength="60" placeholder="Название теста, например «Сортировка мусора»"></div><div id="qel"></div>
+    <button class="ghost btn-full" id="qea">+ Вопрос</button><div class="err" id="qee"></div><button class="btn-full" id="qes" style="margin-top:8px">Сохранить и опубликовать</button>`);
+  $("#qeb").onclick=()=>go("class");
+  const draw=()=>{$("#qel").innerHTML=Q.map((x,i)=>`<div class="card qed" data-i="${i}"><div class="row"><b class="grow">Вопрос ${i+1}</b>${Q.length>1?`<button class="ghost sm" data-rm="${i}" aria-label="Удалить вопрос">🗑</button>`:""}</div>
+      <input data-f="q" maxlength="200" placeholder="Текст вопроса" value="${esc(x.q)}">
+      ${x.o.map((o,k)=>`<div class="row qeo"><input type="radio" name="a${i}" data-a="${k}" ${x.a===k?"checked":""} aria-label="Верный ответ"><input data-o="${k}" maxlength="100" placeholder="Вариант ${k+1}" value="${esc(o)}" style="flex:1">${x.o.length>2?`<button class="ghost sm" data-ro="${k}" aria-label="Убрать вариант">✕</button>`:""}</div>`).join("")}
+      ${x.o.length<4?`<button class="ghost sm" data-ao="1">+ Вариант</button>`:""}<input data-f="e" maxlength="200" placeholder="Пояснение после ответа (необязательно)" value="${esc(x.e)}" style="margin-top:6px">
+      <p class="muted sm" style="margin:4px 0 0">Отметьте кружком верный ответ.</p></div>`).join("");$("#qea").hidden=Q.length>=15};
+  $("#qel").oninput=e=>{const c=e.target.closest("[data-i]");if(!c)return;const x=Q[+c.dataset.i],t=e.target;
+    if(t.dataset.f)x[t.dataset.f]=t.value;else if(t.dataset.o!==undefined)x.o[+t.dataset.o]=t.value;else if(t.dataset.a!==undefined)x.a=+t.dataset.a};
+  $("#qel").onclick=e=>{const c=e.target.closest("[data-i]");if(!c)return;const i=+c.dataset.i,x=Q[i],t=e.target.closest("button");if(!t)return;
+    if(t.dataset.rm!==undefined)Q.splice(i,1);else if(t.dataset.ro!==undefined){const k=+t.dataset.ro;x.o.splice(k,1);if(x.a>=x.o.length)x.a=0}else if(t.dataset.ao)x.o.push("");draw()};
+  $("#qea").onclick=()=>{Q.push({q:"",o:["",""],a:0,e:""});draw();$("#qel").lastElementChild.scrollIntoView({behavior:"smooth"})};
+  $("#qes").onclick=busy($("#qes"),async()=>{const r=await api("quizCreate",{title:$("#qet").value,questions:Q});if(my!==vid||dead(r))return;
+    if(!r.ok)return $("#qee").textContent=r.error;cset("qz:"+me.username,null);FRESH["qz:"+me.username]=0;toast("Тест опубликован 📝");burst();go("class")});
+  draw();
+}
+async function quizResultsModal(id){
+  const m=modal(`<h2 style="padding-right:40px">📊 Результаты теста</h2><div id="qrb">${sk(2)}</div>`),r=await api("quizResults",{id});if(dead(r))return m.close();
+  const b=m.el.querySelector("#qrb");if(!b)return;if(!r.ok){b.innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
+  b.innerHTML=`<p class="muted sm" style="margin:0">«${esc(r.title)}» · ${plural(r.total,"вопрос","вопроса","вопросов")}</p><div class="sec">Ученики</div>
+    ${r.students.length?r.students.map(s=>`<div class="item">${avatar(s.user)}<div class="grow"><b>${nameH(s.user)}</b></div><b>${s.score===null?`<span class="muted">не прошёл</span>`:s.score+" из "+r.total}</b></div>`).join(""):`<p class="muted sm">В классе пока нет учеников.</p>`}
+    <div class="sec">Вопросы</div>${r.questions.map((q,i)=>`<div style="margin:10px 0"><div class="row sm"><b class="grow">${i+1}. ${esc(q.q)}</b><span class="muted">${q.pct===null?"нет ответов":q.pct+"% верно"}</span></div>${q.pct===null?"":`<div class="tbar"><i style="width:${q.pct}%"></i></div>`}</div>`).join("")}`;
+  loadAv(r.students.map(s=>s.user));
+}
+
+/* ───────── страница для родителей ───────── */
+const parentUrl=c=>location.origin+location.pathname+"?parent="+c;
+function parentCard(box){if(!box)return;
+  const draw=code=>{box.innerHTML=`<div class="card"><b>👪 Страница для родителей</b><p class="muted sm" style="margin:4px 0 8px">Ссылка только для просмотра: уровень, серия дней, задания, значки и итоги недели. Чаты, фото и имя пользователя там не видны.</p>
+    ${code?`<div class="plink"><input readonly value="${esc(parentUrl(code))}" id="plv"></div><div class="row" style="gap:8px;margin-top:8px"><button class="grow sm" id="plc">📋 Скопировать</button><button class="ghost grow sm" id="plr">🔄 Новая ссылка</button><button class="ghost danger sm" id="plo">Выключить</button></div>
+      <p class="muted sm" style="margin:6px 0 0">Новая ссылка отменяет старую.</p>`:`<button class="btn-full" id="plm">Создать ссылку</button>`}</div>`;
+    const call=async(a,d)=>{const r=await api(a,d);if(dead(r))return;if(!r.ok)return toast(r.error,"err");draw(r.code||"")};
+    if($("#plm"))$("#plm").onclick=()=>call("parentLink",{create:true});
+    if($("#plc"))$("#plc").onclick=async()=>{try{await navigator.clipboard.writeText(parentUrl(code));toast("Ссылка скопирована 📋")}catch{$("#plv").select();toast("Выделите ссылку и скопируйте")}};
+    if($("#plr"))$("#plr").onclick=async()=>{if(await ask("Создать новую ссылку? Старая перестанет работать.","Создать"))call("parentLink",{reset:true})};
+    if($("#plo"))$("#plo").onclick=async()=>{if(await ask("Выключить страницу для родителей?","Выключить",1)){const r=await api("parentOff");if(r&&r.ok)draw("")}}};
+  box.innerHTML=`<div class="card">${sk(1)}</div>`;api("parentLink").then(r=>{if(r&&r.ok)draw(r.code);else box.innerHTML=""});
+}
+async function parentPage(code){
+  document.body.classList.remove("chatting");app.innerHTML=`<div class="wrap" style="padding:16px"><div id="pp">${sk(3)}</div></div>`;
+  const r=await api("parentView",{code}),b=$("#pp");
+  if(!r.ok){b.innerHTML=`<div class="card empty"><div class="eb">👪</div><h2>Ссылка не работает</h2><p class="muted">${esc(r.error)}</p></div>`;return}
+  const c=r.child,w=r.week,imp=r.impact;
+  b.innerHTML=`<div class="row" style="margin:6px 0 12px"><span style="font-size:28px">${BRAND.emoji}</span><h1 class="grow grad" style="margin:0">${esc(BRAND.name)}</h1></div>
+    <div class="card hero"><div class="muted sm">Успехи в ЭкоТреке</div><h2>${esc(c.firstName)} ${esc(c.lastName)}</h2><div class="muted">${c.grade?esc(c.grade+(c.letter||""))+" класс · ":""}${r.level} уровень · ${r.xp} опыта · эко-сад: ${esc(r.stage.toLowerCase())}</div></div>
+    <div class="card"><b>🔥 Серия дней</b><p style="margin:6px 0 0">${r.streak?plural(r.streak,"день","дня","дней")+" подряд играет в мини-игры":"Сейчас серии нет"} · лучшая серия: ${plural(r.bestStreak,"день","дня","дней")}</p></div>
+    <div class="card"><b>📅 Последние 7 дней</b><div class="stg"><div class="imp"><span>🎮</span><b>${w.days}</b><small>дней с играми</small></div><div class="imp"><span>✅</span><b>${w.tasks}</b><small>заданий дня</small></div><div class="imp"><span>⭐</span><b>${w.xp}</b><small>опыта</small></div></div>
+    <p class="muted sm" style="margin:8px 0 0">Всего: ${plural(r.tasks,"задание","задания","заданий")} дня и ${plural(r.games,"мини-игра","мини-игры","мини-игр")}.</p></div>
+    ${impactCard(imp,"Польза для природы","Пока заданий дня с пользой не было.")}
+    <div class="card"><b>🏅 Значки</b>${r.badges.length?`<div class="bgrid">${r.badges.map((x,i)=>`<div class="bdg">${medal({...x,track:x.level?"x":""},"",i)}<b>${esc(x.title)}</b></div>`).join("")}</div>`:`<p class="muted sm">Значков пока нет.</p>`}</div>
+    ${r.events.length?`<div class="card"><b>📰 Недавние успехи</b>${r.events.map(e=>`<div class="item"><div class="evi">${esc(e.emoji)}</div><div class="grow"><div>${esc(e.text)}</div><div class="muted sm">${ago(e.created)}</div></div></div>`).join("")}</div>`:""}
+    <p class="muted sm center">Это страница только для просмотра. ЭкоТрек - школьный проект об экологии.</p>`;
+  stag(b);
+}
+
 /* ───────── запуск ───────── */
 (async()=>{
+  const pc=new URLSearchParams(location.search).get("parent");
+  if(pc&&API_URL)return parentPage(pc);
   if(!API_URL){app.innerHTML=`<div class="card"><h2>⚙️ Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js. Инструкция - в README.md.</p></div>`;return}
   const cached=token&&ls.get("me");
   if(cached){
