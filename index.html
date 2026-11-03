@@ -532,7 +532,8 @@ button.bdg.lockd>b{color:var(--muted);font-weight:700}
 .evd{display:grid;place-items:center;min-width:52px;padding:6px;border-radius:14px;background:var(--pri2);line-height:1.1}
 .evd b{font-size:22px}.evd small{font-size:12px;color:var(--muted)}
 .evp{display:grid;gap:6px;margin-top:10px;padding:10px;border-radius:12px;background:var(--pri2)}
-.evp label{gap:8px;align-items:center}
+.evp label{display:flex;justify-content:flex-start;gap:10px;align-items:center;cursor:pointer;font-weight:700}
+.evp input[type=checkbox]{width:20px;height:20px;min-height:0;flex:none;margin:0;padding:0;accent-color:var(--pri)}
 .qed input{margin:6px 0 0}.qeo{gap:8px;align-items:center;margin-top:6px}.qeo input[type=radio]{width:20px;height:20px;flex:none;margin:0}
 .plink input{font-size:13px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
@@ -1994,6 +1995,7 @@ function eventsBox(box,own,my){if(!box)return;
         <div class="muted sm">${e.place?"📍 "+esc(e.place)+" · ":""}${e.scope==="school"?"вся школа":"класс"}${e.teacher&&!e.own?" · "+esc(e.teacher.firstName)+" "+esc(e.teacher.lastName):""} · записались: ${e.count}</div></div></div>
         ${e.description?`<p class="sm" style="margin:8px 0 0">${esc(e.description)}</p>`:""}
         ${e.own?`${e.people.length?`<div class="evp">${e.people.map(p=>`<label class="row sm"><input type="checkbox" value="${esc(p.user.username)}" ${p.attended?"checked disabled":""}${e.date>today0()?" disabled":""}> ${esc(p.user.firstName)} ${esc(p.user.lastName)}${p.attended?" ✓":""}</label>`).join("")}</div>`:`<p class="muted sm" style="margin:8px 0 0">Пока никто не записался.</p>`}
+          ${e.people.length&&e.date>today0()?`<p class="muted sm" style="margin:8px 0 0">Отметить, кто пришёл, можно в день мероприятия или после него.</p>`:""}
           <div class="row" style="margin-top:8px">${e.date<=today0()&&e.people.some(p=>!p.attended)?`<button class="grow sm" data-att="${esc(e.id)}">✅ Отметить участие</button>`:""}${!e.past?`<button class="ghost sm" data-evx="${esc(e.id)}">Отменить</button>`:""}</div>`
         :e.attended?`<p class="sm" style="margin:8px 0 0;color:var(--pri);font-weight:800">✅ Участие отмечено - значок уже в профиле</p>`:e.past?"":`<button class="${e.joined?"ghost ":""}btn-full" data-ej="${esc(e.id)}" style="margin-top:8px">${e.joined?"Отменить запись":"Записаться"}</button>`}</div>`).join("")
       :`<div class="card empty"><div class="eb">📅</div><p class="muted">${own?"Создайте субботник, сбор макулатуры или экскурсию. Ученики запишутся, а после вы отметите, кто пришёл - они получат значок, опыт и монеты.":"Пока мероприятий нет."}</p></div>`}`;
