@@ -12,8 +12,9 @@ NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title
 XpLog:["userId","date","xp","src"],GameLog:["userId","date","game","score","total"],
 Counters:["userId","games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy"],
 Qotd:["date","userId","answer","ok"],Challenges:["id","teacherId","title","unit","goal","status","created","deadline"],
-Contrib:["chId","userId","amount","created"],Bans:["userId","until","reason","by","created"]});
-function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+Contrib:["chId","userId","amount","created"],Bans:["userId","until","reason","by","created"],
+MapCache:["key","data","updated"]});
+function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
 
@@ -46,7 +47,7 @@ const delRows=(n,list)=>{const sh=SS().getSheetByName(n);list.map(r=>r._row).sor
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
-const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans"];
+const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache"];
 const ensured={};
 function ensure(n){if(ensured[n]||MY.indexOf(n)<0)return;
  if(!SS().getSheetByName(n)){const s=SS().insertSheet(n);s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -453,6 +454,20 @@ profile(d){const me_=who(d),t=byName(d.username);if(!t)throw"Пользоват�
  return{user:pub(t),avatar:av?av.data:"",streak:streakOf(t.id,pd),bestStreak:Math.max(cn.best,streakOf(t.id,pd)),impact:impactOfC(cn),
   badges:rows("Badges").filter(b=>b.studentId===t.id).sort(sortNew).map(b=>badgeOut(b,users)),events:eventsOf(t.id),
   self:t.id===me_.id,friend:t.id!==me_.id&&(friendsOf(d).friends||[]).some(f=>f.username===t.username)}},
+// Эко-карта: запасной путь к серверам OpenStreetMap через Google и общий кэш на неделю для всех учеников
+mapPoints(d){who(d);const lat=Number(d.lat),lon=Number(d.lon),rad=Number(d.rad);
+ if(!(Math.abs(lat)<=85&&Math.abs(lon)<=180)||MAP_RADS.indexOf(rad)<0)throw"Неверное место на карте";
+ const la=lat.toFixed(2),lo=lon.toFixed(2),key="map_"+la+"_"+lo+"_"+rad,C=CacheService.getScriptCache(),c=C.get(key);
+ if(c)return{el:JSON.parse(c),cached:true};
+ const hit=mapCacheFind(key);
+ if(hit&&Date.now()-new Date(hit.updated).getTime()<7*864e5){C.put(key,hit.data,21600);return{el:JSON.parse(hit.data),cached:true}}
+ const el=mapFetch(+la,+lo,rad);
+ if(!el){if(hit)return{el:JSON.parse(hit.data),cached:true,stale:true};throw"Серверы карты сейчас перегружены"}
+ const slim=el.map(slimPoint).filter(Boolean).slice(0,200);let data=JSON.stringify(slim);
+ while(data.length>45000&&slim.length>10){slim.length=Math.floor(slim.length*0.8);data=JSON.stringify(slim)}
+ C.put(key,data,21600);
+ withLock(()=>{const h=mapCacheFind(key);if(h)setRow("MapCache",h.row,[key,data,now()]);else addT("MapCache",[key,data,now()]);mapCachePrune()});
+ return{el:slim}},
 classForest(d){const u=who(d),t=byName(d.username),c=t&&rows("Classes").find(x=>x.teacherId===t.id);
  if(!c||(t.id!==u.id&&!isMember(t.id,u.id)))throw"Вы не состоите в этом классе";
  return Object.assign({name:c.name},forestOf(t))},
@@ -709,6 +724,29 @@ const SEASON=[["recycling","Всемирный день вторичной пе�
  ["carfree","Всемирный день без автомобиля","🚲",y=>y+"-09-22",{title:"День без машины",description:"Доберись до школы пешком, на велосипеде или на общественном транспорте.",icon:"🚲",xp:20,imp:{co2:1}}],
  ["animals","Всемирный день животных","🐾",y=>y+"-10-04",{title:"Помоги животным",description:"Насыпь корм в кормушку или помоги приюту для животных.",icon:"🐾",xp:20,imp:{}}],
  ["titmouse","Синичкин день","🐦",y=>y+"-11-12",{title:"Кормушка для птиц",description:"Сделай или повесь кормушку и насыпь несолёных семечек.",icon:"🐦",xp:20,imp:{}}]];
+/* ───── эко-карта: серверы OpenStreetMap и общий кэш ───── */
+const MAP_RADS=[1000,2000,3000,5000];
+const OVP_SRV=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+const MAP_TAG=/^(name|operator|recycling_type|opening_hours|recycling:[a-z_]+)$/i;
+// Только нужное для карты, чтобы ответ помещался в кэш и в ячейку таблицы
+function slimPoint(e){const t={},g=e.tags||{};Object.keys(g).forEach(k=>{if(MAP_TAG.test(k)&&(k.indexOf("recycling:")!==0||g[k]==="yes"))t[k]=String(g[k]).slice(0,80)});
+ const lat=e.lat!=null?e.lat:e.center&&e.center.lat,lon=e.lon!=null?e.lon:e.center&&e.center.lon;
+ return lat==null||lon==null?null:{lat:Math.round(lat*1e6)/1e6,lon:Math.round(lon*1e6)/1e6,tags:t}}
+const okOvp=j=>j&&Array.isArray(j.elements)&&!(/runtime error/i.test(j.remark||"")&&!j.elements.length);
+// Спрашивает все серверы сразу и берёт первый удачный ответ; если запрос целиком сорвался - по одному
+function mapFetch(lat,lon,rad){const dy=rad/111320,dx=rad/(111320*Math.cos(lat*Math.PI/180)),bb=[lat-dy,lon-dx,lat+dy,lon+dx].map(v=>v.toFixed(5)).join(",");
+ const q='[out:json][timeout:20];(node["amenity"="recycling"]('+bb+');way["amenity"="recycling"]('+bb+'););out center qt 200;';
+ const req=u=>({url:u,method:"post",payload:{data:q},muteHttpExceptions:true}),parse=r=>{try{if(r.getResponseCode()!==200)return null;const j=JSON.parse(r.getContentText());return okOvp(j)?j.elements:null}catch(e){return null}};
+ try{for(const r of UrlFetchApp.fetchAll(OVP_SRV.map(req))){const el=parse(r);if(el)return el}return null}catch(e){}
+ for(const u of OVP_SRV){try{const el=parse(UrlFetchApp.fetch(u,req(u)));if(el)return el}catch(e){}}
+ return null}
+function mapCacheFind(key){ensure("MapCache");const sh=SS().getSheetByName("MapCache"),n=sh.getLastRow()-1;if(n<1)return null;
+ const ks=sh.getRange(2,1,n,1).getValues();let i=-1;for(let k=0;k<ks.length;k++)if(String(ks[k][0])===key){i=k;break}
+ if(i<0)return null;const v=sh.getRange(i+2,1,1,3).getValues()[0];return{row:i+2,data:String(v[1]),updated:String(v[2])}}
+// не больше 200 мест в кэше: самые старые удаляются
+function mapCachePrune(){const sh=SS().getSheetByName("MapCache"),n=sh.getLastRow()-1;if(n<=200)return;
+ const up=sh.getRange(2,3,n,1).getValues().map((r,i)=>({row:i+2,u:String(r[0])})).sort((a,b)=>a.u<b.u?-1:1).slice(0,n-200);
+ up.map(x=>x.row).sort((a,b)=>b-a).forEach(r=>sh.deleteRow(r))}
 function activeEvent(){const t=today(),y=+t.slice(0,4);
  for(const e of SEASON){const d=e[3](y);if(t>=dayShift(d,-3)&&t<=dayShift(d,3))
   return{id:e[0],name:e[1],emoji:e[2],date:d,year:y,until:dayShift(d,3),task:e[4]}}return null}
@@ -911,7 +949,7 @@ const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0};
 A.batch=d=>{const out={};(Array.isArray(d.calls)?d.calls:[]).slice(0,8).forEach(c=>{const a=c&&c.action;if(!BATCH[a]||!A[a])return;
  try{out[a]=Object.assign({ok:true},A[a](Object.assign({},c,{token:d.token})))}catch(e){out[a]={ok:false,error:typeof e==="string"?e:"Ошибка сервера: "+e}}});
  return{results:out}};
-const FAST={qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
+const FAST={mapPoints:1,qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
 // Сообщения из Code.gs - русскими словами вместо «юзернейм» и длинного тире
 const RU_ERR={"Неверный юзернейм или пароль":"Неверное имя пользователя или пароль","Этот юзернейм уже занят":"Это имя пользователя уже занято"};
 const ruText=t=>{t=String(t);return(RU_ERR[t]||t).replace(/Юзернейм/g,"Имя пользователя").replace(/юзернейм/g,"имя пользователя").replace(/[\u2013\u2014]/g,"-")};
