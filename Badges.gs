@@ -1,13 +1,13 @@
-// ЭкоТрек: учителя, классы, бейджи, аватарки, чаты, мини-игры и ускорение сервера.
+// ЭкоТрек: учителя, классы, значки, фото профиля, чаты, мини-игры и ускорение сервера.
 // Дополнение к Code.gs - отдельный файл НИЖЕ Code.gs. После каждого обновления этого файла
 // один раз запустить setupBadges() и развернуть новую версию. Код учителя: Настройки проекта -> Свойства скрипта -> TEACHER_CODE.
 Object.assign(H,{Avatars:["userId","data","updated"],Classes:["teacherId","code","name"],
 Members:["teacherId","studentId","created"],
-Badges:["id","teacherId","studentId","emoji","color","title","description","created","seen"],
+Badges:["id","teacherId","studentId","emoji","color","title","description","created","seen","level"],
 Messages:["id","chat","userId","type","text","media","created"],ChatReads:["userId","chat","ts"],
 GamesPlayed:["userId","date","game"],GameQueue:["userId","game","order","pos"],DailyTasks:["userId","date","slot","taskId","done"],PlayDays:["userId","date"],
 Events:["id","userId","type","emoji","text","created"],Reactions:["msgId","chat","userId","emoji"],
-Profiles:["userId","cover","pattern","frame","status","emoji","showcase","grade","letter","consent"],
+Profiles:["userId","cover","pattern","frame","status","emoji","showcase","grade","letter","consent","nameColor"],
 NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"],
 XpLog:["userId","date","xp","src"],GameLog:["userId","date","game","score","total"],
 Counters:["userId","games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy"],
@@ -68,8 +68,8 @@ function addT(n,a){ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.
  sh.getRange(r,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])})}
 function setRow(n,row,a){SS().getSheetByName(n).getRange(row,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])}
 
-// Разработчик: аккаунт, который первым был замечен с юзернеймом renwori. Дальше узнаётся по id,
-// поэтому смена юзернейма ничего не ломает и никто другой не сможет «занять» эту роль.
+// Разработчик: аккаунт, который первым был замечен с именем пользователя renwori. Дальше узнаётся по id,
+// поэтому смена имени пользователя ничего не ломает и никто другой не сможет «занять» эту роль.
 let devId;
 function isDev(u){
  if(devId===undefined){const c=CacheService.getScriptCache();devId=c.get("dev_id")||"";
@@ -81,10 +81,29 @@ const isStaff=u=>u.role==="teacher"||u.role==="admin"||isDev(u);
 try{const _pub=pub;pub=function(u){const o=_pub(u);if(isDev(u))o.dev=true;const c=custOf(u.id);if(c)o.cust=c;return o}}catch(e){}
 
 /* ───── оформление профиля ───── */
-const COVERS=["default","forest","ocean","sunset","aurora","meadow","night","berry","dev"];
-const PATTERNS=["none","leaves","waves","stars","dots","binary"];
-const DEV_ONLY={cover:"dev",pattern:"binary",emoji:"</>"};  // украшения только для разработчика
-// свой эмодзи: только символы эмодзи (с модификаторами и склейками), не длиннее 16 знаков
+// Каталог оформления: [код, название, условие открытия, как открыть, только для разработчика].
+// Без условия - открыто всем. x - статистика пользователя (cosmStats).
+const COSM={
+ cover:[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Северное сияние"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["autumn","Осень"],["cherry","Вишнёвый цвет"],
+  ["space","Космос",x=>x.lv>=15,"с 15 уровня"],["arctic","Арктика",x=>x.tr.streak>=3,"серия 30 дней"],["deep","Морская глубина",x=>x.tr.water>=2,"сберечь 500 л воды"],
+  ["jungle","Джунгли",x=>x.tr.tasks>=3,"100 заданий дня"],["volcano","Вулкан",x=>x.tr.streak>=4,"серия 100 дней"],["golden","Золотая",x=>x.maxTier>=4,"любой значок 4 уровня"],
+  ["party","Праздничная",x=>x.years>=1,"1 год на платформе"],["dev","Код",x=>x.dev,"только у разработчика",1]],
+ pattern:[["none","Без узора"],["leaves","Листья"],["waves","Волны"],["stars","Звёзды"],["dots","Точки"],["snow","Снежинки"],["hearts","Сердечки"],
+  ["drops","Капли",x=>x.tr.water>=1,"сберечь 100 л воды"],["paws","Следы лап",x=>x.tr.games>=2,"50 мини-игр"],["hex","Соты",x=>x.tr.perfect>=2,"10 игр без ошибок"],
+  ["firs","Ёлочки",x=>x.xp>=500,"вырастить дерево в эко-саду"],["crowns","Короны",x=>x.lv>=20,"с 20 уровня"],["confetti","Конфетти",x=>x.years>=1,"1 год на платформе"],
+  ["binary","01010",x=>x.dev,"только у разработчика",1]],
+ frame:[["none","Без рамки"],["leaf","Листья"],["ocean","Океан",x=>x.lv>=3,"с 3 уровня"],["fire","Огонь",x=>x.best>=7,"серия 7 дней"],["rainbow","Радуга",x=>x.lv>=5,"с 5 уровня"],
+  ["medal","Медальная",x=>x.badges>=3,"3 значка"],["gold","Золото",x=>x.lv>=10,"с 10 уровня"],["season","Эко-праздник",x=>x.season,"задание эко-праздника"],
+  ["ice","Лёд",x=>x.tr.streak>=3,"серия 30 дней"],["bee","Пчела",x=>x.tr.tasks>=2,"50 заданий дня"],["wise","Мудрость",x=>x.tr.correct>=2,"500 верных ответов"],
+  ["sun","Солнце",x=>x.tr.qotd>=2,"30 верных ответов на вопрос дня"],["team","Командная",x=>x.ch>=1,"выполнить испытание класса"],["anniv","Годовщина",x=>x.years>=1,"1 год на платформе"],
+  ["diamond","Алмазная",x=>x.maxTier>=5,"любой значок 5 уровня"],["legend","Легенда",x=>x.lv>=30,"с 30 уровня"],["dev","Разработчик",x=>x.dev,"только у разработчика",1]],
+ nameColor:[["none","Обычный"],["green","Зелёный"],["blue","Синий"],["sunset","Закат",x=>x.lv>=5,"с 5 уровня"],["ocean","Морской",x=>x.tr.water>=1,"сберечь 100 л воды"],
+  ["fire","Огненный",x=>x.tr.streak>=3,"серия 30 дней"],["gold","Золотой",x=>x.lv>=20,"с 20 уровня"],["rainbow","Радужный",x=>x.maxTier>=5,"любой значок 5 уровня"],
+  ["dev","Код",x=>x.dev,"только у разработчика",1]]};
+const COSM_ERR={cover:["Неизвестная обложка","Эта обложка пока закрыта"],pattern:["Неизвестный узор","Этот узор пока закрыт"],
+ frame:["Неизвестная рамка","Эта рамка пока закрыта"],nameColor:["Неизвестный цвет имени","Этот цвет имени пока закрыт"]};
+const DEV_ONLY={emoji:"</>"};  // смайлик только для разработчика
+// свой смайлик: только символы-смайлики (с модификаторами и склейками), не длиннее 16 знаков
 const EMOJI_RE=/^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|\u200d|\ufe0f|\u20e3)+$/u;
 const okEmoji=e=>P_EMOJI.indexOf(e)>=0||(e.length<=16&&EMOJI_RE.test(e)&&/\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(e));
 // класс ученика: цифра 1-11 и буква (её ученик вписывает сам)
@@ -94,11 +113,10 @@ function gradeOf(grade,letter,required){const g=String(grade??"").trim(),l=Strin
  if(l&&!/^[А-ЯЁA-Z]{1,2}$/.test(l))throw"Буква класса - одна или две буквы";
  return{grade:g,letter:l}}
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
-const FRAMES={none:()=>true,leaf:()=>true,ocean:x=>x.lv>=3,fire:x=>x.best>=7,rainbow:x=>x.lv>=5,medal:x=>x.badges>=3,gold:x=>x.lv>=10,season:x=>x.season,dev:x=>x.dev};
 let CU=null;
 function custOf(uid){if(!CU){CU={};const bs=rows("Badges");rows("Profiles").forEach(p=>{let sc=[];try{sc=JSON.parse(p.showcase||"[]")}catch(e){}
-  CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,grade:p.grade||"",letter:p.letter||"",
-   sc:sc.map(id=>bs.find(b=>b.id===id&&b.studentId===p.userId)).filter(Boolean).map(b=>({id:b.id,emoji:b.emoji,color:b.color,title:b.title}))}})}
+  CU[p.userId]={cover:p.cover,pattern:p.pattern,frame:p.frame,status:p.status,emoji:p.emoji,grade:p.grade||"",letter:p.letter||"",nameColor:p.nameColor||"",
+   sc:sc.map(id=>bs.find(b=>b.id===id&&b.studentId===p.userId)).filter(Boolean).map(b=>({id:b.id,emoji:b.emoji,color:b.color,title:b.title,level:Number(b.level)||0}))}})}
  return CU[uid]||null}
 function bestStreak(uid,pd){const ds=pd.filter(r=>r.userId===uid).map(r=>r.date).sort();let best=0,run=0,prev=null;
  ds.forEach(d=>{if(d===prev)return;run=prev&&dayShift(prev,1)===d?run+1:1;best=Math.max(best,run);prev=d});return best}
@@ -116,7 +134,8 @@ function classOf(t){let c=rows("Classes").find(x=>x.teacherId===t.id);
  if(!c){addT("Classes",[t.id,newCode(),"Мой класс"]);c=rows("Classes").find(x=>x.teacherId===t.id)}return c}
 const isMember=(tid,sid)=>rows("Members").some(m=>m.teacherId===tid&&m.studentId===sid);
 function badgeOut(b,users){const t=users.find(u=>u.id===b.teacherId);
- return{id:b.id,emoji:b.emoji,color:b.color,title:b.title,description:b.description,created:b.created,seen:b.seen==="1",
+ const tm=/^ach_([a-z]+)_/.exec(b.id),track=tm&&TRACKS.some(t=>t[0]===tm[1])?tm[1]:"";
+ return{id:b.id,emoji:b.emoji,color:b.color,title:b.title,description:b.description,created:b.created,seen:b.seen==="1",up:b.seen==="u",level:Number(b.level)||0,track,
   from:b.teacherId==="system"?{system:true,username:"",firstName:"ЭкоТрек",lastName:""}:t?{username:t.username,firstName:t.firstName,lastName:t.lastName,dev:isDev(t)}:null}}
 const sortNew=(a,b)=>a.created<b.created?1:-1;
 function studentOf(t,username){const s=byName(username);if(!s)throw"Пользователь не найден";
@@ -181,8 +200,8 @@ const GAMES={
   ["Старый ноутбук",4,"Электронику сдают в пункты приёма техники.",1],["Зарядное устройство",4,"Зарядки - это электроника, их сдают в пункты приёма.",2],
   ["Аккумулятор от телефона",4,"Аккумуляторы опасны для природы - их сдают отдельно.",2],["Баллончик с краской",4,"Баллончики с краской относятся к опасным отходам.",3],
   ["Электронная игрушка",4,"Игрушки с микросхемами и батарейками сдают как электронику.",1],["Светодиодная лампа",4,"Лампы сдают в специальные пункты приёма.",3],
-  ["Батарейка-таблетка от часов",4,"Маленькие батарейки тоже содержат вредные металлы - их сдают в пункты приёма батареек.",2],["Старый Wi-Fi роутер",4,"Роутер - это электроника. Её сдают в пункты приёма техники.",2],
-  ["Крафтовая бумага от посылки",0,"Обёрточная крафтовая бумага - это бумага, её сдают в макулатуру. Скотч лучше снять.",2],["Пустой стеклянный флакон от лекарства",2,"Чистый стеклянный флакон без резиновой пробки и пипетки сдают вместе со стеклом.",2],
+  ["Батарейка-таблетка от часов",4,"Маленькие батарейки тоже содержат вредные металлы - их сдают в пункты приёма батареек.",2],["Старый маршрутизатор для интернета",4,"Маршрутизатор - это электроника. Её сдают в пункты приёма техники.",2],
+  ["Обёрточная бумага от посылки",0,"Обёрточная бумага - это бумага, её сдают в макулатуру. Клейкую ленту лучше снять.",2],["Пустой стеклянный флакон от лекарства",2,"Чистый стеклянный флакон без резиновой пробки и пипетки сдают вместе со стеклом.",2],
   ["Электронный градусник",4,"В электронном градуснике есть батарейка и плата - его сдают вместе с электроникой.",3],["Аккумулятор от электросамоката",4,"Литий-ионные аккумуляторы могут загореться, если их повредить. Их сдают в специальные пункты приёма.",3],
   ["Отработанное моторное масло",4,"Масло нельзя выливать на землю или в канализацию: даже немного масла загрязняет большой объём воды. Его сдают в автосервис или пункт приёма.",3],["Растворитель для краски",4,"Растворители ядовиты и легко воспламеняются - их сдают как опасные отходы, а не выливают в раковину.",3],
   ["Флакон с остатками лака для ногтей",4,"В лаке и жидкости для его снятия есть растворители, поэтому остатки сдают как опасные отходы.",3]]},
@@ -237,7 +256,7 @@ const GAMES={
   ["Почему сжигание угля особенно вредно для климата?",["На единицу энергии выделяется больше CO₂, чем от нефти и газа","Уголь поглощает кислород из почвы","Уголь охлаждает воздух","Уголь - возобновляемый ресурс"],"Уголь почти целиком состоит из углерода, поэтому при сжигании даёт больше всего CO₂ среди ископаемых видов топлива.",3],["Какой недостаток есть у атомных электростанций, хотя при работе они почти не выделяют CO₂?",["Радиоактивные отходы","Много дыма","Зависят от ветра","Работают только днём"],"Отработанное ядерное топливо очень долго остаётся опасным, его нужно надёжно хранить.",3],
   ["Что означает ПДК?",["Предельно допустимая концентрация вредного вещества","Природный двигатель климата","Прибор для измерения ветра","Проект дорожного комплекса"],"ПДК - наибольшее содержание вещества в воздухе, воде или почве, которое не вредит здоровью.",3],["К какому классу опасности относятся отработанные ртутные лампы?",["I класс - чрезвычайно опасные","III класс","V класс - практически неопасные","Они не опасны"],"Ртуть очень ядовита, поэтому ртутные лампы и градусники - отходы I класса опасности.",3],
   ["Чем опасно таяние вечной мерзлоты?",["Выделяется метан, рушатся дома и дороги","Почва везде становится плодороднее","Опускается уровень океана","Ничем"],"Мерзлота занимает больше половины территории России. Когда она тает, грунт проседает, а из него выходят парниковые газы.",3],["В какой стране больше всего лесов?",["Россия","Бразилия","Канада","США"],"На Россию приходится около пятой части всех лесов мира.",3],
-  ["Какая часть пресной поверхностной воды мира находится в Байкале?",["Около 20%","Около 1%","Около 50%","Около 90%"],"Байкал - самое глубокое озеро на Земле и огромный запас чистой пресной воды.",3],["Как называется переделка ненужной вещи в более ценную, например поддонов в мебель?",["Апсайклинг","Даунсайклинг","Пиролиз","Компостирование"],"Апсайклинг даёт вещам вторую жизнь без сложной переработки.",3],
+  ["Какая часть пресной поверхностной воды мира находится в Байкале?",["Около 20%","Около 1%","Около 50%","Около 90%"],"Байкал - самое глубокое озеро на Земле и огромный запас чистой пресной воды.",3],["Как называется восстановление нарушенной земли, например на месте старого карьера или свалки?",["Рекультивация","Эрозия","Урбанизация","Опустынивание"],"При рекультивации засыпают ямы, насыпают плодородную почву и сажают растения, чтобы земля снова стала живой.",3],
   ["Какой шаг в принципе «сократи, используй снова, переработай» самый важный?",["Сократить потребление","Переработать","Сжечь","Закопать"],"Лучший мусор - тот, который не появился. Переработка тоже тратит энергию.",3],["Почему вырубка тропических лесов усиливает потепление?",["Деревья перестают поглощать CO₂, а при сжигании выделяют его","Без леса Земля ближе к Солнцу","Лес охлаждает Солнце","Вырубка не влияет на климат"],"Леса хранят огромное количество углерода. При вырубке и пожарах он попадает в атмосферу.",3],
   ["Какой газ образуется при неполном сгорании топлива и особенно опасен, потому что не имеет запаха?",["Угарный газ","Кислород","Азот","Гелий"],"Угарный газ мешает крови переносить кислород. Он есть в выхлопах машин и дыме.",3],["Что такое водный след товара?",["Объём воды, нужный для его производства","Вода в составе товара","След от капель на упаковке","Число рек рядом с заводом"],"Например, на выращивание хлопка для одной футболки уходят тысячи литров воды.",3],
   ["Какое вещество когда-то добавляли в бензин, а потом запретили из-за вреда здоровью?",["Соединения свинца","Этиловый спирт","Вода","Метан"],"Свинец из выхлопов накапливался в воздухе и почве и вредил здоровью, особенно детей.",3]]},
@@ -315,9 +334,9 @@ const GAMES={
   ["На пляже остались пластиковые бутылки. Что делать?",["Собрать и выбросить в контейнер","Закопать в песок","Бросить в море"],"Пластик из моря потом попадает в рыб и птиц.",1],["Коробка от пиццы вся в жирных пятнах. Как поступить?",["Выбросить в обычный мусор","Сдать в макулатуру","Сжечь"],"Жирный картон плохо перерабатывается и портит макулатуру.",2],
   ["Хочется сделать поделку. Из чего лучше?",["Из того, что уже есть дома - коробок, втулок, пробок","Купить всё новое","Сделать на один раз и выбросить"],"Вторая жизнь для вещей - это меньше отходов.",2],["У подъезда сломан контейнер для пластика. Что сделать?",["Попросить взрослых сообщить в управляющую компанию","Бросить пластик рядом на землю","Ничего"],"Сообщить о поломке - значит помочь всему дому сортировать мусор.",2],
   ["Хочется понежиться в воде, но сэкономить её. Как?",["Принять короткий душ","Набрать ванну до краёв","Оставить воду течь"],"Короткий душ расходует в несколько раз меньше воды.",1],["Лист бумаги испорчен только с одной стороны. Как поступить?",["Использовать другую сторону для черновика","Сразу выбросить","Порвать на кусочки"],"Чистая сторона листа ещё пригодится.",1],
-  ["Для праздника предлагают одноразовые стаканчики. Что лучше?",["Взять обычные кружки и стаканы","Взять ещё больше одноразовых","Использовать и сразу выбросить"],"Многоразовая посуда не превращается в мусор.",2],["Старый смартфон ещё работает, но хочется новый. Как поступить экологичнее?",["Пользоваться старым, пока он исправен, или купить восстановленный","Менять телефон каждый год","Купить два новых на всякий случай"],"Больше всего вреда смартфон приносит при производстве: добыча металлов, энергия, перевозка. Чем дольше он служит, тем лучше.",3],
+  ["Для праздника предлагают одноразовые стаканчики. Что лучше?",["Взять обычные кружки и стаканы","Взять ещё больше одноразовых","Использовать и сразу выбросить"],"Многоразовая посуда не превращается в мусор.",2],["Старый телефон ещё работает, но хочется новый. Как поступить экологичнее?",["Пользоваться старым, пока он исправен, или купить восстановленный","Менять телефон каждый год","Купить два новых на всякий случай"],"Больше всего вреда телефон приносит при производстве: добыча металлов, энергия, перевозка. Чем дольше он служит, тем лучше.",3],
   ["Нужен костюм на один школьный вечер. Что разумнее?",["Взять напрокат или у знакомых","Купить и выбросить после праздника","Купить три на выбор"],"Вещь, которую надели один раз, - это ресурсы, потраченные почти впустую.",3],["Ты видишь, как с предприятия в реку сливают мутную воду. Что сделать?",["Сфотографировать, записать место и время и сообщить в Росприроднадзор или администрацию","Ничего не делать","Самому перекрыть трубу"],"Обращение можно отправить через сайт Росприроднадзора. Фото с датой и местом помогут проверке.",3],
-  ["В районе хотят вырубить сквер. Как действовать?",["Узнать, есть ли разрешение, собрать подписи и обратиться в администрацию","Ничего, всё равно срубят","Портить технику"],"Жители имеют право узнать, законна ли вырубка, и обратиться к властям. Портить чужое имущество нельзя.",3],["На упаковке крупно написано «эко», но нет ни состава, ни сертификатов. Как поступить?",["Проверить состав и экомаркировку, прежде чем покупать","Купить - раз написано «эко», значит экологично","Купить побольше"],"Слово «эко» само по себе ничего не гарантирует - это может быть гринвошинг. Надёжнее смотреть на сертифицированные экомаркировки, например «Листок жизни».",3],
+  ["В районе хотят вырубить сквер. Как действовать?",["Узнать, есть ли разрешение, собрать подписи и обратиться в администрацию","Ничего, всё равно срубят","Портить технику"],"Жители имеют право узнать, законна ли вырубка, и обратиться к властям. Портить чужое имущество нельзя.",3],["На упаковке крупно написано «эко», но нет ни состава, ни сертификатов. Как поступить?",["Проверить состав и экомаркировку, прежде чем покупать","Купить - раз написано «эко», значит экологично","Купить побольше"],"Слово «эко» само по себе ничего не гарантирует - это может быть просто реклама. Надёжнее смотреть на сертифицированные экомаркировки, например «Листок жизни».",3],
   ["Хочешь заказать несколько вещей в интернет-магазине. Как сократить вред?",["Собрать покупки в один заказ и забрать из пункта выдачи","Заказывать по одной вещи каждый день","Заказать много на примерку и почти всё вернуть"],"Каждая отдельная доставка и возврат - это лишние поездки и упаковка.",3],["Летом в квартире жарко. Как охладиться и не тратить много энергии?",["Днём закрывать шторы, проветривать ночью, кондиционер ставить на 24-26 °C","Включить кондиционер на 16 °C и открыть окна","Держать открытым холодильник"],"Каждый лишний градус охлаждения заметно увеличивает расход электричества.",3],
   ["Нужно постирать одну футболку. Что лучше?",["Подождать полной загрузки и стирать при 30-40 °C","Запустить машину ради одной вещи на 90 °C","Стирать каждую вещь отдельно"],"Больше всего энергии уходит на нагрев воды, а полная загрузка экономит и воду, и электричество.",3],["Ты организуешь субботник. Что сделать заранее?",["Согласовать место, найти перчатки и мешки и договориться о вывозе мусора","Ничего, мусор можно оставить в кучах","Сжечь собранный мусор на месте"],"Без вывоза мешки с мусором так и останутся лежать, а жечь мусор вредно и опасно.",3],
   ["Друг говорит: «Сортировать бессмысленно, всё равно всё смешают». Что ответить?",["Что во многих городах сырьё правда везут на переработку, и это можно проверить у регионального оператора","Согласиться и перестать сортировать","Поссориться"],"Региональный оператор по обращению с отходами отвечает, куда везут мусор в вашем регионе.",3],["Семья выбирает новый холодильник. На что посмотреть?",["На класс энергоэффективности - A и выше","Только на цвет","На самую большую мощность"],"Холодильник работает круглые сутки годами, поэтому экономичная модель сбережёт много электричества.",3],
@@ -403,7 +422,10 @@ becomeTeacher(d){const u=who(d);if(u.role==="teacher"||u.role==="admin")return{u
  return{user:pub(byId(u.id))}},
 extra(d){const u=who(d),av=rows("Avatars").find(a=>a.userId===u.id),users=rows("Users");
  const o={avatar:av?av.data:""};
- o.badges=rows("Badges").filter(b=>b.studentId===u.id).sort(sortNew).map(b=>badgeOut(b,users));
+ let mine=rowsRaw("Badges").filter(b=>b.studentId===u.id);
+ if(needAch(u,mine)){withLock(()=>checkAch(u));mine=rowsRaw("Badges").filter(b=>b.studentId===u.id)}
+ o.badges=mine.slice().sort(sortNew).map(b=>badgeOut(b,users));
+ {const ax=achStats(u);o.ach=achList(u,mine,ax);o.cosm=cosmOut(cosmStats(u,mine,ax))}
  o.teachers=rows("Members").filter(m=>m.studentId===u.id).map(m=>users.find(x=>x.id===m.teacherId)).filter(Boolean).map(pub);
  if(isStaff(u)){const c=rows("Classes").find(x=>x.teacherId===u.id);
   o.class=c?{code:c.code,name:c.name,count:rows("Members").filter(m=>m.teacherId===u.id).length}:null}
@@ -413,19 +435,17 @@ extra(d){const u=who(d),av=rows("Avatars").find(a=>a.userId===u.id),users=rows("
  o.week={days:pd.filter(r=>r.userId===u.id&&r.date>=w7).length,tasks:dt.length,impact:impactOf(new Set([u.id]),dt),
   xp:tail("XpLog",30000).filter(r=>r.userId===u.id&&r.date>=w7).reduce((s,r)=>s+(Number(r.xp)||0),0)};
  return o},
-profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id),grade:c.grade||"",letter:c.letter||""};
+profileSet(d){const u=who(d),c=custOf(u.id)||{},v={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",nameColor:c.nameColor||"none",status:c.status||"",emoji:c.emoji||"",showcase:(c.sc||[]).map(b=>b.id),grade:c.grade||"",letter:c.letter||""};
  const dev=isDev(u),devOnly=(k,val)=>{if(DEV_ONLY[k]===val&&!dev)throw"Это украшение есть только у разработчика"};
- if(d.cover!==undefined){if(COVERS.indexOf(d.cover)<0)throw"Неизвестная обложка";devOnly("cover",d.cover);v.cover=d.cover}
- if(d.pattern!==undefined){if(PATTERNS.indexOf(d.pattern)<0)throw"Неизвестный узор";devOnly("pattern",d.pattern);v.pattern=d.pattern}
- if(d.emoji!==undefined){const e=String(d.emoji).trim();devOnly("emoji",e);if(e!=="</>"&&!okEmoji(e))throw"Здесь можно поставить только эмодзи";v.emoji=e}
+ let xs=null;
+ ["cover","pattern","frame","nameColor"].forEach(k=>{if(d[k]===undefined||d[k]===v[k])return;const it=COSM[k].find(i=>i[0]===d[k]);if(!it)throw COSM_ERR[k][0];
+  if(it[2]){xs=xs||cosmStats(u);if(!it[2](xs))throw it[4]?"Это украшение есть только у разработчика":COSM_ERR[k][1]}v[k]=d[k]});
+ if(d.emoji!==undefined){const e=String(d.emoji).trim();devOnly("emoji",e);if(e!=="</>"&&!okEmoji(e))throw"Здесь можно поставить только смайлик";v.emoji=e}
  if(d.grade!==undefined){const g=gradeOf(d.grade,d.letter,false);v.grade=g.grade;v.letter=g.letter}
  if(d.status!==undefined){const st=String(d.status).trim();if(st.length>60)throw"Статус не длиннее 60 символов";v.status=st}
- if(d.frame!==undefined){const f=FRAMES[d.frame];if(!f)throw"Неизвестная рамка";
-  const mb=rows("Badges").filter(b=>b.studentId===u.id),xs={lv:Math.floor((Number(u.xp)||0)/100)+1,best:counters(u).best,badges:mb.length,dev:isDev(u),season:mb.some(b=>b.id.indexOf("ach_event_")===0)};
-  if(!f(xs))throw"Эта рамка пока закрыта";v.frame=d.frame}
  if(d.showcase!==undefined){const ids=(Array.isArray(d.showcase)?d.showcase:[]).map(String).slice(0,3),own=rows("Badges").filter(b=>b.studentId===u.id).map(b=>b.id);
-  if(ids.some(id=>own.indexOf(id)<0))throw"В витрину можно поставить только свои бейджи";v.showcase=ids}
- const old=rowsRaw("Profiles").find(p=>p.userId===u.id),row=[u.id,v.cover,v.pattern,v.frame,v.status,v.emoji,JSON.stringify(v.showcase),v.grade,v.letter,old?old.consent||"":""];
+  if(ids.some(id=>own.indexOf(id)<0))throw"В витрину можно поставить только свои значки";v.showcase=ids}
+ const old=rowsRaw("Profiles").find(p=>p.userId===u.id),row=[u.id,v.cover,v.pattern,v.frame,v.status,v.emoji,JSON.stringify(v.showcase),v.grade,v.letter,old?old.consent||"":"",v.nameColor];
  if(old)setRow("Profiles",old._row,row);else addT("Profiles",row);
  CU=null;return{cust:custOf(u.id)}},
 profile(d){const me_=who(d),t=byName(d.username);if(!t)throw"Пользователь не найден";
@@ -481,16 +501,16 @@ studentBadges(d){const t=who(d);needTeacher(t);const s=studentOf(t,d.username),u
  return{badges:rows("Badges").filter(b=>b.studentId===s.id).sort(sortNew).map(b=>Object.assign(badgeOut(b,users),{mine:b.teacherId===t.id||isDev(t)}))}},
 badgeGive(d){const t=who(d);needTeacher(t);const s=studentOf(t,d.username);
  const title=String(d.title||"").trim(),desc=String(d.description||"").trim(),emoji=String(d.emoji||"").trim();
- if(title.length<1||title.length>40)throw"Название бейджа: от 1 до 40 символов";
+ if(title.length<1||title.length>40)throw"Название значка: от 1 до 40 символов";
  if(desc.length>200)throw"Описание не длиннее 200 символов";
  if(emoji.length<1||emoji.length>16)throw"Выберите значок";
  if(!COLORS.includes(d.color))throw"Выберите цвет";
  const id=Utilities.getUuid();addT("Badges",[id,t.id,s.id,emoji,d.color,title,desc,now(),""]);
- addEvent(s.id,"badge",emoji,"Получен бейдж «"+title+"»");
+ addEvent(s.id,"badge",emoji,"Получен значок «"+title+"»");
  return{badge:badgeOut(rows("Badges").find(b=>b.id===id),[t]),user:pub(s)}},
 badgeRevoke(d){const t=who(d);needTeacher(t);const b=rows("Badges").find(x=>x.id===String(d.id||""));
- if(!b||(b.teacherId!==t.id&&!isDev(t)))throw"Можно отозвать только свой бейдж";delRows("Badges",[b]);return{}},
-// Удаление аккаунта: стираются профиль, фото, бейджи, задания, лента, классы учителя и строки пользователя
+ if(!b||(b.teacherId!==t.id&&!isDev(t)))throw"Можно отозвать только свой значок";delRows("Badges",[b]);return{}},
+// Удаление аккаунта: стираются профиль, фото, значки, задания, лента, классы учителя и строки пользователя
 // во всех листах Code.gs (друзья, сессии и т.п.). В листах чатов строки не удаляются, а очищаются:
 // их меняют запросы без общей очереди, и сдвиг строк мог бы задеть чужие сообщения.
 deleteAccount(d){const u=who(d),id=u.id,dev=isDev(u);
@@ -499,7 +519,7 @@ deleteAccount(d){const u=who(d),id=u.id,dev=isDev(u);
  delRows("Members",rowsRaw("Members").filter(r=>r.studentId===id||r.teacherId===id));
  delRows("Classes",rowsRaw("Classes").filter(r=>r.teacherId===id));
  delRows("Badges",rowsRaw("Badges").filter(r=>r.studentId===id));
- rowsRaw("Badges").filter(r=>r.teacherId===id).forEach(r=>upd("Badges",r._row,"teacherId",""));  // выданные бейджи остаются у учеников
+ rowsRaw("Badges").filter(r=>r.teacherId===id).forEach(r=>upd("Badges",r._row,"teacherId",""));  // выданные значки остаются у учеников
  const scrub=(n,col,f)=>{ensure(n);const sh=SS().getSheetByName(n),last=sh.getLastRow();if(last<2)return;
   const rg=sh.getRange(2,1,last-1,H[n].length),v=rg.getValues();let ch=false;
   v.forEach(r=>{if(String(r[col])===id){f(r);ch=true}});if(ch)rg.setNumberFormat("@").setValues(v.map(r=>r.map(String)))};
@@ -616,29 +636,67 @@ function impactSum(list){const all=rowsRaw("Counters"),o={water:0,plastic:0,pape
  list.forEach(u=>{const c=counters(u,all);IMPK.forEach(k=>o[k]+=c[k])});IMPK.forEach(k=>o[k]=Math.round(o[k]*100)/100);return o}
 
 /* ───── автоматические достижения ───── */
-const ACH=[["streak3","🔥","orange","Три дня подряд","Играть в мини-игры 3 дня подряд",x=>x.best>=3],
- ["streak7","🔥","orange","Неделя без перерыва","Играть в мини-игры 7 дней подряд",x=>x.best>=7],
- ["streak30","🏆","gold","Месяц без перерыва","Играть в мини-игры 30 дней подряд",x=>x.best>=30],
- ["games10","🎮","blue","10 игр","Сыграть 10 мини-игр",x=>x.games>=10],
- ["games100","🕹️","purple","100 игр","Сыграть 100 мини-игр",x=>x.games>=100],
- ["perfect1","⭐","gold","Без единой ошибки","Пройти мини-игру без ошибок",x=>x.perfect>=1],
- ["perfect10","🧠","purple","Знаток","Пройти 10 мини-игр без ошибок",x=>x.perfect>=10],
- ["correct100","💯","green","100 верных ответов","Дать 100 правильных ответов в мини-играх",x=>x.correct>=100],
- ["tasks10","✅","green","10 полезных дел","Выполнить 10 заданий дня",x=>x.tasks>=10],
- ["tasks50","🌱","green","50 полезных дел","Выполнить 50 заданий дня",x=>x.tasks>=50],
- ["paper10","📄","blue","Первые 10 кг макулатуры","Собрать 10 кг макулатуры в заданиях дня",x=>x.paper>=10],
- ["water100","💧","blue","100 литров воды","Сберечь 100 литров воды в заданиях дня",x=>x.water>=100],
- ["plastic20","🧴","pink","Меньше пластика","20 пластиковых вещей не стали мусором",x=>x.plastic>=20],
- ["level5","⭐","gold","5 уровень","Достичь 5 уровня",x=>x.lv>=5],
- ["level10","🌟","gold","10 уровень","Достичь 10 уровня",x=>x.lv>=10],
- ["tree","🌳","green","Выросло дерево","Вырастить в эко-саду дерево",x=>x.xp>=500],
- ["team","🤝","pink","В команде","Вступить в класс",x=>x.team],
- ["qotd7","❓","purple","Знаток дня","Дать 7 верных ответов на вопрос дня",x=>x.qotd>=7]];
-function grant(uid,id,emoji,color,title,desc){addT("Badges",[id,"system",uid,emoji,color,title.slice(0,40),desc.slice(0,200),now(),""]);
+// Значки с уровнями: [код, смайлик, цвет, название, пороги уровней 1-5, что считаем, цель уровня].
+// С каждым уровнем у значка улучшается рамка: 1 - бронза, 2 - серебро, 3 - золото, 4 - изумруд, 5 - алмаз.
+const fmtN=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ");
+const TRACKS=[
+ ["streak","🔥","orange","Серия дней",[3,7,30,100,365],x=>x.best,n=>"Играть в мини-игры "+plural(n,"день","дня","дней")+" подряд"],
+ ["games","🎮","blue","Игрок",[10,50,100,250,500],x=>x.games,n=>"Сыграть "+plural(n,"мини-игру","мини-игры","мини-игр")],
+ ["perfect","⭐","gold","Без ошибок",[1,10,25,50,100],x=>x.perfect,n=>n===1?"Пройти мини-игру без единой ошибки":"Пройти без ошибок "+plural(n,"мини-игру","мини-игры","мини-игр")],
+ ["correct","💯","green","Верные ответы",[100,500,1000,2500,5000],x=>x.correct,n=>"Дать в мини-играх "+fmtN(n)+" верных ответов"],
+ ["tasks","✅","green","Полезные дела",[10,50,100,250,500],x=>x.tasks,n=>"Выполнить "+n+" заданий дня"],
+ ["paper","📄","blue","Макулатура",[5,10,25,50,100],x=>x.paper,n=>"Собрать "+n+" кг макулатуры в заданиях дня"],
+ ["water","💧","blue","Хранитель воды",[100,500,1000,2500,5000],x=>x.water,n=>"Сберечь "+fmtN(n)+" л воды в заданиях дня"],
+ ["plastic","🧴","pink","Меньше пластика",[20,50,100,200,500],x=>x.plastic,n=>"Не дать "+n+" пластиковым вещам стать мусором"],
+ ["level","🌟","gold","Опыт",[5,10,15,20,30],x=>x.lv,n=>"Достичь "+n+" уровня"],
+ ["qotd","❓","purple","Вопрос дня",[7,30,100,200,365],x=>x.qotd,n=>"Дать "+n+" верных ответов на вопрос дня"],
+ ["year","🎂","purple","На платформе",[1,2,3,4,5],x=>x.years,n=>plural(n,"год","года","лет")+" на платформе"]];
+// Значки без уровней
+const SINGLES=[["tree","🌳","green","Выросло дерево","Вырастить в эко-саду дерево",x=>x.xp>=500],
+ ["team","🤝","pink","В команде","Вступить в класс",x=>x.team]];
+// Старые значки (до уровней) -> значок с уровнями
+const OLD_ACH={streak3:["streak",1],streak7:["streak",2],streak30:["streak",3],games10:["games",1],games100:["games",3],perfect1:["perfect",1],perfect10:["perfect",2],
+ correct100:["correct",1],tasks10:["tasks",1],tasks50:["tasks",2],paper10:["paper",2],water100:["water",1],plastic20:["plastic",1],level5:["level",1],level10:["level",2],qotd7:["qotd",1]};
+// Полных лет с регистрации: значок растёт в каждую годовщину
+function yearsOf(u){const c=String(u.created||"");if(!c)return 0;const d=new Date(c);if(isNaN(d.getTime()))return 0;
+ const r=Utilities.formatDate(d,"Europe/Moscow","yyyy-MM-dd"),t=today();let y=+t.slice(0,4)-+r.slice(0,4);if(t.slice(5)<r.slice(5))y--;return Math.max(0,y)}
+function achStats(u){const c=counters(u),xp=Number(u.xp)||0;
+ return Object.assign({},c,{xp,lv:Math.floor(xp/100)+1,team:rowsRaw("Members").some(m=>m.studentId===u.id),years:yearsOf(u)})}
+// Уровень по порогам; у «На платформе» уровень - число лет (может быть больше 5)
+const trackLevel=(t,x)=>t[0]==="year"?x.years:t[4].filter(th=>t[5](x)>=th).length;
+const trackTitle=(t,lv)=>t[0]==="year"?plural(lv,"год","года","лет")+" на платформе":t[3];
+const trackDesc=(t,lv)=>t[0]==="year"?"Столько лет вместе с ЭкоТреком. Значок растёт в каждую годовщину регистрации.":t[6](t[4][Math.min(lv,5)-1]);
+function grant(uid,id,emoji,color,title,desc,level){addT("Badges",[id,"system",uid,emoji,color,title.slice(0,40),desc.slice(0,200),now(),"",level||""]);
  addEvent(uid,"badge",emoji,"Получено достижение «"+title.slice(0,40)+"»")}
-function checkAch(u){const c=counters(u),xp=Number(u.xp)||0,x=Object.assign({},c,{xp,lv:Math.floor(xp/100)+1,team:rowsRaw("Members").some(m=>m.studentId===u.id)});
- const have=new Set(rowsRaw("Badges").filter(b=>b.studentId===u.id).map(b=>b.id)),got=[];
- ACH.forEach(a=>{const id="ach_"+a[0]+"_"+u.id;if(!have.has(id)&&a[5](x)){grant(u.id,id,a[1],a[2],a[3],a[4]);got.push(a[3])}});return got}
+const needAch=(u,mine)=>Object.keys(OLD_ACH).some(k=>mine.some(b=>b.id==="ach_"+k+"_"+u.id))||
+ (yearsOf(u)>0&&!mine.some(b=>b.id==="ach_year_"+u.id&&Number(b.level)>=yearsOf(u)));
+// Выдаёт новые значки и повышает уровни. Возвращает подписи для всплывающих сообщений.
+function checkAch(u){const x=achStats(u),mine=rowsRaw("Badges").filter(b=>b.studentId===u.id),by={},got=[],prev={},old=[];
+ mine.forEach(b=>by[b.id]=b);
+ Object.keys(OLD_ACH).forEach(k=>{const b=by["ach_"+k+"_"+u.id];if(b){old.push(b);const o=OLD_ACH[k];prev[o[0]]=Math.max(prev[o[0]]||0,o[1])}});
+ TRACKS.forEach(t=>{const lv=Math.max(trackLevel(t,x),prev[t[0]]||0),id="ach_"+t[0]+"_"+u.id,b=by[id],cur=b?Number(b.level)||1:0;if(lv<1||lv<=cur)return;
+  const was=Math.max(cur,prev[t[0]]||0),title=trackTitle(t,lv),row=[id,"system",u.id,t[1],t[2],title,trackDesc(t,lv),now(),lv<=was?"1":was>0?"u":"",lv];  // "u" - улучшен, ещё не показан
+  if(b)setRow("Badges",b._row,row);else addT("Badges",row);
+  if(lv>was){if(was>0&&t[0]!=="year"){addEvent(u.id,"badge",t[1],"Значок «"+title+"» улучшен до "+lv+" уровня");got.push("«"+title+"» - "+lv+" уровень")}
+   else{addEvent(u.id,"badge",t[1],"Получено достижение «"+title+"»");got.push(title)}}});
+ SINGLES.forEach(a=>{const id="ach_"+a[0]+"_"+u.id;if(!by[id]&&a[5](x)){grant(u.id,id,a[1],a[2],a[3],a[4]);got.push(a[3])}});
+ if(old.length){delRows("Badges",old);  // витрина: старые значки заменяются новыми
+  const p=rowsRaw("Profiles").find(r=>r.userId===u.id);let sc=[];try{sc=JSON.parse(p?p.showcase||"[]":"[]")}catch(e){}
+  const m=/^ach_([a-z]+\d+)_/,ns=[];sc.forEach(id=>{const k=(m.exec(id)||[])[1],nid=k&&OLD_ACH[k]?"ach_"+OLD_ACH[k][0]+"_"+u.id:id;if(ns.indexOf(nid)<0)ns.push(nid)});
+  if(p&&JSON.stringify(ns)!==JSON.stringify(sc))upd("Profiles",p._row,"showcase",JSON.stringify(ns));CU=null}
+ return got}
+// Все достижения пользователя - и полученные, и закрытые (для серых значков с подсказкой, как получить)
+function achList(u,mine,x){const by={};mine.forEach(b=>by[b.id]=b);
+ return TRACKS.map(t=>{const b=by["ach_"+t[0]+"_"+u.id],lv=b?Number(b.level)||1:0,v=t[0]==="year"?x.years:t[5](x),nx=t[0]==="year"?lv+1:t[4][lv];
+  return{code:t[0],emoji:t[1],color:t[2],title:b?b.title:trackTitle(t,1),level:lv,max:t[0]==="year"?0:5,v:Math.round(v*100)/100,next:nx===undefined?null:nx,
+   goal:nx===undefined?"":t[0]==="year"?"Пробыть в ЭкоТреке "+plural(nx,"год","года","лет"):t[6](nx),
+   levels:t[4].map((th,i)=>({n:i+1,goal:t[0]==="year"?plural(th,"год","года","лет")+" на платформе":t[6](th)})),id:b?b.id:null}})
+  .concat(SINGLES.map(a=>{const b=by["ach_"+a[0]+"_"+u.id];return{code:a[0],emoji:a[1],color:a[2],title:a[3],level:b?1:0,max:1,goal:b?"":a[4],levels:[],id:b?b.id:null}}))}
+// Статистика для открытия оформления
+function cosmStats(u,mine,x){mine=mine||rowsRaw("Badges").filter(b=>b.studentId===u.id);x=x||achStats(u);const tr={};let maxTier=0;
+ TRACKS.forEach(t=>{tr[t[0]]=trackLevel(t,x);maxTier=Math.max(maxTier,Math.min(5,tr[t[0]]))});
+ return{lv:x.lv,xp:x.xp,best:x.best,years:x.years,tr,maxTier,badges:mine.length,dev:isDev(u),season:mine.some(b=>b.id.indexOf("ach_event_")===0),ch:mine.filter(b=>b.id.indexOf("ach_ch_")===0).length}}
+function cosmOut(xs){const o={};Object.keys(COSM).forEach(k=>o[k]=COSM[k].map(i=>({id:i[0],name:i[1],open:!i[2]||!!i[2](xs),how:i[3]||"",dev:!!i[4]})).filter(i=>!i.dev||i.open));return o}
 
 /* ───── эко-праздники: особое задание дня и рамка ───── */
 const lastSat=(y,m)=>{const d=new Date(Date.UTC(y,m+1,0));while(d.getUTCDay()!==6)d.setUTCDate(d.getUTCDate()-1);return d.toISOString().slice(0,10)};
@@ -693,7 +751,7 @@ function classesRating(u){const users=rows("Users"),cls=rows("Classes"),mem=rows
  const mi=+today().slice(5,7)-1;
  return{scope:"classes",classes:list.slice(0,50),prev,month:MONTHS[mi],prevMonth:MONTHS[(mi+11)%12]}}
 
-/* ───── эко-челленджи класса ───── */
+/* ───── эко-испытания класса ───── */
 const UNITS=["кг","шт.","л","дел","раз","км"];
 function challengeOut(c,u,contrib,users){const cs=contrib.filter(x=>x.chId===c.id),sum=Math.round(cs.reduce((s,x)=>s+(Number(x.amount)||0),0)*100)/100;
  const per={};cs.forEach(x=>per[x.userId]=(per[x.userId]||0)+(Number(x.amount)||0));
@@ -736,22 +794,22 @@ rating(d){const u=who(d),scope=String(d.scope||"school"),metric=["xp","tasks","s
 challengeList(d){const u=who(d),t=classTeacherFor(u,d.teacher);if(!t)throw"Вы пока не состоите в классе";
  const c=rows("Classes").find(x=>x.teacherId===t.id);return{challenges:challengesOf(u,t),className:c?c.name:"",teacher:t.username,own:t.id===u.id}},
 challengeCreate(d){const t=who(d);needTeacher(t);const title=String(d.title||"").trim(),goal=Number(d.goal),dl=String(d.deadline||"").trim();
- if(title.length<3||title.length>60)throw"Название челленджа: от 3 до 60 символов";
+ if(title.length<3||title.length>60)throw"Название испытания: от 3 до 60 символов";
  if(UNITS.indexOf(d.unit)<0)throw"Выберите единицу измерения";
  if(!(goal>0&&goal<=100000))throw"Цель - число от 1 до 100000";
  if(dl&&(!/^\d{4}-\d{2}-\d{2}$/.test(dl)||dl<today()))throw"Срок не может быть в прошлом";
- if(rows("Challenges").filter(c=>c.teacherId===t.id&&c.status==="open").length>=5)throw"Одновременно можно вести не больше 5 челленджей";
+ if(rows("Challenges").filter(c=>c.teacherId===t.id&&c.status==="open").length>=5)throw"Одновременно можно вести не больше 5 испытаний";
  addT("Challenges",[Utilities.getUuid(),t.id,title,d.unit,goal,"open",now(),dl]);return{challenges:challengesOf(t,t)}},
-challengeAdd(d){const u=who(d),c=rows("Challenges").find(x=>x.id===String(d.id||""));if(!c)throw"Челлендж не найден";
+challengeAdd(d){const u=who(d),c=rows("Challenges").find(x=>x.id===String(d.id||""));if(!c)throw"Испытание не найдено";
  if(!isMember(c.teacherId,u.id))throw"Вклад могут вносить только ученики класса";
- if(c.status!=="open")throw"Челлендж уже завершён";if(c.deadline&&c.deadline<today())throw"Время челленджа вышло";
+ if(c.status!=="open")throw"Испытание уже завершено";if(c.deadline&&c.deadline<today())throw"Время испытания вышло";
  const amount=Math.round(Number(d.amount)*100)/100;if(!(amount>0&&amount<=1000&&amount<=Number(c.goal)))throw"Вклад - число больше нуля и не больше 1000";
  addT("Contrib",[c.id,u.id,amount,now()]);
  const sum=rowsRaw("Contrib").filter(x=>x.chId===c.id).reduce((s,x)=>s+(Number(x.amount)||0),0);let done=false;
  if(sum>=Number(c.goal)){done=true;upd("Challenges",c._row,"status","done");
-  rows("Members").filter(m=>m.teacherId===c.teacherId).forEach(m=>grant(m.studentId,"ach_ch_"+c.id+"_"+m.studentId,"🏁","gold","Челлендж: "+c.title,"Класс вместе выполнил челлендж: "+c.goal+" "+c.unit))}
+  rows("Members").filter(m=>m.teacherId===c.teacherId).forEach(m=>grant(m.studentId,"ach_ch_"+c.id+"_"+m.studentId,"🏁","gold","Испытание: "+c.title,"Класс вместе выполнил испытание: "+c.goal+" "+c.unit))}
  const t=byId(c.teacherId);return{challenges:challengesOf(u,t),done}},
-challengeEnd(d){const t=who(d);needTeacher(t);const c=rows("Challenges").find(x=>x.id===String(d.id||"")&&x.teacherId===t.id);if(!c)throw"Челлендж не найден";
+challengeEnd(d){const t=who(d);needTeacher(t);const c=rows("Challenges").find(x=>x.id===String(d.id||"")&&x.teacherId===t.id);if(!c)throw"Испытание не найдено";
  upd("Challenges",c._row,"status","closed");return{challenges:challengesOf(t,t)}},
 classStats(d){const t=who(d);needTeacher(t);const users=rows("Users"),ws=weekStart(),m30=dayShift(today(),-29);
  const ms=rows("Members").filter(m=>m.teacherId===t.id).map(m=>users.find(u=>u.id===m.studentId)).filter(Boolean),ids=new Set(ms.map(u=>u.id));
@@ -854,6 +912,9 @@ A.batch=d=>{const out={};(Array.isArray(d.calls)?d.calls:[]).slice(0,8).forEach(
  try{out[a]=Object.assign({ok:true},A[a](Object.assign({},c,{token:d.token})))}catch(e){out[a]={ok:false,error:typeof e==="string"?e:"Ошибка сервера: "+e}}});
  return{results:out}};
 const FAST={qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
+// Сообщения из Code.gs - русскими словами вместо «юзернейм» и длинного тире
+const RU_ERR={"Неверный юзернейм или пароль":"Неверное имя пользователя или пароль","Этот юзернейм уже занят":"Это имя пользователя уже занято"};
+const ruText=t=>{t=String(t);return(RU_ERR[t]||t).replace(/Юзернейм/g,"Имя пользователя").replace(/юзернейм/g,"имя пользователя").replace(/[\u2013\u2014]/g,"-")};
 const reply=o=>ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 try{doPost=function(e){
  let d,lock=null,orig=null;
@@ -865,7 +926,7 @@ try{doPost=function(e){
   return reply(Object.assign({ok:true},A[d.action](d)));
  }catch(err){
   if(typeof err!=="string")console.error(err);
-  return reply({ok:false,error:typeof err==="string"?err:"Ошибка сервера: "+err});
+  return reply({ok:false,error:typeof err==="string"?ruText(err):"Ошибка сервера: "+err});
  }finally{if(orig)rows=orig;if(lock)try{lock.releaseLock()}catch(x){}}
 }}catch(e){}
 })();

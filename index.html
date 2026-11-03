@@ -174,7 +174,7 @@ button.cam{position:absolute;left:-2px;bottom:2px;width:32px;height:32px;min-hei
 .wait{text-align:center}.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--pri2);border-top-color:var(--pri);animation:spin .8s linear infinite;margin:8px auto}
 .pops{display:inline-block;animation:pop .6s var(--spring) .9s backwards;margin-top:6px;font-size:15px;padding:6px 14px}
 
-/* бейджи */
+/* значки */
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:14px 8px;margin-top:14px}
 button.bdg{display:grid;justify-items:center;align-content:start;gap:8px;padding:6px 2px;background:none;box-shadow:none;color:var(--text);filter:none;overflow:visible;perspective:600px;animation:pop .6s var(--spring) backwards;animation-delay:calc(150ms + var(--i,0)*70ms)}
 button.bdg>b{font-size:13px;line-height:1.25;text-align:center;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -371,7 +371,7 @@ button.rc b{font-size:12px}
 .scpick button.on{box-shadow:inset 0 0 0 2px var(--pri);background:var(--pri2)}
 .scpick .md{--s:40px}
 
-/* чат: мгновенная отправка, реакции с аватарками */
+/* чат: мгновенная отправка, реакции с фото */
 .msg.pending{opacity:1}
 .clk{font-size:10px;opacity:.8}
 .msg.gone{animation:gone .25s ease forwards}
@@ -398,7 +398,7 @@ select:focus{outline:0;border-color:var(--pri);box-shadow:0 0 0 4px var(--pri2)}
 .consent a,.links a{color:var(--pri);font-weight:800}
 .links{margin:6px 0 20px}
 .policy h3{margin:14px 0 4px;font-size:15px}.policy p,.policy li{font-size:14px;margin:4px 0}.policy ul{padding-left:20px;margin:4px 0}
-/* рейтинг, вопрос дня, праздники, челленджи, статистика, панель разработчика */
+/* рейтинг, вопрос дня, праздники, испытания, статистика, панель разработчика */
 .rtr{display:flex;gap:12px;align-items:center;padding:10px 6px;border-top:1px solid var(--line)}
 .rtr:first-of-type{border-top:0}
 .rtr.me{background:var(--pri2);border-radius:14px;border-top-color:transparent}
@@ -424,6 +424,77 @@ div.opt{cursor:default}
 .tbar{height:10px;border-radius:9px;background:var(--pri2);overflow:hidden;margin-top:6px}
 .tbar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,var(--pri))}
 .f-season{--fr:conic-gradient(#22c55e,#0ea5e9,#22c55e,#facc15,#22c55e)}
+/* ───── уровни значков: рамка становится красивее с каждым уровнем ───── */
+.md.t1,.md.t2,.md.t3,.md.t4,.md.t5{--r1:calc(var(--s)*.045);--r2:calc(var(--s)*.085)}
+.md.t1{box-shadow:0 0 0 var(--r1) #b9733a,0 0 0 var(--r2) #f2c896,0 12px 22px -12px var(--c2),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -5px 12px rgba(0,0,0,.2)}
+.md.t2{box-shadow:0 0 0 var(--r1) #8a99ad,0 0 0 var(--r2) #f1f5f9,0 0 0 calc(var(--r2) + 1.5px) #94a3b8,0 12px 22px -12px var(--c2),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -5px 12px rgba(0,0,0,.2)}
+.md.t3{box-shadow:0 0 0 var(--r1) #b7791f,0 0 0 var(--r2) #fde68a,0 0 0 calc(var(--r2) + 2px) #d69e2e,0 0 calc(var(--s)*.25) rgba(234,179,8,.55),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -5px 12px rgba(0,0,0,.2)}
+.md.t4{box-shadow:0 0 0 var(--r1) #047857,0 0 0 var(--r2) #6ee7b7,0 0 0 calc(var(--r2) + 2px) #10b981,0 0 0 calc(var(--r2) + 4px) #d1fae5,0 0 calc(var(--s)*.3) rgba(16,185,129,.6),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -5px 12px rgba(0,0,0,.2)}
+.md.t5{animation:diamond 3s linear infinite;box-shadow:0 0 0 var(--r1) #7dd3fc,0 0 0 var(--r2) #f5f3ff,0 0 0 calc(var(--r2) + 2px) #c084fc,0 0 0 calc(var(--r2) + 4px) #f0f9ff,0 0 calc(var(--s)*.35) rgba(167,139,250,.75),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -5px 12px rgba(0,0,0,.2)}
+.md.t5.flip{animation:flip 1.1s var(--ease) backwards,diamond 3s linear 1.1s infinite}
+@keyframes diamond{0%,100%{filter:drop-shadow(0 0 2px #7dd3fc)}33%{filter:drop-shadow(0 0 4px #f0abfc)}66%{filter:drop-shadow(0 0 3px #a5f3fc)}}
+.md .lvn{position:absolute;z-index:2;left:50%;bottom:6%;transform:translateX(-50%);min-width:calc(var(--s)*.3);padding:0 calc(var(--s)*.05);border-radius:99px;background:rgba(0,0,0,.45);color:#fff;font-weight:900;font-size:calc(var(--s)*.17);line-height:1.35;font-style:normal;text-align:center}
+.md.xs .lvn,.md.xs.t1,.md.xs.t2{--r1:1.5px;--r2:2.5px}.md.xs .lvn{display:none}
+.md.lock{filter:grayscale(1);opacity:.5;box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -5px 12px rgba(0,0,0,.15)}
+.md.lock::after{display:none}
+.md .lk{position:absolute;z-index:2;right:4%;bottom:4%;font-size:calc(var(--s)*.26);filter:grayscale(0)}
+button.bdg.lockd>b{color:var(--muted);font-weight:700}
+.lad{display:grid;gap:10px;margin:12px 0 4px}
+.ldr{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:16px;background:var(--pri2)}
+.ldr .md{--s:44px;flex:none}
+.ldr.cur{box-shadow:inset 0 0 0 2px var(--pri)}
+.ldr:not(.got){opacity:.75}
+.prog{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0}
+.prog i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--pri),#22d3ee)}
+.tiers{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:14px 0}
+.tiers div{display:grid;justify-items:center;gap:8px;font-size:12px;font-weight:800;text-align:center}
+.tiers .md{--s:50px}
+/* ───── новые обложки ───── */
+.hero.cv-autumn{background:linear-gradient(135deg,rgba(234,88,12,.45),rgba(202,138,4,.38)),var(--card)}
+.hero.cv-cherry{background:linear-gradient(135deg,rgba(251,207,232,.8),rgba(244,114,182,.42)),var(--card)}
+.hero.cv-space{background:radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 85% 70%,#fff,transparent),radial-gradient(1px 1px at 40% 80%,#fff,transparent),linear-gradient(135deg,#0b1026,#1e1b4b 55%,#4c1d95),var(--card);color:#fff}
+.hero.cv-arctic{background:linear-gradient(135deg,rgba(186,230,253,.85),rgba(240,249,255,.8) 50%,rgba(125,211,252,.55)),var(--card)}
+.hero.cv-deep{background:linear-gradient(160deg,#0e7490,#0c4a6e 55%,#082f49),var(--card);color:#fff}
+.hero.cv-jungle{background:linear-gradient(135deg,rgba(21,128,61,.65),rgba(101,163,13,.5),rgba(20,83,45,.6)),var(--card)}
+.hero.cv-volcano{background:linear-gradient(135deg,#1c1917,#7f1d1d 60%,#ea580c),var(--card);color:#fff}
+.hero.cv-golden{background:linear-gradient(135deg,#fef3c7,#fcd34d 45%,#d97706),var(--card);color:#422006}
+.hero.cv-party{background:linear-gradient(135deg,rgba(244,114,182,.5),rgba(250,204,21,.5),rgba(56,189,248,.5)),var(--card)}
+.hero.cv-space .muted,.hero.cv-deep .muted,.hero.cv-volcano .muted{color:rgba(255,255,255,.78)}
+.hero.cv-golden .muted{color:rgba(66,32,6,.75)}
+/* ───── новые узоры ───── */
+.pt-snow .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M14 4v20M4 14h20M7 7l14 14M21 7L7 21' stroke='%2314532d' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
+.pt-hearts .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='42' height='42'%3E%3Cpath d='M14 22s-8-5-8-10a4 4 0 0 1 8-1.5A4 4 0 0 1 22 12c0 5-8 10-8 10z' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-drops .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='40'%3E%3Cpath d='M12 5c4 6 7 9 7 13a7 7 0 0 1-14 0c0-4 3-7 7-13z' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-paws .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='%2314532d'%3E%3Cellipse cx='16' cy='22' rx='6' ry='5'/%3E%3Ccircle cx='9' cy='14' r='2.5'/%3E%3Ccircle cx='14' cy='10' r='2.5'/%3E%3Ccircle cx='20' cy='10' r='2.5'/%3E%3Ccircle cx='24' cy='15' r='2.5'/%3E%3C/g%3E%3C/svg%3E")}
+.pt-hex .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48'%3E%3Cpath d='M14 0l14 8v16l-14 8-14-8V8zM14 32v16' fill='none' stroke='%2314532d' stroke-width='1.6'/%3E%3C/svg%3E")}
+.pt-firs .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M16 6l8 11h-4l6 9H6l6-9H8z' fill='%2314532d'/%3E%3Crect x='14.5' y='26' width='3' height='5' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-crowns .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='40'%3E%3Cpath d='M6 22l2-11 6 6 4-8 4 8 6-6 2 11z' fill='%2314532d'/%3E%3C/svg%3E")}
+.pt-confetti .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect x='6' y='8' width='7' height='3' rx='1' fill='%23f43f5e' transform='rotate(30 9 9)'/%3E%3Crect x='38' y='14' width='7' height='3' rx='1' fill='%230ea5e9' transform='rotate(-40 41 15)'/%3E%3Ccircle cx='26' cy='34' r='2.2' fill='%23eab308'/%3E%3Crect x='46' y='44' width='7' height='3' rx='1' fill='%2322c55e' transform='rotate(60 49 45)'/%3E%3Ccircle cx='12' cy='50' r='2' fill='%23a855f7'/%3E%3C/svg%3E");filter:none!important;opacity:.4!important}
+/* ───── новые рамки фото ───── */
+.f-ice{--fr:linear-gradient(135deg,#e0f2fe,#7dd3fc,#f0f9ff,#38bdf8);box-shadow:0 0 14px -3px #38bdf8}
+.f-bee{--fr:repeating-linear-gradient(45deg,#facc15 0 6px,#1c1917 6px 12px)}
+.f-wise{--fr:linear-gradient(135deg,#ddd6fe,#7c3aed,#c4b5fd,#4c1d95);box-shadow:0 0 14px -3px #7c3aed}
+.f-sun{--fr:conic-gradient(#fde047,#f59e0b,#fde047,#fb923c,#fde047);box-shadow:0 0 16px -2px #fbbf24}
+.f-team{--fr:conic-gradient(#f472b6,#a78bfa,#60a5fa,#34d399,#f472b6)}
+.f-anniv{--fr:linear-gradient(135deg,#fbcfe8,#f472b6,#fde68a,#a78bfa)}
+.f-diamond{--fr:conic-gradient(#a5f3fc,#e0e7ff,#f5d0fe,#bae6fd,#fff,#a5f3fc);box-shadow:0 0 18px -2px #a5b4fc}
+.f-legend{--fr:conic-gradient(#facc15,#ef4444,#a855f7,#3b82f6,#facc15);box-shadow:0 0 20px -2px #a855f7}
+/* ───── цвет имени ───── */
+.nm.n-green{color:#16a34a}.nm.n-blue{color:#2563eb}
+.nm.n-sunset,.nm.n-ocean,.nm.n-fire,.nm.n-gold,.nm.n-rainbow{-webkit-background-clip:text;background-clip:text;color:transparent}
+.nm.n-sunset{background-image:linear-gradient(90deg,#f97316,#ec4899)}
+.nm.n-ocean{background-image:linear-gradient(90deg,#06b6d4,#2563eb)}
+.nm.n-fire{background-image:linear-gradient(90deg,#f59e0b,#dc2626)}
+.nm.n-gold{background-image:linear-gradient(90deg,#a16207,#eab308,#a16207)}
+.nm.n-rainbow{background-image:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e,#06b6d4,#8b5cf6,#ef4444);background-size:200% 100%;animation:rbw 4s linear infinite}
+@keyframes rbw{to{background-position:200% 0}}
+.nm.n-dev{color:#16a34a;font-family:ui-monospace,Menlo,monospace}
+.ncl{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.ncl button{padding:8px 12px;min-height:0;border-radius:12px;background:var(--pri2);box-shadow:none;filter:none;color:var(--text);font-weight:800}
+.ncl button.on{box-shadow:inset 0 0 0 2px var(--pri)}
+.sw button.lk,.frs button.lk,.ncl button.lk{opacity:.55;cursor:help}
+.sw button small,.ncl button small{display:block;position:relative;z-index:1;font-size:9px;font-weight:700;opacity:.9}
+.ncl button small{opacity:.75}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -480,7 +551,7 @@ const avatar=(u,nol,frame)=>{const h=hue(u.username),f=frame??frameOf(u),fr=f&&f
   return`<div class="ava${fr}" data-av="${esc(u.username)}"${nol?"":` data-pf="${esc(u.username)}"`} data-i="${initials(u)}" style="--face:linear-gradient(135deg,hsl(${h} 70% 52%),hsl(${(h+45)%360} 70% 40%))">${avInner(u)}</div>`};
 const custOf=u=>(u&&u.cust)||{};
 const emo=u=>{const e=custOf(u).emoji||(u&&u.emoji);return e?` <span class="nemo">${esc(e)}</span>`:""};
-const nameH=u=>`${esc(u.firstName)} ${esc(u.lastName)}${emo(u)}`;
+const nameH=u=>{const n=custOf(u).nameColor;return`${n&&n!=="none"?`<span class="nm n-${esc(n)}">`:""}${esc(u.firstName)} ${esc(u.lastName)}${n&&n!=="none"?"</span>":""}${emo(u)}`};
 const statusH=u=>custOf(u).status?`<div class="stat">${esc(custOf(u).status)}</div>`:"";
 const heroCls=u=>`card hero cv-${custOf(u).cover||"default"} pt-${custOf(u).pattern||"none"}`;
 const showcaseH=u=>{const sc=custOf(u).sc||[];return sc.length?`<div class="showc">${sc.map(b=>`<span class="scm" title="${esc(b.title)}">${medal(b,"xs")}<small>${esc(b.title)}</small></span>`).join("")}</div>`:""};
@@ -565,34 +636,63 @@ const ask=(text,ok="Да",danger)=>new Promise(res=>{let v=false;
   const m=modal(`<h2 style="padding-right:40px">${esc(text)}</h2><div class="row" style="margin-top:18px"><button class="ghost grow" data-x>Отмена</button><button class="grow ${danger?"danger":""}" id="ok">${esc(ok)}</button></div>`,()=>res(v));
   m.el.querySelector("#ok").onclick=()=>{v=true;m.close()}});
 
-/* ───────── бейджи ───────── */
+/* ───────── значки ───────── */
 const CL={green:["#4ade80","#0d9488"],blue:["#38bdf8","#2563eb"],purple:["#c4b5fd","#7c3aed"],orange:["#fcd34d","#f97316"],pink:["#f9a8d4","#e11d48"],gold:["#fef08a","#ca8a04"]};
 const EMO=["🌱","🌳","♻️","💧","☀️","🌍","🐝","🦋","🐢","🏆","⭐","🥇","🎖️","💡","🔋","🚲","🧹","📚","🧠","❤️","🔥","🚀","🎨","🤝"];
-const medal=(b,cls="",i=0)=>{const c=CL[b.color]||CL.green;return`<div class="md ${cls}" style="--c1:${c[0]};--c2:${c[1]};--i:${i}"><span>${esc(b.emoji)}</span>${b.seen===false&&cls.includes("dot")?'<i class="nw"></i>':""}</div>`};
+// Уровни рамки значка
+const TIER=["","Бронза","Серебро","Золото","Изумруд","Алмаз"];
+const tierOf=l=>Math.min(5,l||0);
+const medal=(b,cls="",i=0)=>{const c=CL[b.color]||CL.green,t=b.lock?0:tierOf(b.level);
+  return`<div class="md ${cls}${t?" t"+t:""}${b.lock?" lock":""}" style="--c1:${c[0]};--c2:${c[1]};--i:${i}"><span>${esc(b.emoji)}</span>${b.track&&b.level&&!b.lock?`<i class="lvn">${b.level}</i>`:""}${b.lock?'<i class="lk">🔒</i>':""}${b.seen===false&&cls.includes("dot")?'<i class="nw"></i>':""}</div>`};
 const fromT=b=>b.from?(b.from.system?"Достижение ЭкоТрека":`${b.from.dev?"От разработчика":"От учителя"}: ${esc(b.from.firstName+" "+b.from.lastName)}`):"";
-const achToast=l=>{(l||[]).forEach((t,i)=>setTimeout(()=>toast("🏅 Новое достижение: "+t),1300+i*900));if(l&&l.length)FRESH.x=0};
-const bgrid=list=>`<div class="bgrid">${list.map((b,i)=>`<button class="bdg" data-b="${i}" style="--i:${Math.min(i,12)}" aria-label="${esc(b.title)}">${medal(b,"dot",i)}<b>${esc(b.title)}</b></button>`).join("")}</div>`;
-function badgeModal(b,foot=""){
+const achToast=l=>{(l||[]).forEach((t,i)=>setTimeout(()=>toast(/уровень$/.test(t)?"⬆️ Значок улучшен: "+t:"🏅 Новое достижение: "+t),1300+i*900));if(l&&l.length)FRESH.x=0};
+const bgrid=list=>`<div class="bgrid">${list.map((b,i)=>`<button class="bdg${b.lock?" lockd":""}" data-b="${i}" style="--i:${Math.min(i,12)}" aria-label="${esc(b.title)}${b.lock?" (закрыт)":""}">${medal(b,"dot",i)}<b>${esc(b.title)}</b></button>`).join("")}</div>`;
+// Закрытое достижение выглядит как серый значок
+const lockB=a=>({id:"lock_"+a.code,emoji:a.emoji,color:a.color,title:a.title,lock:true,ach:a,seen:true});
+const achOf=b=>b.ach||(b.track&&X&&X.ach?X.ach.find(a=>a.code===b.track):null);
+// Лесенка уровней значка: какие рамки и за что
+function ladderH(a,cur){if(!a||!a.levels||!a.levels.length)return"";
+  return`<div class="sec" style="margin-top:14px">Уровни значка</div><div class="lad">${a.levels.map(l=>`<div class="ldr ${l.n<=cur?"got":""} ${l.n===cur||(a.code==="year"&&l.n===5&&cur>5)?"cur":""}">${medal({emoji:a.emoji,color:a.color,level:l.n,track:a.code,lock:l.n>cur},"")}
+    <div class="grow"><b>${l.n} уровень · ${TIER[l.n]}</b><div class="muted sm">${esc(l.goal)}</div></div><b>${l.n<=cur?"✓":""}</b></div>`).join("")}</div>
+    ${a.code==="year"?`<p class="muted sm">После 5 лет рамка остаётся алмазной, а число лет продолжает расти.</p>`:""}`}
+function progH(a){if(!a||a.next===null||a.next===undefined||a.v===undefined)return"";const pct=Math.min(100,Math.round(a.v/a.next*100));
+  return`<div class="row sm" style="margin-top:10px"><b class="grow">${a.level?"До следующего уровня":"Прогресс"}</b><span class="muted">${fnum(a.v)} из ${fnum(a.next)}</span></div><div class="prog"><i style="width:${pct}%"></i></div>`}
+function badgeModal(b,foot=""){const a=achOf(b),cur=b.lock?0:(b.level||(a?a.level:0));
+  if(b.lock)return modal(`<div class="stage"><div class="rays" style="opacity:.3"></div>${medal(b,"big")}</div><h2 class="center">${esc(b.title)}</h2>
+    <p class="center" style="margin:8px 0"><b>🔒 Как получить:</b> ${esc(a.goal)}</p>${progH(a)}${ladderH(a,0)}${foot}`);
   return modal(`<div class="stage"><div class="rays"></div>${medal(b,"big flip")}</div><h2 class="center">${esc(b.title)}</h2>
-  ${b.description?`<p class="center" style="margin:8px 0">${esc(b.description)}</p>`:""}<p class="muted sm center">${[fromT(b),fdate(b.created)].filter(Boolean).join(" · ")}</p>${foot}`);
+  ${b.track&&cur?`<p class="center" style="margin:4px 0"><span class="tag">${cur} уровень · ${TIER[tierOf(cur)]}</span></p>`:""}
+  ${b.description?`<p class="center" style="margin:8px 0">${esc(b.description)}</p>`:""}<p class="muted sm center">${[fromT(b),fdate(b.created)].filter(Boolean).join(" · ")}</p>
+  ${a&&a.id===b.id&&a.goal?`<p class="sm" style="margin:12px 0 0"><b>Следующий уровень:</b> ${esc(a.goal)}</p>${progH(a)}`:""}${ladderH(a,cur)}${foot}`);
 }
-// Уже показанные бейджи: ответ сервера, пришедший раньше отметки «просмотрено», не покажет их снова.
-const CELEB=new Set(ls.get("celeb")||[]);
+// Все уровни рамок значков
+function tiersModal(){
+  modal(`<h2 style="padding-right:40px">✨ Уровни рамок</h2><p class="muted sm" style="margin:4px 0 0">У многих значков есть уровни. Достигай новых целей - и рамка вокруг значка становится красивее.</p>
+    <div class="tiers">${[1,2,3,4,5].map(n=>`<div>${medal({emoji:"🏅",color:["","orange","blue","gold","green","purple"][n],level:n,track:"x"},"")}<span>${n}<br>${TIER[n]}</span></div>`).join("")}</div>
+    <p class="sm" style="margin:0">Значок «На платформе» растёт в каждую годовщину регистрации: 1 год, 2 года и дальше.</p>`)}
+function badgesCard(B,title,empty){const A=(X&&X.ach)||[],L=A.filter(a=>!a.level).map(lockB),all=B.concat(L);
+  return`<div class="card"><div class="row"><b class="grow">${title}</b><button class="ghost sm" id="tiers">✨ Уровни</button><span class="tag">${B.length}${A.length?" из "+(B.length+L.length):""}</span></div>
+    ${all.length?bgrid(all):`<div class="empty" style="padding:18px 6px 6px"><div class="eb">🏅</div><p class="muted" style="margin:6px 0 0">${empty}</p></div>`}
+    ${L.length?`<p class="muted sm" style="margin:10px 0 0">Серые значки ещё закрыты - нажми на любой, чтобы узнать, как его получить.</p>`:""}</div>`}
+// Уже показанные значки: ответ сервера, пришедший раньше отметки «просмотрено», не покажет их снова.
+const CELEB=new Set(ls.get("celeb")||[]),celebKey=b=>b.id+(b.level>1?"@"+b.level:"");
 function celebrate(list){
   let i=0;const m=modal(`<div id="cel"></div>`);
   const show=()=>{const b=list[i];
-    m.el.querySelector("#cel").innerHTML=`<div class="sec center" style="margin-top:0">🎉 Новый бейдж${list.length>1?` · ${i+1} из ${list.length}`:""}</div>
+    const up=!!b.up;
+    m.el.querySelector("#cel").innerHTML=`<div class="sec center" style="margin-top:0">${up?"⬆️ Значок улучшен":"🎉 Новый значок"}${list.length>1?` · ${i+1} из ${list.length}`:""}</div>
     <div class="stage"><div class="rays"></div>${medal(b,"big flip")}</div><h2 class="center">${esc(b.title)}</h2>
+    ${b.track&&b.level?`<p class="center" style="margin:4px 0"><span class="tag">${b.level} уровень · ${TIER[tierOf(b.level)]}</span></p>`:""}
     ${b.description?`<p class="center" style="margin:8px 0">${esc(b.description)}</p>`:""}<p class="muted sm center">${fromT(b)}</p>
     <button class="btn-full" id="nx" style="margin-top:12px">${i<list.length-1?"Дальше →":"Ура! 🎉"}</button>`;
     setTimeout(()=>burst(innerWidth/2,innerHeight*.4,40),550);
     m.el.querySelector("#nx").onclick=()=>{i++;i<list.length?show():m.close()};
   };
-  show();list.forEach(b=>{b.seen=true;CELEB.add(b.id)});ls.set("celeb",[...CELEB].slice(-200));
-  if(X){(X.badges||[]).forEach(b=>{if(CELEB.has(b.id))b.seen=true});cset("x",X)}api("badgesSeen");
+  show();list.forEach(b=>{b.seen=true;CELEB.add(celebKey(b))});ls.set("celeb",[...CELEB].slice(-200));
+  if(X){(X.badges||[]).forEach(b=>{if(CELEB.has(celebKey(b)))b.seen=true});cset("x",X)}api("badgesSeen");
 }
 
-/* ───────── аватарка ───────── */
+/* ───────── фото профиля ───────── */
 function pickAvatar(){
   if(X&&X.off)return toast("Сначала обновите серверную часть (Badges.gs)","err");
   const inp=document.createElement("input");inp.type="file";inp.accept="image/*";
@@ -640,7 +740,7 @@ function avatarMenu(){
     AV[me.username]="";saveAV();if(X){X.avatar="";cset("x",X)}paintAv(me.username);m.close();toast("Фото удалено")});
 }
 
-function chip(bump){const c=$("#xpc");if(!c||!me)return;const {lv}=level(me.xp);c.textContent=`${rank(lv)[2]} Ур. ${lv} · ${me.xp} XP`;
+function chip(bump){const c=$("#xpc");if(!c||!me)return;const {lv}=level(me.xp);c.textContent=`${rank(lv)[2]} Ур. ${lv} · ${me.xp} опыта`;
   if(bump&&!RM){c.classList.remove("bump");void c.offsetWidth;c.classList.add("bump")}}
 function addXp(n){if(!n)return;const o=level(me.xp).lv;me.xp+=n;saveMe();chip(true);
   const l=level(me.xp).lv;if(l>o)setTimeout(()=>{toast("🎉 Новый уровень: "+l+"!");burst()},450)}
@@ -683,7 +783,7 @@ function treeSvg(st,streak){
 function gardenCard(xp,streak,own){const st=stageOf(xp),nx=STAGES[st+1],lo=STAGES[st][0];
   return`<div class="card"><b>🌳 ${own?"Мой эко-сад":"Эко-сад"}</b><div class="muted sm">${STAGES[st][1]}${streak>=30?" · даёт плоды 🍎":streak>=7?" · цветёт 🌸":""}</div>
   <div class="tstage">${treeSvg(st,streak)}</div>
-  ${nx?`<div class="prog"><i style="width:${Math.round((xp-lo)/(nx[0]-lo)*100)}%"></i></div><div class="muted sm" style="margin-top:6px">До стадии «${nx[1]}»: ${nx[0]-xp} XP</div>`:`<div class="muted sm center">Самая высокая стадия! 🎉</div>`}
+  ${nx?`<div class="prog"><i style="width:${Math.round((xp-lo)/(nx[0]-lo)*100)}%"></i></div><div class="muted sm" style="margin-top:6px">До стадии «${nx[1]}»: ${nx[0]-xp} опыта</div>`:`<div class="muted sm center">Самая высокая стадия! 🎉</div>`}
   ${own?`<p class="muted sm" style="margin:8px 0 0">Сад растёт от опыта. Серия 7+ дней - дерево цветёт, 30+ - даёт плоды.</p>`:""}</div>`}
 const IMP=[["water","💧","л воды сэкономлено"],["plastic","🧴","шт. пластика не выброшено"],["paper","📄","кг макулатуры собрано"],["co2","🌫️","кг CO₂ - меньше выбросов"],["energy","💡","кВт·ч электричества сэкономлено"]];
 const fnum=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:2});
@@ -702,39 +802,47 @@ async function forestModal(un){
 }
 
 /* ───────── оформление профиля ───────── */
-const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Аврора"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["dev","Код",1]];
+const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Северное сияние"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["dev","Код",1]];
 const PATTERNS=[["none","Без узора"],["leaves","Листья"],["waves","Волны"],["stars","Звёзды"],["dots","Точки"],["binary","01010",1]];
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
 function customize(){
   const lv=level(me.xp).lv,best=(X&&X.bestStreak)||0,nb=((X&&X.badges)||[]).length,c=custOf(me);
-  const FR=[["none","Без рамки",1,""],["leaf","Листья",1,""],["ocean","Океан",lv>=3,"с 3 уровня"],["fire","Огонь",best>=7,"серия 7 дней"],
-    ["rainbow","Радуга",lv>=5,"с 5 уровня"],["medal","Медальная",nb>=3,"3 бейджа"],["gold","Золото",lv>=10,"с 10 уровня"],["season","Эко-праздник",((X&&X.badges)||[]).some(b=>b.id.indexOf("ach_event_")===0),"задание эко-праздника"],...(me.dev?[["dev","Разработчик",1,""]]:[])];
-  const st={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",emoji:c.emoji||"",status:c.status||"",showcase:(c.sc||[]).map(b=>b.id)};
+  // каталог с сервера; если сервер старый - прежние списки
+  const old=()=>({cover:COVERS.filter(x=>!x[2]||me.dev).map(([id,name])=>({id,name,open:true})),pattern:PATTERNS.filter(x=>!x[2]||me.dev).map(([id,name])=>({id,name,open:true})),
+    frame:[["none","Без рамки",1,""],["leaf","Листья",1,""],["ocean","Океан",lv>=3,"с 3 уровня"],["fire","Огонь",best>=7,"серия 7 дней"],["rainbow","Радуга",lv>=5,"с 5 уровня"],
+      ["medal","Медальная",nb>=3,"3 значка"],["gold","Золото",lv>=10,"с 10 уровня"],...(me.dev?[["dev","Разработчик",1,""]]:[])].map(([id,name,open,how])=>({id,name,open:!!open,how})),nameColor:null});
+  const CAT=(X&&X.cosm)||old();
+  const st={cover:c.cover||"default",pattern:c.pattern||"none",frame:c.frame||"none",nameColor:c.nameColor||"none",emoji:c.emoji||"",status:c.status||"",showcase:(c.sc||[]).map(b=>b.id)};
   const B=(X&&X.badges)||[];
+  const lockH=i=>i.open?"":`<small>🔒 ${esc(i.how)}</small>`,cnt=k=>`<span class="cnt">${CAT[k].filter(i=>i.open).length} из ${CAT[k].length}</span>`;
   const m=modal(`<h2 style="padding-right:40px">🎨 Оформление профиля</h2><div id="cpv"></div>
-    <label class="lbl">Обложка</label><div class="sw" id="cco">${COVERS.filter(x=>!x[2]||me.dev).map(([k,n])=>`<button type="button" data-v="${k}" class="hero cv-${k}"><span>${n}</span></button>`).join("")}</div>
-    <label class="lbl">Узор</label><div class="sw" id="cpt">${PATTERNS.filter(x=>!x[2]||me.dev).map(([k,n])=>`<button type="button" data-v="${k}" class="hero pt-${k}"><i class="pat"></i><span>${n}</span></button>`).join("")}</div>
-    <label class="lbl">Рамка аватарки</label><div class="frs" id="cfr">${FR.map(([k,n,ok,req])=>`<button type="button" data-v="${k}" ${ok?"":"disabled"}>${avatar(me,1,k)}<span>${ok?"":"🔒 "}${n}</span>${ok?"":`<small>${req}</small>`}</button>`).join("")}</div>
-    <label class="lbl">Эмодзи рядом с именем</label><div class="egrid" id="cem">${P_EMOJI.concat(me.dev?["</>"]:[]).map(e=>`<button type="button" data-v="${esc(e)}" ${e==="</>"?'style="font:800 15px ui-monospace,monospace"':""}>${esc(e)||"✕"}</button>`).join("")}</div>
-    <input id="cec" maxlength="16" placeholder="…или вставьте свой эмодзи" autocomplete="off">
+    <p class="muted sm" style="margin:0">Закрытые украшения 🔒 открываются за достижения. Нажми на закрытое, чтобы узнать, как его получить.</p>
+    <label class="lbl">Обложка ${cnt("cover")}</label><div class="sw" id="cco">${CAT.cover.map(i=>`<button type="button" data-v="${i.id}" class="hero cv-${i.id}${i.open?"":" lk"}" data-how="${esc(i.how||"")}"><span>${esc(i.name)}</span>${lockH(i)}</button>`).join("")}</div>
+    <label class="lbl">Узор ${cnt("pattern")}</label><div class="sw" id="cpt">${CAT.pattern.map(i=>`<button type="button" data-v="${i.id}" class="hero pt-${i.id}${i.open?"":" lk"}" data-how="${esc(i.how||"")}"><i class="pat"></i><span>${esc(i.name)}</span>${lockH(i)}</button>`).join("")}</div>
+    <label class="lbl">Рамка фото ${cnt("frame")}</label><div class="frs" id="cfr">${CAT.frame.map(i=>`<button type="button" data-v="${i.id}" class="${i.open?"":"lk"}" data-how="${esc(i.how||"")}">${avatar(me,1,i.id)}<span>${i.open?"":"🔒 "}${esc(i.name)}</span>${i.open?"":`<small>${esc(i.how)}</small>`}</button>`).join("")}</div>
+    ${CAT.nameColor?`<label class="lbl">Цвет имени ${cnt("nameColor")}</label><div class="ncl" id="cnc">${CAT.nameColor.map(i=>`<button type="button" data-v="${i.id}" class="${i.open?"":"lk"}" data-how="${esc(i.how||"")}"><span class="nm n-${i.id}">${esc(i.name)}</span>${lockH(i)}</button>`).join("")}</div>`:""}
+    <label class="lbl">Смайлик рядом с именем</label><div class="egrid" id="cem">${P_EMOJI.concat(me.dev?["</>"]:[]).map(e=>`<button type="button" data-v="${esc(e)}" ${e==="</>"?'style="font:800 15px ui-monospace,monospace"':""}>${esc(e)||"✕"}</button>`).join("")}</div>
+    <input id="cec" maxlength="16" placeholder="…или вставь свой смайлик" autocomplete="off">
     <label class="lbl" for="cst">Статус <span class="cnt" id="csc">0/60</span></label><input id="cst" maxlength="60" placeholder="Например: «Сортирую мусор с 2025 🌍»">
-    ${B.length?`<label class="lbl">Витрина бейджей <span class="cnt">до 3</span></label><div class="scpick" id="csp">${B.map(b=>`<button type="button" data-v="${esc(b.id)}">${medal(b)}<span>${esc(b.title)}</span></button>`).join("")}</div>`:`<p class="muted sm">Витрина появится, когда у вас будут бейджи.</p>`}
+    ${B.length?`<label class="lbl">Витрина значков <span class="cnt">до 3</span></label><div class="scpick" id="csp">${B.map(b=>`<button type="button" data-v="${esc(b.id)}">${medal(b)}<span>${esc(b.title)}</span></button>`).join("")}</div>`:`<p class="muted sm">Витрина появится, когда у тебя будут значки.</p>`}
     <div class="err" id="cer"></div><button class="btn-full" id="csv">Сохранить</button>`);
-  const q=x=>m.el.querySelector(x);
-  const mark=()=>{[["#cco","cover"],["#cpt","pattern"],["#cfr","frame"],["#cem","emoji"]].forEach(([sel,k])=>q(sel).querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===st[k])));
+  const q=x=>m.el.querySelector(x),GR=[["#cco","cover"],["#cpt","pattern"],["#cfr","frame"],["#cnc","nameColor"],["#cem","emoji"]].filter(([sel])=>q(sel));
+  const mark=()=>{GR.forEach(([sel,k])=>q(sel).querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===st[k])));
     if(q("#csp"))q("#csp").querySelectorAll("button").forEach(b=>b.classList.toggle("on",st.showcase.includes(b.dataset.v)));
     const u={...me,cust:{...st,sc:st.showcase.map(id=>B.find(b=>b.id===id)).filter(Boolean)}};
     q("#cpv").innerHTML=`<div class="${heroCls(u)}" style="margin:8px 0"><i class="pat"></i><div class="row">${avatar(u,1)}<div class="grow"><b>${nameH(u)}</b><div class="muted sm">@${esc(me.username)}</div>${statusH(u)}</div></div>${showcaseH(u)}</div>`;
     q("#csc").textContent=st.status.length+"/60"};
-  [["#cco","cover"],["#cpt","pattern"],["#cfr","frame"],["#cem","emoji"]].forEach(([sel,k])=>q(sel).onclick=e=>{const b=e.target.closest("button");if(!b||b.disabled)return;st[k]=b.dataset.v;mark()});
+  GR.forEach(([sel,k])=>q(sel).onclick=e=>{const b=e.target.closest("button");if(!b)return;
+    if(b.classList.contains("lk"))return toast("🔒 Откроется: "+b.dataset.how);st[k]=b.dataset.v;mark()});
   if(q("#csp"))q("#csp").onclick=e=>{const b=e.target.closest("button");if(!b)return;const id=b.dataset.v;
-    if(st.showcase.includes(id))st.showcase=st.showcase.filter(x=>x!==id);else if(st.showcase.length<3)st.showcase.push(id);else return toast("В витрине максимум 3 бейджа","err");mark()};
+    if(st.showcase.includes(id))st.showcase=st.showcase.filter(x=>x!==id);else if(st.showcase.length<3)st.showcase.push(id);else return toast("В витрине максимум 3 значка","err");mark()};
   const si=q("#cst");si.value=st.status;si.oninput=()=>{st.status=si.value;mark()};
   const ce=q("#cec");if(st.emoji&&!P_EMOJI.includes(st.emoji)&&st.emoji!=="</>")ce.value=st.emoji;
   ce.oninput=()=>{const v=ce.value.trim();if(v){st.emoji=v;mark()}};q("#cem").addEventListener("click",()=>{ce.value=""});
   mark();
   const sb=q("#csv");sb.onclick=busy(sb,async()=>{
-    const r=await api("profileSet",st);if(dead(r))return m.close();
+    const body={...st};if(!CAT.nameColor)delete body.nameColor;
+    const r=await api("profileSet",body);if(dead(r))return m.close();
     if(!r.ok)return q("#cer").textContent=/Неизвестное действие/.test(r.error)?"Оформление заработает после обновления серверной части (Badges.gs).":r.error;
     me.cust=r.cust;saveMe();m.close();toast("Профиль обновлён ✨");burst();profileV()});
 }
@@ -754,9 +862,9 @@ function userV(un,back){
       ${showcaseH(u)}${u.bio?`<p class="bio">${esc(u.bio)}</p>`:""}
       ${r.self?`<button class="ghost btn-full" id="mine" style="margin-top:12px">Это вы - открыть свой профиль</button>`:r.friend?`<button class="btn-full" id="wr" style="margin-top:12px">💬 Написать</button>`:""}</div>
       ${gardenCard(u.xp,r.streak,false)}
-      ${B.length?`<div class="card"><div class="row"><b class="grow">🏅 Бейджи</b><span class="tag">${B.length}</span></div>${bgrid(B.map(b=>({...b,seen:true})))}</div>`:""}
+      ${B.length?`<div class="card"><div class="row"><b class="grow">🏅 Значки</b><span class="tag">${B.length}</span></div>${bgrid(B.map(b=>({...b,seen:true})))}</div>`:""}
       ${impactCard(r.impact,"Польза для природы","Пока нет выполненных заданий дня.")}
-      ${feedCard(r.events,"Лента достижений","Здесь появятся новые бейджи, уровни и серии дней.")}`;
+      ${feedCard(r.events,"Лента достижений","Здесь появятся новые значки, уровни и серии дней.")}`;
     stag(box);raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct/100)});
     box.querySelectorAll(".bdg").forEach(b=>b.onclick=()=>badgeModal(B[+b.dataset.b]));tilt(box);
     if($("#mine"))$("#mine").onclick=()=>go("profile");
@@ -848,16 +956,16 @@ async function mapV(){
 const FEEDBACK="renwori1@gmail.com";
 function policyModal(){modal(`<div class="policy"><h2 style="padding-right:40px">Политика конфиденциальности</h2><p class="muted sm">Версия от 28 октября 2026 года</p>
   <h3>1. Кто обрабатывает данные</h3><p>Создатель сайта ЭкоТрек (далее - администратор). Связаться: <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
-  <h3>2. Какие данные мы собираем</h3><ul><li>имя, фамилия и юзернейм;</li><li>класс и его буква (для учеников);</li><li>пароль - только в зашифрованном виде (хэш), сам пароль никто не видит;</li>
-  <li>фото профиля, статус, «о себе» и оформление профиля - если вы их добавили;</li><li>сообщения и реакции в чатах;</li><li>результаты игр и заданий, опыт, бейджи, классы и друзья.</li></ul>
-  <h3>3. Зачем</h3><p>Только чтобы сайт работал: вход в аккаунт, профиль, игры и задания, чаты, классы и бейджи. Мы не показываем рекламу и не продаём данные.</p>
-  <h3>4. Кто видит данные</h3><ul><li>имя, юзернейм, фото, класс, уровень, бейджи, эко-сад и ленту достижений - все пользователи сайта;</li>
-  <li>сообщения - только участники конкретного чата;</li><li>учитель видит учеников своего класса и их бейджи.</li></ul>
+  <h3>2. Какие данные мы собираем</h3><ul><li>имя, фамилия и имя пользователя;</li><li>класс и его буква (для учеников);</li><li>пароль - только в зашифрованном виде (хэш), сам пароль никто не видит;</li>
+  <li>фото профиля, статус, «о себе» и оформление профиля - если вы их добавили;</li><li>сообщения и реакции в чатах;</li><li>результаты игр и заданий, опыт, значки, классы и друзья.</li></ul>
+  <h3>3. Зачем</h3><p>Только чтобы сайт работал: вход в аккаунт, профиль, игры и задания, чаты, классы и значки. Мы не показываем рекламу и не продаём данные.</p>
+  <h3>4. Кто видит данные</h3><ul><li>имя, имя пользователя, фото, класс, уровень, значки, эко-сад и ленту достижений - все пользователи сайта;</li>
+  <li>сообщения - только участники конкретного чата;</li><li>учитель видит учеников своего класса и их значки.</li></ul>
   <h3>5. Где хранятся данные</h3><p>В Google Таблице администратора на серверах Google. Третьим лицам данные не передаются, кроме Google как площадки хранения.</p>
   <h3>6. Сколько хранятся</h3><p>Пока существует аккаунт. Удалить аккаунт и все данные можно самостоятельно: Настройки → «Удалить аккаунт», или по письму на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
   <h3>7. Дети</h3><p>Если вам меньше 14 лет, регистрироваться можно только с согласия родителей или законных представителей.</p>
   <h3>8. Ваши права</h3><p>Вы можете узнать, какие данные о вас хранятся, исправить их, удалить или отозвать согласие - напишите на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
-  <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих cookies нет.</p></div>`)}
+  <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих файлов нет.</p></div>`)}
 const feedbackCard=()=>`<div class="card"><b>📮 Обратная связь</b><p class="muted sm" style="margin:4px 0 10px">Нашли ошибку, есть идея или вопрос? Напишите нам: <b>${FEEDBACK}</b></p>
   <a class="btn-full" href="mailto:${FEEDBACK}?subject=${encodeURIComponent("ЭкоТрек: обратная связь")}" style="display:block;text-align:center;padding:12px;border-radius:14px;background:var(--pri2);color:var(--pri);font-weight:800;text-decoration:none">✉️ Написать письмо</a>
   <p class="sm center" style="margin:10px 0 0"><a href="#" data-pol style="color:var(--pri);font-weight:800">Политика конфиденциальности</a></p></div>`;
@@ -890,14 +998,14 @@ const tipOfDay=()=>{const d=new Date().toDateString();let h=0;for(const c of d)h
 /* ───────── вопрос дня ───────── */
 function drawQotd(r,my){const box=$("#qd");if(!box||my!==vid)return;if(!r.ok){box.innerHTML="";return}
   if(!r.answered){
-    box.innerHTML=`<div class="card"><div class="row"><b class="grow">❓ Вопрос дня</b><span class="tag">+10 XP</span></div><h3 class="qq">${esc(r.q)}</h3>
+    box.innerHTML=`<div class="card"><div class="row"><b class="grow">❓ Вопрос дня</b><span class="tag">+10 опыта</span></div><h3 class="qq">${esc(r.q)}</h3>
       ${r.o.map((o,k)=>`<button class="opt" data-qa="${k}"><b>${"ABCD"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}
       <p class="muted sm" style="margin:6px 0 0">${r.band?"Один вопрос для всех ребят "+esc(r.band.replace("класс","классов")):"Один вопрос для всех"}. Ответить можно один раз.</p></div>`;
     box.querySelectorAll("[data-qa]").forEach(b=>b.onclick=async()=>{box.querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");
       const res=await api("qotdAnswer",{a:r.ix[+b.dataset.qa]});if(dead(res))return;
       if(!res.ok){toast(res.error,"err");box.querySelectorAll(".opt").forEach(x=>x.disabled=false);b.classList.remove("sel");return}
       cset("qotd",res);FRESH.qotd=Date.now();
-      if(res.xp){addXp(res.xp);const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,24);toast(`Верно! +${res.xp} XP 🎉`)}else toast("Не совсем. Посмотри пояснение 👇");
+      if(res.xp){addXp(res.xp);const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,24);toast(`Верно! +${res.xp} опыта 🎉`)}else toast("Не совсем. Посмотри пояснение 👇");
       achToast(res.ach);drawQotd(res,my)});
     return}
   const a=r.answered,rk=r.ix.indexOf(a.right),mk=r.ix.indexOf(a.a),st=r.stats;
@@ -918,7 +1026,7 @@ function ratingV(o={}){
   const seg=(id,list,get,set)=>{const el=$(id),upd=()=>{const k=Math.max(0,list.findIndex(x=>x[0]===get()));el.style.setProperty("--k",k);el.querySelectorAll("button").forEach((b,j)=>b.classList.toggle("on",j===k))};
     el.querySelectorAll("button").forEach((b,j)=>b.onclick=()=>{set(list[j][0]);upd();load()});upd()};
   seg("#rsc",SC,()=>scope,v=>{scope=v;ls.set("rt.scope",v)});seg("#rme",ME,()=>metric,v=>{metric=v;ls.set("rt.metric",v)});
-  const val=v=>metric==="xp"?v+" XP":metric==="streak"?"🔥 "+plural(v,"день","дня","дней"):"✅ "+v;
+  const val=v=>metric==="xp"?v+" опыта":metric==="streak"?"🔥 "+plural(v,"день","дня","дней"):"✅ "+v;
   const head={xp:"Опыт с понедельника",streak:"Серия дней в мини-играх",tasks:"Задания дня с понедельника"};
   const medalOf=p=>p===1?"🥇":p===2?"🥈":p===3?"🥉":p;
   const draw=r=>{const box=$("#rl");if(!box||my!==vid)return;$("#rme").style.display=scope==="classes"?"none":"";
@@ -926,9 +1034,9 @@ function ratingV(o={}){
     $("#rtc").querySelectorAll("[data-rt]").forEach(b=>b.onclick=()=>{teacher=b.dataset.rt;load()});
     if(!r.ok){box.innerHTML=`<div class="card ${/не состоите/.test(r.error)?"empty":"err"}">${/не состоите/.test(r.error)?`<div class="eb">🏫</div><p class="muted">Вы пока не в классе. Вступите по коду учителя в профиле.</p>`:esc(r.error)}</div>`;return}
     if(r.scope==="classes"){
-      box.innerHTML=(r.prev?`<div class="card hero"><b>👑 Победитель за ${esc(r.prev.name&&r.prevMonth)}</b><h2 style="margin:6px 0 0">${esc(r.prev.name)}</h2><div class="muted">${r.prev.teacher?esc(r.prev.teacher.firstName+" "+r.prev.teacher.lastName):""} · ${r.prev.avg} XP на ученика</div></div>`:"")+
+      box.innerHTML=(r.prev?`<div class="card hero"><b>👑 Победитель за ${esc(r.prev.name&&r.prevMonth)}</b><h2 style="margin:6px 0 0">${esc(r.prev.name)}</h2><div class="muted">${r.prev.teacher?esc(r.prev.teacher.firstName+" "+r.prev.teacher.lastName):""} · ${r.prev.avg} опыта на ученика</div></div>`:"")+
         `<div class="card"><b>Соревнование классов - ${esc(r.month)}</b><p class="muted sm" style="margin:4px 0 6px">Побеждает класс с самым большим средним опытом на ученика за месяц. Итоги - в начале следующего месяца.</p>
-        ${r.classes.length?r.classes.map((c,i)=>`<div class="rtr ${c.mine?"me":""}"><span class="rtp">${medalOf(i+1)}</span><div class="ava cls">🏫</div><div class="grow"><b>${esc(c.name)}</b><div class="muted sm">${c.teacher?esc(c.teacher.firstName+" "+c.teacher.lastName)+" · ":""}${plural(c.count,"ученик","ученика","учеников")} · ✅ ${c.tasks}</div></div><b class="rtv">${c.avg} XP</b></div>`).join("")
+        ${r.classes.length?r.classes.map((c,i)=>`<div class="rtr ${c.mine?"me":""}"><span class="rtp">${medalOf(i+1)}</span><div class="ava cls">🏫</div><div class="grow"><b>${esc(c.name)}</b><div class="muted sm">${c.teacher?esc(c.teacher.firstName+" "+c.teacher.lastName)+" · ":""}${plural(c.count,"ученик","ученика","учеников")} · ✅ ${c.tasks}</div></div><b class="rtv">${c.avg} опыта</b></div>`).join("")
         :`<p class="muted">Пока ни в одном классе нет учеников.</p>`}</div>`;
       stag(box);return}
     box.innerHTML=`<div class="card"><b>${head[r.metric]}</b>${r.className?` <span class="muted sm">· ${esc(r.className)}</span>`:""}
@@ -940,13 +1048,13 @@ function ratingV(o={}){
   load();
 }
 
-/* ───────── эко-челленджи класса ───────── */
+/* ───────── эко-испытания класса ───────── */
 const UNITS=["кг","шт.","л","дел","раз","км"];
 function chCard(c,own){const pct=Math.min(100,Math.round(c.sum/c.goal*100)),open=c.status==="open"&&!c.expired;
   return`<div class="card chc ${c.status==="done"?"done":""}"><div class="row"><b class="grow">${c.status==="done"?"✅":"🏁"} ${esc(c.title)}</b>${own&&c.status==="open"?`<button class="ghost sm" data-chend="${esc(c.id)}">Завершить</button>`:""}</div>
     <div class="bar"><i style="width:${pct}%"></i></div>
     <div class="row sm" style="gap:8px"><b class="grow">${fnum(c.sum)} из ${fnum(c.goal)} ${esc(c.unit)} · ${pct}%</b><span class="muted">${plural(c.people,"участник","участника","участников")}</span></div>
-    ${c.status==="done"?`<p class="sm" style="margin:6px 0 0;color:var(--pri);font-weight:800">Цель достигнута! Все ученики класса получили бейдж 🏁</p>`:c.expired?`<p class="muted sm" style="margin:6px 0 0">Время вышло</p>`:c.deadline?`<p class="muted sm" style="margin:6px 0 0">Срок: до ${fdate(c.deadline+"T12:00:00")}</p>`:""}
+    ${c.status==="done"?`<p class="sm" style="margin:6px 0 0;color:var(--pri);font-weight:800">Цель достигнута! Все ученики класса получили значок 🏁</p>`:c.expired?`<p class="muted sm" style="margin:6px 0 0">Время вышло</p>`:c.deadline?`<p class="muted sm" style="margin:6px 0 0">Срок: до ${fdate(c.deadline+"T12:00:00")}</p>`:""}
     ${c.top.length?`<div class="tops">${c.top.map(t=>`<span>${avatar(t.user)}${esc(t.user.firstName)} · ${fnum(t.amount)}</span>`).join("")}</div>`:""}
     ${!own&&c.mine?`<p class="sm" style="margin:8px 0 0">Мой вклад: <b>${fnum(c.mine)} ${esc(c.unit)}</b></p>`:""}
     ${!own&&open?`<form class="srch" data-chf="${esc(c.id)}" style="margin-top:10px"><input type="number" min="0.1" max="1000" step="0.1" inputmode="decimal" placeholder="Мой вклад, ${esc(c.unit)}"><button type="submit">Добавить</button></form>`:""}</div>`}
@@ -954,28 +1062,28 @@ function challengesBox(box,teacher,own,my,onLoad){if(!box)return;
   const draw=r=>{if(!box.isConnected||my!==vid)return;
     if(!r.ok){box.innerHTML=/Неизвестное действие/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
     if(onLoad)onLoad(r);
-    box.innerHTML=`<h2 class="sec">🏁 Челленджи класса</h2>${own?`<button class="btn-full" id="chn" style="margin:10px 0">+ Новый челлендж</button>`:""}
+    box.innerHTML=`<h2 class="sec">🏁 Испытания класса</h2>${own?`<button class="btn-full" id="chn" style="margin:10px 0">+ Новое испытание</button>`:""}
       ${r.challenges.length?r.challenges.map(c=>chCard(c,own)).join(""):`<div class="card empty"><div class="eb">🏁</div><p class="muted">${own?"Поставьте классу общую цель, например «Собрать 30 кг макулатуры». Ученики будут отмечать свой вклад.":"Учитель пока не поставил классу общую цель."}</p></div>`}`;
     stag(box);loadAv(r.challenges.flatMap(c=>c.top.map(t=>t.user)));
     if($("#chn"))$("#chn").onclick=()=>challengeModal(res=>{cset("ch:"+teacher,{ok:true,...r,challenges:res.challenges});draw({ok:true,...r,challenges:res.challenges})});
-    box.querySelectorAll("[data-chend]").forEach(b=>b.onclick=async()=>{if(!await ask("Завершить челлендж? Он пропадёт из списка.","Завершить",1))return;
+    box.querySelectorAll("[data-chend]").forEach(b=>b.onclick=async()=>{if(!await ask("Завершить испытание? Оно пропадёт из списка.","Завершить",1))return;
       const res=await api("challengeEnd",{id:b.dataset.chend});if(dead(res))return;if(!res.ok)return toast(res.error,"err");draw({ok:true,...r,challenges:res.challenges})});
     box.querySelectorAll("[data-chf]").forEach(f=>f.onsubmit=async e=>{e.preventDefault();const inp=f.querySelector("input"),v=Number(String(inp.value).replace(",","."));
       if(!(v>0))return toast("Введите число больше нуля","err");const btn=f.querySelector("button");btn.disabled=true;
       const res=await api("challengeAdd",{id:f.dataset.chf,amount:v});btn.disabled=false;if(dead(res))return;if(!res.ok)return toast(res.error,"err");
-      const rc=btn.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,res.done?60:20);toast(res.done?"🏁 Класс выполнил челлендж! Бейдж уже в профиле":"Вклад добавлен 💪");
+      const rc=btn.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,res.done?60:20);toast(res.done?"🏁 Класс выполнил испытание! Значок уже в профиле":"Вклад добавлен 💪");
       if(res.done)FRESH.x=0;const nr={ok:true,...r,challenges:res.challenges};cset("ch:"+teacher,nr);draw(nr)})};
   swr("ch:"+teacher,"challengeList",{teacher},draw,my);
 }
 function challengeModal(done){
-  const m=modal(`<h2 style="padding-right:40px">🏁 Новый челлендж</h2><p class="muted sm" style="margin:0 0 8px">Общая цель для всего класса. Когда ученики вместе её достигнут, каждый получит бейдж.</p>
+  const m=modal(`<h2 style="padding-right:40px">🏁 Новое испытание</h2><p class="muted sm" style="margin:0 0 8px">Общая цель для всего класса. Когда ученики вместе её достигнут, каждый получит значок.</p>
     <input id="cht" maxlength="60" placeholder="Например: «Собрать макулатуру»">
     <div class="row" style="gap:8px"><input id="chg" type="number" min="1" max="100000" inputmode="numeric" placeholder="Цель, например 30" style="flex:1"><select id="chu" style="flex:1">${UNITS.map(u=>`<option>${u}</option>`).join("")}</select></div>
     <label class="lbl" for="chd">Срок (необязательно)</label><input id="chd" type="date">
     <div class="err" id="che"></div><button class="btn-full" id="chs2">Создать</button>`);
   const q=x=>m.el.querySelector(x),b=q("#chs2");
   b.onclick=busy(b,async()=>{const r=await api("challengeCreate",{title:q("#cht").value,goal:Number(q("#chg").value),unit:q("#chu").value,deadline:q("#chd").value});
-    if(dead(r))return m.close();if(!r.ok)return q("#che").textContent=r.error;m.close();toast("Челлендж создан 🏁");done(r)});
+    if(dead(r))return m.close();if(!r.ok)return q("#che").textContent=r.error;m.close();toast("Испытание создано 🏁");done(r)});
 }
 function studentClassV(){
   const my=++vid,T=(X&&X.teachers)||[];let cur=ls.get("cls.t")||"";if(!T.some(t=>t.username===cur))cur=T[0]?T[0].username:"";
@@ -1001,7 +1109,7 @@ async function statsModal(){
     ${r.topics.map(x=>`<div style="margin:10px 0"><div class="row sm"><b class="grow">${esc(x.name)}</b><span class="muted">${x.pct===null?"нет игр":x.pct+"% · "+plural(x.plays,"игра","игры","игр")}</span></div>${x.pct===null?"":`<div class="tbar"><i style="width:${x.pct}%"></i></div>`}</div>`).join("")}
     <div class="sec">Ученики · с понедельника</div>
     ${r.students.length?r.students.map(s=>`<div class="item">${avatar(s.user)}<div class="grow"><b data-pf="${esc(s.user.username)}">${nameH(s.user)}</b>
-      <div class="sti"><span>${dayAgo(s.last)}</span><span>🔥 ${s.streak}</span><span>⭐ ${s.xpWeek} XP</span><span>🎮 ${s.gamesWeek}</span><span>✅ ${s.tasksWeek}</span>${s.acc!==null?`<span>🎯 ${s.acc}%</span>`:""}</div></div></div>`).join("")
+      <div class="sti"><span>${dayAgo(s.last)}</span><span>🔥 ${s.streak}</span><span>⭐ ${s.xpWeek}</span><span>🎮 ${s.gamesWeek}</span><span>✅ ${s.tasksWeek}</span>${s.acc!==null?`<span>🎯 ${s.acc}%</span>`:""}</div></div></div>`).join("")
     :`<p class="muted sm">В классе пока нет учеников.</p>`}
     <p class="muted sm" style="margin-top:10px">🔥 серия дней · ⭐ опыт · 🎮 игры · ✅ задания · 🎯 верные ответы за 30 дней</p>`;
   loadAv(r.students.map(s=>s.user));
@@ -1011,16 +1119,16 @@ async function statsModal(){
 function devV(){
   const my=++vid;
   put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="dvback" aria-label="Назад">←</button><h1 class="grow" style="margin:0">🛠 Панель разработчика</h1></div>
-   <div id="dvs">${sk(1)}</div><h2 class="sec">Пользователи</h2><form class="srch" id="dvf"><input id="dvq" placeholder="Имя или @юзернейм" autocapitalize="none" autocomplete="off"><button type="submit" aria-label="Найти">🔍</button></form>
+   <div id="dvs">${sk(1)}</div><h2 class="sec">Пользователи</h2><form class="srch" id="dvf"><input id="dvq" placeholder="Имя или @имя_пользователя" autocapitalize="none" autocomplete="off"><button type="submit" aria-label="Найти">🔍</button></form>
    <div id="dvu">${sk(2)}</div><h2 class="sec">Последние сообщения</h2><div id="dvm">${sk(2)}</div>`);
   $("#dvback").onclick=()=>go(tab);
   api("devStats").then(r=>{const b=$("#dvs");if(!b||my!==vid||dead(r))return;if(!r.ok){b.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
     const it=[["👥",r.users,"пользователей"],["🎒",r.students,"учеников"],["🧑‍🏫",r.teachers,"учителей"],["🆕",r.newWeek,"новых за неделю"],["🟢",r.activeToday,"активны сегодня"],["📅",r.activeWeek,"активны за неделю"],
-      ["💬",r.messagesDay,"сообщений за сутки"],["🎮",r.gamesToday,"игр сегодня"],["🏫",r.classes,"классов"],["🏅",r.badges,"бейджей"],["⛔",r.bans,"блокировок"]];
+      ["💬",r.messagesDay,"сообщений за сутки"],["🎮",r.gamesToday,"игр сегодня"],["🏫",r.classes,"классов"],["🏅",r.badges,"значков"],["⛔",r.bans,"блокировок"]];
     b.innerHTML=`<div class="card"><div class="stg">${it.map(([e,v,t])=>`<div class="imp"><span>${e}</span><b>${v}</b><small>${t}</small></div>`).join("")}</div></div>`});
   const users=async q=>{const r=await api("devUsers",{q});const b=$("#dvu");if(!b||my!==vid||dead(r))return;if(!r.ok){b.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
     b.innerHTML=`<div class="card">${r.users.length?r.users.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}
-      <div class="muted sm">@${esc(u.username)} · ${u.role==="student"?"ученик":"учитель"} · ${u.xp} XP${u.ban?` · <span style="color:var(--err)">⛔ до ${fdate(u.ban.until)}</span>`:""}</div></div>
+      <div class="muted sm">@${esc(u.username)} · ${u.role==="student"?"ученик":"учитель"} · ${u.xp} опыта${u.ban?` · <span style="color:var(--err)">⛔ до ${fdate(u.ban.until)}</span>`:""}</div></div>
       ${u.dev?"":u.ban?`<button class="ghost sm" data-unban="${esc(u.username)}">Разблокировать</button>`:`<button class="ghost danger sm" data-ban="${esc(u.username)}">Блок</button>`}</div>`).join(""):`<p class="muted">Никого не найдено</p>`}</div>`;
     loadAv(r.users);
     b.querySelectorAll("[data-ban]").forEach(x=>x.onclick=()=>banModal(x.dataset.ban,()=>users($("#dvq").value)));
@@ -1066,7 +1174,7 @@ function authView(msg=""){
   document.body.classList.remove("chatting");
   app.innerHTML=`<div class="auth"><div class="lw"><div class="logo-big">${BRAND.emoji}</div></div><h1 class="grad">${esc(BRAND.name)}</h1>
   <p class="muted" style="margin:0 0 8px">Заботиться о планете - просто и интересно</p>
-  <div class="feat">${["🎮 Игры","🏅 Бейджи","💬 Чаты","🌱 Задания"].map((t,i)=>`<span style="animation-delay:${200+i*90}ms">${t}</span>`).join("")}</div>
+  <div class="feat">${["🎮 Игры","🏅 Значки","💬 Чаты","🌱 Задания"].map((t,i)=>`<span style="animation-delay:${200+i*90}ms">${t}</span>`).join("")}</div>
   <div class="card"><div class="seg" id="sg" style="--n:2;--k:${mode==="register"?1:0};margin-bottom:10px"><i></i>
   <button type="button" data-m="login" class="${mode==="login"?"on":""}">Вход</button><button type="button" data-m="register" class="${mode==="register"?"on":""}">Регистрация</button></div>
   <form id="af" novalidate></form></div>
@@ -1080,11 +1188,11 @@ function drawForm(msg=""){
   const reg=mode==="register",f=$("#af"),tch=()=>reg&&regRole==="teacher";
   const pw=(id,ph,ac)=>`<div class="pw"><input id="${id}" type="password" placeholder="${ph}" autocomplete="${ac}"><button type="button" class="eye" tabindex="-1" aria-label="Показать пароль">👁</button></div>`;
   f.innerHTML=(reg?`<div class="seg" id="rs" style="--n:2;--k:${regRole==="teacher"?1:0};margin:4px 0 8px"><i></i><button type="button" data-r="student" class="${regRole==="student"?"on":""}">🎒 Я ученик</button><button type="button" data-r="teacher" class="${regRole==="teacher"?"on":""}">🧑‍🏫 Я учитель</button></div>
-    <div class="coll ${regRole==="teacher"?"open":""}" id="tcw"><div>${pw("tc","Код учителя","off")}<p class="hint">Код выдаёт администратор ЭкоТрека. Учителя создают класс и выдают ученикам бейджи.</p></div></div>
+    <div class="coll ${regRole==="teacher"?"open":""}" id="tcw"><div>${pw("tc","Код учителя","off")}<p class="hint">Код выдаёт администратор ЭкоТрека. Учителя создают класс и выдают ученикам значки.</p></div></div>
     <div class="coll ${regRole==="student"?"open":""}" id="scw"><div><div class="row" style="gap:8px"><select id="gr" aria-label="Класс" style="flex:1"><option value="">Класс</option>${Array.from({length:11},(_,i)=>`<option value="${i+1}">${i+1} класс</option>`).join("")}</select>
       <input id="gl" maxlength="2" placeholder="Буква" aria-label="Буква класса" autocomplete="off" style="flex:1;text-transform:uppercase"></div></div></div>
     <input id="fn" placeholder="Имя" maxlength="40" autocomplete="given-name"><input id="ln" placeholder="Фамилия" maxlength="40" autocomplete="family-name">`:"")+
-   `<input id="un" placeholder="Юзернейм (a-z, 0-9, _)" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">`+
+   `<input id="un" placeholder="Имя пользователя (латиница, цифры, _)" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">`+
    pw("pw","Пароль (от 8 символов)",reg?"new-password":"current-password")+(reg?pw("pw2","Повторите пароль","new-password")+
    `<label class="consent"><input type="checkbox" id="agr"><span>Принимаю <a href="#" data-pol>политику конфиденциальности</a> и даю согласие на обработку моих персональных данных. Если мне меньше 14 лет - с согласия родителей.</span></label>`:"")+
    `<div class="err" id="er" role="alert">${esc(msg)}</div><button class="btn-full" id="go" type="submit">${reg?"Зарегистрироваться":"Войти"}</button>`;
@@ -1098,7 +1206,7 @@ function drawForm(msg=""){
     e.preventDefault();
     const er=$("#er"),b=$("#go"),username=$("#un").value.trim().toLowerCase().replace(/^@/,""),password=$("#pw").value;
     er.textContent="";
-    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Юзернейм: 3-20 символов, a-z, 0-9 и _";
+    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Имя пользователя: 3-20 символов - латинские буквы, цифры и _";
     let body={username,password};
     if(reg){
       if(tch()&&!$("#tc").value.trim())return er.textContent="Введите код учителя";
@@ -1179,7 +1287,7 @@ const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf=
 const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
 function friendsV(){
   const my=++vid;let users=[];
-  put(`<h1>Друзья</h1><div class="card"><b>Найти по юзернейму</b><form class="srch" id="sf"><input id="q" placeholder="@username (от 3 символов)" autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="submit" id="sq" aria-label="Найти">🔍</button></form><div id="sr"></div></div><div id="fl">${sk(2)}</div>`);
+  put(`<h1>Друзья</h1><div class="card"><b>Найти по имени пользователя</b><form class="srch" id="sf"><input id="q" placeholder="Имя пользователя (от 3 символов)" autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="submit" id="sq" aria-label="Найти">🔍</button></form><div id="sr"></div></div><div id="fl">${sk(2)}</div>`);
   const drawSr=()=>{$("#sr").innerHTML=users.length?users.map(u=>ppl(u,{none:fb("add",u,"Добавить"),sent:`<span class="tag">Отправлено</span>`,received:fb("ok",u,"Принять"),friend:`<span class="tag">Друг ✓</span>`}[u.rel])).join(""):`<p class="muted sm">Никого не найдено</p>`;loadAv(users)};
   const drawFl=r=>{const box=$("#fl");if(!box||my!==vid)return;
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
@@ -1187,7 +1295,7 @@ function friendsV(){
     box.innerHTML=sec("🔔 Запросы в друзья",r.incoming,u=>ppl(u,fb("ok",u,"Принять")+fb("no",u,"✕",1)),"hl")
       +sec(`Мои друзья (${r.friends.length})`,r.friends,u=>ppl(u,fb("chat",u,"💬",1)+fb("rm",u,"Удалить",1)))
       +sec("Отправленные запросы",r.outgoing,u=>ppl(u,fb("rm",u,"Отменить",1)))
-      ||`<div class="card empty"><div class="eb">🫂</div><h2>Пока нет друзей</h2><p class="muted">Найдите кого-нибудь по юзернейму и отправьте запрос.</p></div>`;
+      ||`<div class="card empty"><div class="eb">🫂</div><h2>Пока нет друзей</h2><p class="muted">Найдите кого-нибудь по имени пользователя и отправьте запрос.</p></div>`;
     stag(box);loadAv([...r.incoming,...r.friends,...r.outgoing]);dots({requests:r.incoming.length});
   };
   const loadFl=force=>swr("friends","friends",{},drawFl,my,force);
@@ -1334,11 +1442,11 @@ async function chatV(key){
 
 /* ───────── игры и задания ───────── */
 const GAMES={
-  sort:{n:"Сортировка мусора",e:"♻️",d:"Куда выбросить предмет?",g:"linear-gradient(135deg,#16a34a,#0d9488)",xp:"до 10 XP"},
-  quiz:{n:"Эко-викторина",e:"🧠",d:"5 вопросов об экологии",g:"linear-gradient(135deg,#2563eb,#7c3aed)",xp:"до 15 XP"},
-  act:{n:"Как поступить?",e:"🤔",d:"Выбери лучший поступок в жизненной ситуации",g:"linear-gradient(135deg,#0d9488,#2563eb)",xp:"до 15 XP"},
-  decay:{n:"Что дольше разлагается",e:"⏳",d:"Расставь предметы по сроку разложения",g:"linear-gradient(135deg,#a16207,#16a34a)",xp:"до 12 XP"},
-  myth:{n:"Миф или правда",e:"🔍",d:"Проверь, что ты знаешь о природе",g:"linear-gradient(135deg,#f59e0b,#ec4899)",xp:"до 15 XP"}};
+  sort:{n:"Сортировка мусора",e:"♻️",d:"Куда выбросить предмет?",g:"linear-gradient(135deg,#16a34a,#0d9488)",xp:"до 10 опыта"},
+  quiz:{n:"Эко-викторина",e:"🧠",d:"5 вопросов об экологии",g:"linear-gradient(135deg,#2563eb,#7c3aed)",xp:"до 15 опыта"},
+  act:{n:"Как поступить?",e:"🤔",d:"Выбери лучший поступок в жизненной ситуации",g:"linear-gradient(135deg,#0d9488,#2563eb)",xp:"до 15 опыта"},
+  decay:{n:"Что дольше разлагается",e:"⏳",d:"Расставь предметы по сроку разложения",g:"linear-gradient(135deg,#a16207,#16a34a)",xp:"до 12 опыта"},
+  myth:{n:"Миф или правда",e:"🔍",d:"Проверь, что ты знаешь о природе",g:"linear-gradient(135deg,#f59e0b,#ec4899)",xp:"до 15 опыта"}};
 const OI={"Бумага":"📄","Пластик":"🧴","Стекло":"🫙","Металл":"🥫","Опасные отходы":"☣️","Правда":"✅","Миф":"❌"};
 const optText=o=>((OI[o]||"")+" "+o).trim();
 
@@ -1350,7 +1458,7 @@ function gamesV(){
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
   <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>`+
   Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
-  `<p class="muted sm">XP даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`+
+  `<p class="muted sm">Опыт даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`+
   (isT(me)?"":bandOf(custOf(me).grade)?`<p class="muted sm">🎯 Вопросы подобраны для ${bandOf(custOf(me).grade).replace("класс","класса")}. Сложность зависит от класса в профиле.</p>`
     :`<div class="card"><b>🎯 Укажи свой класс</b><p class="muted sm" style="margin:4px 0 8px">Тогда вопросы в играх и вопрос дня будут подходить тебе по сложности.</p><button class="ghost" id="setgr">Открыть профиль</button></div>`));
   if($("#setgr"))$("#setgr").onclick=()=>go("profile");
@@ -1360,7 +1468,7 @@ function gamesV(){
   const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}T=r;
     if(!r.tasks.length){box.innerHTML=`<div class="card muted">Задания пока не загрузились. Обновите страницу через минуту.</div>`;return}
     const evb=$("#evb");if(evb)evb.innerHTML=r.event?`<div class="card evb"><div class="row"><div class="eb" style="font-size:40px">${esc(r.event.emoji)}</div><div class="grow"><b>${esc(r.event.name)}</b><div class="muted sm">Эко-праздник до ${fdate(r.event.until+"T12:00:00")}: особое задание дня и рамка «Эко-праздник» за его выполнение</div></div></div></div>`:"";
-    box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div>${t.event?`<span class="tag t">🎉 ${esc(t.event)}</span> `:""}<span class="tag">+${t.xp} XP</span>${impText(t.imp)?` <span class="tag imp">${impText(t.imp)}</span>`:""}${t.map?`<div style="margin-top:8px"><button class="ghost sm" data-map>🗺️ Открыть эко-карту</button></div>`:""}</div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
+    box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div>${t.event?`<span class="tag t">🎉 ${esc(t.event)}</span> `:""}<span class="tag">+${t.xp} опыта</span>${impText(t.imp)?` <span class="tag imp">${impText(t.imp)}</span>`:""}${t.map?`<div style="margin-top:8px"><button class="ghost sm" data-map>🗺️ Открыть эко-карту</button></div>`:""}</div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
      `<p class="muted sm">Это самоотчёт: отмечайте, только если правда сделали. Новые задания - каждый день.</p>`;
     stag(box);box.querySelectorAll("[data-map]").forEach(b=>b.onclick=mapV);
     box.querySelectorAll("button[data-s]").forEach(b=>b.onclick=async()=>{
@@ -1369,7 +1477,7 @@ function gamesV(){
       const res=await api("complete",{slot});if(dead(res))return;
       if(!res.ok){card.classList.remove("done");st.innerHTML=`<button data-s="${slot}">Готово</button>`;toast(res.error,"err");if(my===vid)draw(T);return}
       if(t){t.done=true;cset("tasks",T)}
-      if(res.gained){toast(`+${res.gained} XP 🌱`);addXp(res.gained)}achToast(res.ach);FRESH.x=0;
+      if(res.gained){toast(`+${res.gained} опыта 🌱`);addXp(res.gained)}achToast(res.ach);FRESH.x=0;
     });
   };
   swr("tasks","tasks",{},draw,my);
@@ -1386,7 +1494,7 @@ async function play(g){
     if(i>=n)return finish();const it=items[i];
     put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти из игры">✕</button><div class="grow prog"><i id="pb" style="width:${i/n*100}%"></i></div><span class="muted sm">${i+1}/${n}</span></div>
     <div class="card qcard"><div class="qe">${G.e}</div><h2>${esc(it.q)}</h2>${it.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCDE"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}</div>
-    ${r.played?`<p class="muted sm center">XP за эту игру сегодня уже получены - играйте для тренировки.</p>`:""}`);
+    ${r.played?`<p class="muted sm center">Опыт за эту игру сегодня уже получен - играйте для тренировки.</p>`:""}`);
     $("#bk").onclick=()=>go("games");raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/n*100+"%"});
     const v=$("#view");
     v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
@@ -1403,7 +1511,7 @@ async function play(g){
     const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка - в следующий раз выйдет лучше!";
     const bad=s.results.filter(x=>!x.ok);
     put(`<div class="card center"><div class="ring" style="margin:6px auto 10px">${ring("fg")}<div class="num"><span id="cn">0</span><small>/${s.total}</small></div></div>
-      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} XP 🎉`:r.played?"XP за эту игру сегодня уже получены":"Пока без XP - попробуйте ещё раз!"}</span></div>`+
+      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} опыта 🎉`:r.played?"Опыт за эту игру сегодня уже получен":"Пока без опыта - попробуйте ещё раз!"}</span></div>`+
       (bad.length?`<h2 class="sec">Разбор ошибок</h2>`+bad.map(x=>{const it=items.find(t=>t.id===x.id);return`<div class="card wrong"><b>${esc(it.q)}</b><div class="good">✓ ${esc(optText(it.o[it.ix.indexOf(x.right)]))}</div><div class="muted sm">${esc(x.e)}</div></div>`}).join(""):`<div class="card center muted">Ошибок нет - так держать! 🌍</div>`)+
       `<div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
     $("#bk").onclick=()=>go("games");$("#again").onclick=()=>play(g);
@@ -1423,7 +1531,7 @@ function playOrder(g,G,r,my){
     <div class="card qcard"><div class="qe">${G.e}</div><h2>Что разложится быстрее?</h2><p class="muted sm" style="margin-top:-8px">Нажимай по порядку: первым - то, что исчезнет быстрее всего. Нажми ещё раз, чтобы отменить.</p>
     ${rd.items.map(x=>`<button class="opt ordb" data-k="${x.k}"><b></b><span>${x.icon} ${esc(x.name)}</span></button>`).join("")}
     <button class="btn-full" id="nx" disabled style="margin-top:8px">${i<R.length-1?"Дальше →":"Проверить"}</button></div>
-    ${r.played?`<p class="muted sm center">XP за эту игру сегодня уже получены - играйте для тренировки.</p>`:""}`);
+    ${r.played?`<p class="muted sm center">Опыт за эту игру сегодня уже получен - играйте для тренировки.</p>`:""}`);
     $("#bk").onclick=()=>go("games");raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/R.length*100+"%"});
     const v=$("#view"),upd=()=>{v.querySelectorAll(".ordb").forEach(b=>{const n=sel.indexOf(+b.dataset.k);b.querySelector("b").textContent=n>=0?n+1:"";
       b.querySelector("b").classList.toggle("n",n>=0);b.classList.toggle("picked",n>=0)});$("#nx").disabled=sel.length<rd.items.length};
@@ -1438,7 +1546,7 @@ function playOrder(g,G,r,my){
     if(s.streak!==undefined){if(X){X.streak=s.streak;X.playedToday=true;cset("x",X)}if(s.newDay)setTimeout(()=>toast(`🔥 ${plural(s.streak,"день","дня","дней")} подряд в мини-играх!`),900)}
     const pct=s.score/s.total,msg=pct===1?"Идеально! 🏆":pct>=.6?"Отличный результат!":"Хорошая попытка - в следующий раз выйдет лучше!";
     put(`<div class="card center"><div class="ring" style="margin:6px auto 10px">${ring("fg")}<div class="num"><span id="cn">0</span><small>/${s.total}</small></div></div>
-      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} XP 🎉`:r.played?"XP за эту игру сегодня уже получены":"Пока без XP - попробуйте ещё раз!"}</span></div>
+      <h2>${msg}</h2><span class="tag pops">${s.xp?`+${s.xp} опыта 🎉`:r.played?"Опыт за эту игру сегодня уже получен":"Пока без опыта - попробуйте ещё раз!"}</span></div>
       <h2 class="sec">Правильный порядок</h2>${s.results.map((x,k)=>`<div class="card ${x.ok?"":"wrong"}"><b>Раунд ${k+1}${x.ok?" ✓":""}</b>
         ${x.right.map((it,j)=>`<div class="ores ${x.order[j]===it.k?"":"bad"}"><span class="num2">${j+1}</span><span class="grow">${it.icon} ${esc(it.name)}</span><span class="muted sm">${esc(it.time)}</span></div>`).join("")}</div>`).join("")}
       <p class="muted sm">Примерные сроки разложения в природе (по данным NOAA для морской среды). Красным отмечены места, где порядок был другим.</p>
@@ -1454,10 +1562,10 @@ function playOrder(g,G,r,my){
 function classV(){
   if(!isStaff(me))return studentClassV();
   const my=++vid;let C=null;
-  put(`<h1>Мой класс</h1>${me.dev?`<div class="card"><b>💜 Выдать бейдж любому пользователю</b><p class="muted sm" style="margin:4px 0 0">Как разработчик вы можете наградить кого угодно, не только учеников класса.</p><form class="srch" id="dg"><input id="du" placeholder="@username" autocapitalize="none" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Выдать бейдж">🏅</button></form></div>`:""}<div id="cl">${sk(1)}</div><div id="st">${sk(3)}</div><div id="chs"></div><div id="fo"></div>`);
+  put(`<h1>Мой класс</h1>${me.dev?`<div class="card"><b>💜 Выдать значок любому пользователю</b><p class="muted sm" style="margin:4px 0 0">Как разработчик вы можете наградить кого угодно, не только учеников класса.</p><form class="srch" id="dg"><input id="du" placeholder="@username" autocapitalize="none" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Выдать значок">🏅</button></form></div>`:""}<div id="cl">${sk(1)}</div><div id="st">${sk(3)}</div><div id="chs"></div><div id="fo"></div>`);
   if(me.dev)$("#cl").insertAdjacentHTML("beforebegin",`<button class="ghost btn-full" id="dvo" style="margin:8px 0">🛠 Панель разработчика</button>`),$("#dvo").onclick=()=>devV();
   challengesBox($("#chs"),me.username,true,my);
-  if(me.dev)$("#dg").onsubmit=e=>{e.preventDefault();const un=$("#du").value.trim().toLowerCase().replace(/^@/,"");if(!/^[a-z0-9_]{3,20}$/.test(un))return toast("Введите юзернейм","err");
+  if(me.dev)$("#dg").onsubmit=e=>{e.preventDefault();const un=$("#du").value.trim().toLowerCase().replace(/^@/,"");if(!/^[a-z0-9_]{3,20}$/.test(un))return toast("Введите имя пользователя","err");
     giveBadge({username:un,firstName:"@"+un},()=>{$("#du").value=""})};
   const drawCl=()=>{$("#cl").innerHTML=`<div class="card hero"><div class="row"><div class="grow"><div class="muted sm">Класс</div><h2>${esc(C.name)}</h2></div><button class="ghost sm" data-c="rename" aria-label="Переименовать">✏️</button></div>
     <div class="muted sm center" style="margin-top:10px">Код для учеников</div><div class="code" aria-label="Код класса ${esc(C.code)}">${[...C.code].map((ch,i)=>`<span style="animation-delay:${i*70}ms">${esc(ch)}</span>`).join("")}</div>
@@ -1466,7 +1574,7 @@ function classV(){
     <div class="row" style="margin-top:8px"><button class="ghost grow" data-c="stats">📊 Статистика</button><button class="ghost grow" data-c="rating">🏆 Рейтинг</button></div>
     <p class="muted sm" style="margin:10px 0 0">Ученик вводит этот код у себя в профиле - и попадает в ваш класс и его чат.</p></div>`};
   const drawSt=()=>{const s=C.students;
-    $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать бейдж">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
+    $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать значок">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
       :`<div class="card empty"><div class="eb">🏫</div><h2>Пока нет учеников</h2><p class="muted">Поделитесь кодом класса - ученики введут его в профиле.</p></div>`;
     stag($("#st"));loadAv(s)};
   const draw=r=>{if(my!==vid)return;if(!r.ok){$("#cl").innerHTML=`<div class="card err">${esc(r.error)}</div>`;$("#st").innerHTML="";return}C=r;drawCl();drawSt();
@@ -1491,15 +1599,15 @@ function classV(){
 }
 function giveBadge(u,done){
   const s={emoji:"🌱",color:"green",title:"",desc:""};
-  const m=modal(`<h2 style="padding-right:40px">Бейдж для ${esc(u.firstName)}</h2>
-   <div class="stage" style="padding:14px 0 6px"><div class="rays"></div><div id="pv"></div></div><div class="center" style="font-weight:800;min-height:1.5em" id="pt">Название бейджа</div>
+  const m=modal(`<h2 style="padding-right:40px">Значок для ${esc(u.firstName)}</h2>
+   <div class="stage" style="padding:14px 0 6px"><div class="rays"></div><div id="pv"></div></div><div class="center" style="font-weight:800;min-height:1.5em" id="pt">Название значка</div>
    <label class="lbl">Значок</label><div class="egrid" id="eg">${EMO.map(e=>`<button type="button" data-e="${e}" class="${e===s.emoji?"on":""}">${e}</button>`).join("")}</div>
-   <input id="ec" maxlength="8" placeholder="…или вставьте свой эмодзи">
+   <input id="ec" maxlength="8" placeholder="…или вставьте свой смайлик">
    <label class="lbl">Цвет</label><div class="cdots" id="cd">${Object.entries(CL).map(([k,c])=>`<button type="button" data-k="${k}" class="${k===s.color?"on":""}" style="--c1:${c[0]};--c2:${c[1]}" aria-label="${k}"></button>`).join("")}</div>
    <label class="lbl" for="bt">Название достижения <span class="cnt" id="c1">0/40</span></label><input id="bt" maxlength="40" placeholder="Например: «Мастер сортировки»">
-   <label class="lbl" for="bd">Описание <span class="cnt" id="c2">0/200</span></label><textarea id="bd" rows="3" maxlength="200" placeholder="За что выдан бейдж?"></textarea>
-   <div class="err" id="ge"></div><button class="btn-full" id="gs">🏅 Выдать бейдж</button>`);
-  const q=x=>m.el.querySelector(x),pv=()=>{q("#pv").innerHTML=medal({emoji:s.emoji,color:s.color},"big");q("#pt").textContent=s.title||"Название бейджа"};pv();
+   <label class="lbl" for="bd">Описание <span class="cnt" id="c2">0/200</span></label><textarea id="bd" rows="3" maxlength="200" placeholder="За что выдан значок?"></textarea>
+   <div class="err" id="ge"></div><button class="btn-full" id="gs">🏅 Выдать значок</button>`);
+  const q=x=>m.el.querySelector(x),pv=()=>{q("#pv").innerHTML=medal({emoji:s.emoji,color:s.color},"big");q("#pt").textContent=s.title||"Название значка"};pv();
   q("#eg").onclick=e=>{const b=e.target.closest("[data-e]");if(!b)return;s.emoji=b.dataset.e;q("#ec").value="";q("#eg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));pv()};
   q("#ec").oninput=e=>{const v=e.target.value.trim();if(v){s.emoji=v;q("#eg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));pv()}};
   q("#cd").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;s.color=b.dataset.k;q("#cd").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));pv()};
@@ -1510,24 +1618,24 @@ function giveBadge(u,done){
     if(!s.title.trim())return q("#ge").textContent="Напишите название достижения";
     const r=await api("badgeGive",{username:u.username,emoji:s.emoji,color:s.color,title:s.title,description:s.desc});
     if(dead(r))return m.close();if(!r.ok)return q("#ge").textContent=r.error;
-    m.close();toast(`Бейдж выдан: ${r.user?r.user.firstName:u.firstName} 🎉`);burst(innerWidth/2,innerHeight/2,36);done&&done();
+    m.close();toast(`Значок выдан: ${r.user?r.user.firstName:u.firstName} 🎉`);burst(innerWidth/2,innerHeight/2,36);done&&done();
   });
 }
 function studentModal(u,changed){
   let dirty=false;
-  const m=modal(`<div class="row" style="padding-right:40px">${avatar(u)}<div class="grow"><h2>${esc(u.firstName)} ${esc(u.lastName)}</h2><div class="muted sm">@${esc(u.username)} · ${u.xp} XP</div></div></div>
-   <div class="sec">Бейджи</div><div id="sb">${sk(2)}</div><button class="btn-full" id="gv" style="margin-top:12px">🏅 Выдать бейдж</button><button class="ghost danger btn-full" id="kk" style="margin-top:8px">Убрать из класса</button>`,()=>{if(dirty)changed()});
+  const m=modal(`<div class="row" style="padding-right:40px">${avatar(u)}<div class="grow"><h2>${esc(u.firstName)} ${esc(u.lastName)}</h2><div class="muted sm">@${esc(u.username)} · ${u.xp} опыта</div></div></div>
+   <div class="sec">Значки</div><div id="sb">${sk(2)}</div><button class="btn-full" id="gv" style="margin-top:12px">🏅 Выдать значок</button><button class="ghost danger btn-full" id="kk" style="margin-top:8px">Убрать из класса</button>`,()=>{if(dirty)changed()});
   const q=x=>m.el.querySelector(x);loadAv([u]);
   const load=async()=>{const r=await api("studentBadges",{username:u.username});if(dead(r))return m.close();
     if(!r.ok)return q("#sb").innerHTML=`<div class="err">${esc(r.error)}</div>`;
     q("#sb").innerHTML=r.badges.length?r.badges.map(b=>`<div class="bitem">${medal(b,"sm")}<div class="grow"><b>${esc(b.title)}</b>${b.description?`<div class="muted sm">${esc(b.description)}</div>`:""}<div class="muted sm">${esc(b.from?b.from.firstName+" "+b.from.lastName:"")} · ${fdate(b.created)}</div></div>${b.mine?`<button class="ghost danger sm" data-rv="${esc(b.id)}" aria-label="Отозвать">✕</button>`:""}</div>`).join("")
-      :`<p class="muted sm">Бейджей пока нет</p>`;
-    q("#sb").querySelectorAll("[data-rv]").forEach(b=>b.onclick=async()=>{if(!await ask("Отозвать этот бейдж?","Отозвать",1))return;
+      :`<p class="muted sm">Значков пока нет</p>`;
+    q("#sb").querySelectorAll("[data-rv]").forEach(b=>b.onclick=async()=>{if(!await ask("Отозвать этот значок?","Отозвать",1))return;
       b.disabled=true;const r=await api("badgeRevoke",{id:b.dataset.rv});if(dead(r))return;if(!r.ok){b.disabled=false;return toast(r.error,"err")}
-      dirty=true;toast("Бейдж отозван");load()})};
+      dirty=true;toast("Значок отозван");load()})};
   load();
   q("#gv").onclick=()=>giveBadge(u,()=>{dirty=true;load()});
-  q("#kk").onclick=async()=>{if(!await ask(`Убрать ${u.firstName} из класса? Выданные бейджи останутся у ученика.`,"Убрать",1))return;
+  q("#kk").onclick=async()=>{if(!await ask(`Убрать ${u.firstName} из класса? Выданные значки останутся у ученика.`,"Убрать",1))return;
     const r=await api("classKick",{username:u.username});if(dead(r))return;if(!r.ok)return toast(r.error,"err");toast("Ученик убран из класса");dirty=true;m.close()};
 }
 
@@ -1541,7 +1649,7 @@ async function loadX(){
 }
 function drawX(){
   const box=$("#px");if(!box||!X)return;
-  if(X.off){box.innerHTML=`<div class="card"><b>🏅 Бейджи и аватарки</b><p class="muted sm">Серверная часть ещё не обновлена - добавьте файл Badges.gs в Apps Script (см. README).<br>${esc(X.off)}</p></div>`;return}
+  if(X.off){box.innerHTML=`<div class="card"><b>🏅 Значки и фото профиля</b><p class="muted sm">Серверная часть ещё не обновлена - добавьте файл Badges.gs в Apps Script (см. README).<br>${esc(X.off)}</p></div>`;return}
   const fl=$("#flm");if(fl)fl.innerHTML=flame(X.streak||0);
   let h="";
   if(X.streak!==undefined){const n=X.streak,pl=X.playedToday;
@@ -1550,12 +1658,11 @@ function drawX(){
     h+=`<div class="card lift"><div class="row"><div class="eb" style="font-size:38px">🏫</div><div class="grow"><b>${esc(c?c.name:"Мой класс")}</b><div class="muted sm">${c?`Код: <b>${esc(c.code)}</b> · учеников: ${c.count}`:"Откройте, чтобы создать класс"}</div></div><button class="sm" id="oc">Открыть</button></div></div>`}
   h+=gardenCard(me.xp,X.streak||0,true);
   if(!isT(me)){const B=X.badges,T=X.teachers;
-    h+=`<div class="card"><div class="row"><b class="grow">🏅 Мои бейджи</b><span class="tag">${B.length}</span></div>
-      ${B.length?bgrid(B):`<div class="empty" style="padding:18px 6px 6px"><div class="eb">🏅</div><p class="muted" style="margin:6px 0 0">Бейджи выдают учителя за достижения. Вступите в класс своего учителя по коду ниже!</p></div>`}</div>
+    h+=badgesCard(B,"🏅 Мои значки","Значки выдают учителя и ЭкоТрек за достижения. Вступи в класс своего учителя по коду ниже!")+`
       <div class="card"><b>🧑‍🏫 Мои учителя</b>${T.map(t=>`<div class="item">${avatar(t)}<div class="grow"><b data-pf="${esc(t.username)}">${esc(t.firstName)} ${esc(t.lastName)}</b><div class="muted sm">@${esc(t.username)}</div></div><div class="acts"><button class="ghost sm" data-fo="${esc(t.username)}" aria-label="Лес класса">🌲</button><button class="ghost sm" data-ct="${esc(t.username)}" aria-label="Чат класса">💬</button><button class="ghost sm" data-lv="${esc(t.username)}">Выйти</button></div></div>`).join("")}
       <form class="srch" id="jf" style="margin-top:12px"><input id="jc" placeholder="Код класса" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.12em"><button type="submit" id="jb">Вступить</button></form>
       <p class="muted sm" style="margin:6px 0 0">Код класса даёт учитель.</p></div>`}
-  if(isT(me)&&X.badges&&X.badges.length)h+=`<div class="card"><div class="row"><b class="grow">🏅 Мои бейджи</b><span class="tag">${X.badges.length}</span></div>${bgrid(X.badges)}</div>`;
+  if(isT(me)&&((X.badges&&X.badges.length)||X.ach))h+=badgesCard(X.badges||[],"🏅 Мои значки","Здесь появятся значки за достижения.");
   if(X.week){const w=X.week;
     h+=`<div class="card"><b>📅 Итоги недели</b> <span class="muted sm">(последние 7 дней)</span><div class="stg">
       <div class="imp"><span>🎮</span><b>${w.days} из 7</b><small>дней с мини-играми</small></div>
@@ -1563,14 +1670,14 @@ function drawX(){
       <div class="imp"><span>⭐</span><b>${w.xp}</b><small>опыта получено</small></div></div>
       ${impText(w.impact)?`<p class="muted sm" style="margin:10px 0 0">Польза для природы за неделю: ${impText(w.impact)}</p>`:""}</div>`}
   h+=impactCard(X.impact,"Моя польза для природы","Выполняй задания дня во вкладке «Игры» - здесь будет видно, сколько воды, пластика и бумаги удалось сберечь.");
-  h+=feedCard(X.events,"Моя лента","Здесь появятся новые бейджи, уровни, серии дней и рост эко-сада.");
+  h+=feedCard(X.events,"Моя лента","Здесь появятся новые значки, уровни, серии дней и рост эко-сада.");
   box.innerHTML=h;
   if($("#pl"))$("#pl").onclick=()=>go("games");
   box.querySelectorAll("[data-fo]").forEach(b=>b.onclick=()=>forestModal(b.dataset.fo));
   if($("#oc"))$("#oc").onclick=()=>go("class");
-  if(isT(me))box.querySelectorAll(".bdg").forEach(b=>b.onclick=()=>badgeModal(X.badges[+b.dataset.b]));
-  if(!isT(me)){const B=X.badges;
-    box.querySelectorAll(".bdg").forEach(b=>b.onclick=()=>badgeModal(B[+b.dataset.b]));tilt(box);loadAv(X.teachers);
+  const ALL=(X.badges||[]).concat(((X.ach)||[]).filter(a=>!a.level).map(lockB));
+  box.querySelectorAll(".bdg").forEach(b=>b.onclick=()=>badgeModal(ALL[+b.dataset.b]));if($("#tiers"))$("#tiers").onclick=tiersModal;
+  if(!isT(me)){tilt(box);loadAv(X.teachers);
     box.querySelectorAll("[data-ct]").forEach(b=>b.onclick=()=>chatV("c:"+b.dataset.ct));
     box.querySelectorAll("[data-lv]").forEach(b=>b.onclick=async()=>{if(!await ask("Выйти из класса этого учителя?","Выйти",1))return;
       const r=await api("classLeave",{username:b.dataset.lv});if(dead(r))return;if(!r.ok)return toast(r.error,"err");toast("Вы вышли из класса");FRESH.x=0;await loadX();drawX();pulse();refreshNav()});
@@ -1588,8 +1695,8 @@ async function profileV(){
     <div class="grow"><h2 style="padding-right:34px">${nameH(me)}</h2><div class="muted">@${esc(me.username)}</div>${statusH(me)}
     <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${devTag(me)}${isT(me)?`<span class="tag t">🧑‍🏫 ${me.role==="admin"?"Администратор":"Учитель"}</span>`:""}${gradeTag(me)}<span class="tag">${rk[2]} ${rk[1]}</span><span id="flm" style="display:contents">${X?flame(X.streak||0):""}</span></div></div></div>
     ${showcaseH(me)}${me.bio?`<p class="bio">${esc(me.bio)}</p>`:""}</div>
-  <div class="card"><div class="row"><div class="grow"><div class="muted sm">Уровень ${lv}</div><div class="xpn"><span id="xn">0</span> XP</div></div><div class="eb" style="font-size:34px">${rk[2]}</div></div><div class="prog" style="margin-top:10px"><i id="pb" style="width:0"></i></div>
-  <div class="muted sm" style="margin-top:8px">До следующего уровня: ${100-pct} XP</div></div>
+  <div class="card"><div class="row"><div class="grow"><div class="muted sm">Уровень ${lv}</div><div class="xpn"><span id="xn">0</span> опыта</div></div><div class="eb" style="font-size:34px">${rk[2]}</div></div><div class="prog" style="margin-top:10px"><i id="pb" style="width:0"></i></div>
+  <div class="muted sm" style="margin-top:8px">До следующего уровня: ${100-pct} опыта</div></div>
   <div id="px">${X?"":sk(2)}</div>
   <div class="card"><b>Редактировать профиль</b><input id="fn" value="${esc(me.firstName)}" maxlength="40" placeholder="Имя"><input id="ln" value="${esc(me.lastName)}" maxlength="40" placeholder="Фамилия">
   ${isT(me)?"":`<div class="row" style="gap:8px"><select id="pg" aria-label="Класс" style="flex:1"><option value="">Класс не указан</option>${Array.from({length:11},(_,i)=>`<option value="${i+1}" ${custOf(me).grade==String(i+1)?"selected":""}>${i+1} класс</option>`).join("")}</select>
@@ -1611,7 +1718,7 @@ async function profileV(){
   if(X)drawX();
   const old=JSON.stringify(X),x=await loadX();if(my!==vid||!x)return;
   if(JSON.stringify(x)!==old)drawX();
-  const fresh=(x.badges||[]).filter(b=>!b.seen&&!CELEB.has(b.id));if(fresh.length&&!isT(me))setTimeout(()=>{if(my===vid)celebrate(fresh)},700);
+  const fresh=(x.badges||[]).filter(b=>!b.seen&&!CELEB.has(celebKey(b)));if(fresh.length&&!isT(me))setTimeout(()=>{if(my===vid)celebrate(fresh)},700);
 }
 
 /* ───────── настройки ───────── */
@@ -1620,10 +1727,10 @@ function settingsV(){
   const TH=[["auto","Авто"],["light","Светлая"],["dark","Тёмная"]],k=Math.max(0,TH.findIndex(x=>x[0]===me.theme));
   put(`<h1>Настройки</h1>
   <div class="card"><b>Тема</b><div class="seg" id="th" style="--n:3;--k:${k};margin-top:10px"><i></i>${TH.map(([v,n],j)=>`<button type="button" data-v="${v}" class="${j===k?"on":""}">${n}</button>`).join("")}</div></div>
-  ${isT(me)?"":`<div class="card"><b>🧑‍🏫 Я учитель</b><p class="muted sm" style="margin:4px 0">Введите код учителя, чтобы создать класс и выдавать ученикам бейджи. Вы выйдете из классов, в которых состоите как ученик.</p>
+  ${isT(me)?"":`<div class="card"><b>🧑‍🏫 Я учитель</b><p class="muted sm" style="margin:4px 0">Введите код учителя, чтобы создать класс и выдавать ученикам значки. Вы выйдете из классов, в которых состоите как ученик.</p>
   <input id="tcd" type="password" placeholder="Код учителя" autocomplete="off"><div class="err" id="e0"></div><button class="btn-full" id="b0">Стать учителем</button></div>`}
-  <div class="card"><b>Сменить юзернейм</b><input id="nu" placeholder="Новый юзернейм" maxlength="20" autocapitalize="none" autocomplete="off"><input id="up" type="password" placeholder="Текущий пароль" autocomplete="current-password">
-  <div class="err" id="e1"></div><button class="btn-full" id="b1">Сменить юзернейм</button></div>
+  <div class="card"><b>Сменить имя пользователя</b><input id="nu" placeholder="Новое имя пользователя" maxlength="20" autocapitalize="none" autocomplete="off"><input id="up" type="password" placeholder="Текущий пароль" autocomplete="current-password">
+  <div class="err" id="e1"></div><button class="btn-full" id="b1">Сменить имя пользователя</button></div>
   <div class="card"><b>Сменить пароль</b><input id="op" type="password" placeholder="Текущий пароль" autocomplete="current-password"><input id="np" type="password" placeholder="Новый пароль (от 8 символов)" autocomplete="new-password"><input id="np2" type="password" placeholder="Повторите новый пароль" autocomplete="new-password">
   <div class="err" id="e2"></div><button class="btn-full" id="b2">Сменить пароль</button></div>
   <div class="card"><b>🔔 Напоминания</b><p class="muted sm" style="margin:4px 0 8px">Напомним вечером, если сегодня ещё не было мини-игры и серия может сгореть.</p>
@@ -1634,7 +1741,7 @@ function settingsV(){
   ${me.dev?`<div class="card"><button class="btn-full" id="dvb">🛠 Панель разработчика</button></div>`:""}
   ${feedbackCard()}
   <div class="card"><button class="ghost btn-full" id="out">Выйти из аккаунта</button></div>
-  <div class="card"><b>🗑 Удалить аккаунт</b><p class="muted sm" style="margin:4px 0 8px">Удалятся профиль, фото, бейджи, опыт, серия дней, эко-сад, друзья и ваши сообщения в чатах.${isStaff(me)?" Ваш класс и его чат тоже удалятся, а выданные вами бейджи останутся у учеников.":""} Восстановить аккаунт будет нельзя.</p>
+  <div class="card"><b>🗑 Удалить аккаунт</b><p class="muted sm" style="margin:4px 0 8px">Удалятся профиль, фото, значки, опыт, серия дней, эко-сад, друзья и ваши сообщения в чатах.${isStaff(me)?" Ваш класс и его чат тоже удалятся, а выданные вами значки останутся у учеников.":""} Восстановить аккаунт будет нельзя.</p>
   <input id="dpw" type="password" placeholder="Пароль для подтверждения" autocomplete="current-password"><div class="err" id="e3"></div><button class="danger btn-full" id="b3">Удалить аккаунт навсегда</button></div>`);
   const th=$("#th");
   th.querySelectorAll("button").forEach((b,j)=>b.onclick=async()=>{
@@ -1648,7 +1755,7 @@ function settingsV(){
   });
   $("#b1").onclick=busy($("#b1"),async()=>{
     const r=await api("changeUsername",{username:$("#nu").value.trim().toLowerCase().replace(/^@/,""),password:$("#up").value});
-    if(dead(r))return;if(r.ok){const a=AV[me.username];me=r.user;AV[me.username]=a;saveAV();saveMe();$("#e1").textContent="";toast("Юзернейм изменён ✓");$("#nu").value=$("#up").value=""}else $("#e1").textContent=r.error;
+    if(dead(r))return;if(r.ok){const a=AV[me.username];me=r.user;AV[me.username]=a;saveAV();saveMe();$("#e1").textContent="";toast("Имя пользователя изменено ✓");$("#nu").value=$("#up").value=""}else $("#e1").textContent=r.error;
   });
   $("#b2").onclick=busy($("#b2"),async()=>{
     if($("#np").value!==$("#np2").value)return $("#e2").textContent="Пароли не совпадают";
