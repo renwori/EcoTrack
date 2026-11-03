@@ -802,7 +802,7 @@ async function forestModal(un){
 }
 
 /* ───────── оформление профиля ───────── */
-const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Северное сияние"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["dev","Код",1]];
+const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Аврора"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["dev","Код",1]];
 const PATTERNS=[["none","Без узора"],["leaves","Листья"],["waves","Волны"],["stars","Звёзды"],["dots","Точки"],["binary","01010",1]];
 const P_EMOJI=["","🌱","🌳","🌍","♻️","💧","🌊","🔥","🐝","🦋","🐢","🌻","🍀","🌈","⭐","🐼","🦊","🐳"];
 function customize(){
@@ -965,7 +965,7 @@ function policyModal(){modal(`<div class="policy"><h2 style="padding-right:40px"
   <h3>6. Сколько хранятся</h3><p>Пока существует аккаунт. Удалить аккаунт и все данные можно самостоятельно: Настройки → «Удалить аккаунт», или по письму на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
   <h3>7. Дети</h3><p>Если вам меньше 14 лет, регистрироваться можно только с согласия родителей или законных представителей.</p>
   <h3>8. Ваши права</h3><p>Вы можете узнать, какие данные о вас хранятся, исправить их, удалить или отозвать согласие - напишите на <a href="mailto:${FEEDBACK}">${FEEDBACK}</a>.</p>
-  <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих файлов нет.</p></div>`)}
+  <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих cookies нет.</p></div>`)}
 const feedbackCard=()=>`<div class="card"><b>📮 Обратная связь</b><p class="muted sm" style="margin:4px 0 10px">Нашли ошибку, есть идея или вопрос? Напишите нам: <b>${FEEDBACK}</b></p>
   <a class="btn-full" href="mailto:${FEEDBACK}?subject=${encodeURIComponent("ЭкоТрек: обратная связь")}" style="display:block;text-align:center;padding:12px;border-radius:14px;background:var(--pri2);color:var(--pri);font-weight:800;text-decoration:none">✉️ Написать письмо</a>
   <p class="sm center" style="margin:10px 0 0"><a href="#" data-pol style="color:var(--pri);font-weight:800">Политика конфиденциальности</a></p></div>`;
@@ -1192,7 +1192,7 @@ function drawForm(msg=""){
     <div class="coll ${regRole==="student"?"open":""}" id="scw"><div><div class="row" style="gap:8px"><select id="gr" aria-label="Класс" style="flex:1"><option value="">Класс</option>${Array.from({length:11},(_,i)=>`<option value="${i+1}">${i+1} класс</option>`).join("")}</select>
       <input id="gl" maxlength="2" placeholder="Буква" aria-label="Буква класса" autocomplete="off" style="flex:1;text-transform:uppercase"></div></div></div>
     <input id="fn" placeholder="Имя" maxlength="40" autocomplete="given-name"><input id="ln" placeholder="Фамилия" maxlength="40" autocomplete="family-name">`:"")+
-   `<input id="un" placeholder="Имя пользователя (латиница, цифры, _)" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">`+
+   `<input id="un" placeholder="Имя пользователя (a-z, 0-9, _)" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">`+
    pw("pw","Пароль (от 8 символов)",reg?"new-password":"current-password")+(reg?pw("pw2","Повторите пароль","new-password")+
    `<label class="consent"><input type="checkbox" id="agr"><span>Принимаю <a href="#" data-pol>политику конфиденциальности</a> и даю согласие на обработку моих персональных данных. Если мне меньше 14 лет - с согласия родителей.</span></label>`:"")+
    `<div class="err" id="er" role="alert">${esc(msg)}</div><button class="btn-full" id="go" type="submit">${reg?"Зарегистрироваться":"Войти"}</button>`;
@@ -1206,7 +1206,7 @@ function drawForm(msg=""){
     e.preventDefault();
     const er=$("#er"),b=$("#go"),username=$("#un").value.trim().toLowerCase().replace(/^@/,""),password=$("#pw").value;
     er.textContent="";
-    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Имя пользователя: 3-20 символов - латинские буквы, цифры и _";
+    if(!/^[a-z0-9_]{3,20}$/.test(username))return er.textContent="Имя пользователя: 3-20 символов, a-z, 0-9 и _";
     let body={username,password};
     if(reg){
       if(tch()&&!$("#tc").value.trim())return er.textContent="Введите код учителя";
