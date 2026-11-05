@@ -571,10 +571,16 @@ const cclear=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("c:")).fo
 const saveMe=()=>ls.set("me",me);
 // Данные моложе 15 секунд не запрашиваются повторно - вкладка открывается мгновенно и без запроса.
 const FRESH={},FRESH_MS=15000,isFresh=k=>Date.now()-(FRESH[k]||0)<FRESH_MS;
+// Пакетная загрузка: данные для нескольких блоков вкладки - одним запросом к серверу.
+// Блок, которому нужны эти данные, ждёт общий ответ вместо своего отдельного запроса.
+const PEND={};
+function pack(list){const need=list.filter(x=>!isFresh(x.k)&&!PEND[x.k]);if(need.length<2)return;
+  const p=api("batch",{calls:need.map(x=>Object.assign({action:x.action},x.d||{}))}).then(r=>(r&&r.ok&&r.results)||{}).catch(()=>({}));
+  need.forEach(x=>{PEND[x.k]=p.then(R=>R[x.action]&&R[x.action].ok?R[x.action]:null);p.then(()=>delete PEND[x.k])})}
 async function swr(k,action,d,draw,my,force){
   const c=force?null:cget(k);if(c)draw(c);
   if(c&&isFresh(k))return c;
-  const r=await api(action,d);if(my!==vid||dead(r))return null;
+  const r=(!force&&PEND[k]&&await PEND[k])||await api(action,d);if(my!==vid||dead(r))return null;
   if(r.ok){FRESH[k]=Date.now();if(JSON.stringify(r)!==JSON.stringify(c)){cset(k,r);draw(r)}}else if(!c)draw(r);else toast(r.error,"err");
   return r;
 }
@@ -941,11 +947,24 @@ function ovpAsk(urls,q){
         .catch(()=>{if(done)return;if(--left===0&&i>=urls.length){done=true;clearTimeout(timer);rej(new Error("overpass"))}else next()})
         .finally(()=>clearTimeout(tm))};
     next()})}
+// Nominatim (поиск OpenStreetMap) отвечает быстро и надёжнее перегруженных серверов Overpass:
+// до 50 пунктов приёма в прямоугольнике, вместе с тем, что они принимают.
+async function nominatim(lat,lon,rad){const dy=rad/111320,dx=rad/(111320*Math.cos(lat*Math.PI/180));
+  const vb=[lon-dx,lat+dy,lon+dx,lat-dy].map(v=>v.toFixed(5)).join(","),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),10000);
+  try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent("[amenity=recycling]")}&viewbox=${vb}&bounded=1&limit=50&extratags=1&accept-language=ru`,{signal:ac.signal});
+    if(!r.ok)throw new Error("nominatim "+r.status);const j=await r.json();if(!Array.isArray(j))throw new Error("nominatim");
+    const el=j.map(x=>({type:x.osm_type,lat:+x.lat,lon:+x.lon,tags:Object.assign({},x.extratags||{},x.name?{name:x.name}:{})}));el.capped=j.length>=50;return el}
+  finally{clearTimeout(tm)}}
+// Сначала first(); если он молчит дольше ms или ошибся - параллельно second(); берётся первый удачный ответ
+function hedge(first,second,ms){return new Promise((res,rej)=>{let done=false,left=2,started=false;
+  const win=v=>{if(!done){done=true;res(v)}},lose=e=>{if(--left===0&&!done)rej(e)};
+  const go2=()=>{if(started)return;started=true;second().then(win,lose)};
+  const t=setTimeout(go2,ms);first().then(v=>{clearTimeout(t);win(v)},e=>{clearTimeout(t);lose(e);go2()})})}
 async function overpass(lat,lon,rad){
   // одна сетка для всех: соседние запросы совпадают и попадают в общий кэш на сервере ЭкоТрека
   rad=[1000,2000,3000,5000].find(r=>r>=rad+700)||5000;lat=+lat.toFixed(2);lon=+lon.toFixed(2);
   const key=`${lat.toFixed(2)},${lon.toFixed(2)},${rad}`,store=ls.get("ovp")||{},hit=store[key];
-  if(hit&&Date.now()-hit.t<864e5)return hit.el;
+  if(hit&&Date.now()-hit.t<864e5){const e=hit.el;e.capped=!!hit.c;return e}
   const dy=rad/111320,dx=rad/(111320*Math.cos(lat*Math.PI/180)),bb=[lat-dy,lon-dx,lat+dy,lon+dx].map(v=>v.toFixed(5)).join(",");
   const q=`[out:json][timeout:12];(node["amenity"="recycling"](${bb});way["amenity"="recycling"](${bb}););out center qt 200;`;
   const ok=ls.get("ovpOk"),urls=OVERPASS.filter(u=>u!==ok).sort(()=>Math.random()-.5);if(OVERPASS.includes(ok))urls.unshift(ok);
@@ -954,9 +973,10 @@ async function overpass(lat,lon,rad){
   let queued=false;
   const srv=api("mapPoints",{lat,lon,rad}).then(r=>{if(r&&r.queued)queued=true;return r&&r.ok&&Array.isArray(r.el)?r.el:Promise.reject(new Error("srv"))});
   try{let el=await Promise.race([srv.catch(()=>null),new Promise(r=>setTimeout(()=>r(null),2500))]);
-    if(!el)el=await Promise.any([srv,ovpAsk(urls,q)]);
+    // сначала Nominatim; серверы Overpass - только если он не ответил (они часто перегружены и сыплют ошибками)
+    if(!el)el=await Promise.any([srv,hedge(()=>nominatim(lat,lon,rad),()=>ovpAsk(urls,q),3000)]);
     const next={};Object.keys(store).sort((a,b)=>store[b].t-store[a].t).slice(0,9).forEach(k=>next[k]=store[k]);
-    next[key]={t:Date.now(),el};ls.set("ovp",next);return el}
+    next[key]={t:Date.now(),el,c:!!el.capped};ls.set("ovp",next);return el}
   catch(e){// лучше сохранённые пункты рядом (даже старые), чем пустая карта
     const near=Object.keys(store).map(k=>{const [a,b]=k.split(",").map(Number);return{k,d:geoDist(lat,lon,a,b)}}).filter(x=>x.d<3000).sort((a,b)=>a.d-b.d)[0];
     if(near){const el=store[near.k].el;el.stale=true;return el}
@@ -996,7 +1016,7 @@ async function mapV(){
     try{const el=await overpass(c.lat,c.lng,rad);clearTimeout(slow);if(my!==vid)return;const o=here||{lat:c.lat,lon:c.lng};
       pts=el.map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
         return{lat,lon,name:t.name||t.operator||(t.recycling_type==="centre"?"Пункт приёма":"Контейнер для вторсырья"),acc:accepts(t),hours:t.opening_hours||"",d:geoDist(o.lat,o.lon,lat,lon)}}).filter(p=>p.lat!=null);
-      draw();if(el.stale){msg("Серверы карты сейчас перегружены - показаны сохранённые пункты. Обновите позже.");$("#here").hidden=false}}
+      draw();if(el.capped&&pts.length)msg("Показаны 50 пунктов - приблизьте карту, чтобы увидеть остальные.");if(el.stale){msg("Серверы карты сейчас перегружены - показаны сохранённые пункты. Обновите позже.");$("#here").hidden=false}}
     catch(e){clearTimeout(slow);if(my===vid){msg(e&&e.queued?"Серверы карты сейчас перегружены. ЭкоТрек сам запросит пункты для этого места - загляните через полчаса.":"Серверы карты сейчас перегружены. Попробуйте ещё раз через минуту.");$("#here").hidden=false}}};
   let skip=true;map.on("moveend",()=>{if(skip){skip=false;return}$("#here").hidden=false});
   const goTo=(lat,lon,z)=>{skip=true;map.setView([lat,lon],z,{animate:false});load()};
@@ -1153,6 +1173,7 @@ function studentClassV(){
   if(!T.length){$("#sch").innerHTML=`<div class="card empty"><div class="eb">🏫</div><h2>Вы пока не в классе</h2><p class="muted">Попросите у учителя код класса и введите его в профиле.</p><button id="gpf">Открыть профиль</button></div>`;$("#gpf").onclick=()=>go("profile");return}
   if($("#cst"))$("#cst").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;ls.set("cls.t",b.dataset.t);studentClassV()};
   const t=T.find(x=>x.username===cur);
+  pack([{k:"ch:"+cur,action:"challengeList",d:{teacher:cur}},{k:"qz:"+cur,action:"quizList",d:{teacher:cur}},{k:"ev",action:"eventList"}]);
   const head=name=>{$("#sch").innerHTML=`<div class="card hero"><div class="muted sm">Класс</div><h2>${esc(name||"Мой класс")}</h2><div class="muted">Учитель: ${esc(t.firstName)} ${esc(t.lastName)}</div>
     <div class="row hb3" style="margin-top:12px"><button class="grow" id="scc">💬 Чат</button><button class="ghost grow" id="scr">🏆 Рейтинг</button><button class="ghost grow" id="scf">🌲 Лес</button></div></div>`;
     $("#scc").onclick=()=>chatV("c:"+cur);$("#scr").onclick=()=>ratingV({scope:"class",teacher:cur,back:()=>go("class")});$("#scf").onclick=()=>forestModal(cur)};
@@ -1309,12 +1330,16 @@ function shell(){
   $("#nv").querySelectorAll("button").forEach(b=>b.onclick=()=>go(b.dataset.t));
   $("#gear").onclick=()=>go(tab==="settings"?"profile":"settings");
   if(!VIEWS[tab]||(tab==="class"&&!hasClass()))tab="profile";
-  chip();go(tab);
-  const c=cget("chats");if(c)dots(c);prefetch();
+  chip();prefetch();go(tab);
+  const c=cget("chats");if(c)dots(c);
 }
 // Сразу после входа одним запросом загружаем данные всех вкладок, чтобы они открывались мгновенно.
 async function prefetch(){
-  const r=await api("batch",{calls:[{action:"extra"},{action:"chats"},{action:"friends"},{action:"tasks"},{action:"news"},{action:"qotd"}]});if(!me)return;
+  const bp=api("batch",{calls:[{action:"extra"},{action:"chats"},{action:"friends"},{action:"tasks"},{action:"news"},{action:"qotd"}]});
+  // вкладка, открытая сразу после входа, ждёт этот же пакет, а не просит те же данные отдельно
+  [["x","extra"],["chats","chats"],["friends","friends"],["tasks","tasks"],["news","news"],["qotd","qotd"]].forEach(([k,a])=>{
+    PEND[k]=bp.then(r=>r&&r.ok&&r.results&&r.results[a]&&r.results[a].ok?r.results[a]:null);bp.then(()=>delete PEND[k])});
+  const r=await bp;if(!me)return;
   if(!r.ok){pulse();if(tab!=="profile"&&!X)loadX();return}
   const R=r.results||{},keep=(k,v)=>{if(v&&v.ok){cset(k,v);FRESH[k]=Date.now()}};
   keep("friends",R.friends);keep("tasks",R.tasks);keep("news",R.news);keep("qotd",R.qotd);
@@ -1519,7 +1544,7 @@ const optText=o=>((OI[o]||"")+" "+o).trim();
 // Возрастная группа для сложности вопросов - так же, как на сервере.
 const bandOf=g=>{g=+g||0;return!g?"":g<=4?"1-4 класс":g<=8?"5-8 класс":"9-11 класс"};
 function gamesV(){
-  const my=++vid;
+  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"}]);
   put(`<h1>Игры и задания</h1><div id="evb"></div><div id="qd"></div><div id="eco"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
   <h2 class="sec">Полезное</h2>
@@ -1635,6 +1660,7 @@ function classV(){
   const my=++vid;let C=null;
   put(`<h1>Мой класс</h1>${me.dev?`<div class="card"><b>💜 Выдать значок любому пользователю</b><p class="muted sm" style="margin:4px 0 0">Как разработчик вы можете наградить кого угодно, не только учеников класса.</p><form class="srch" id="dg"><input id="du" placeholder="@username" autocapitalize="none" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Выдать значок">🏅</button></form></div>`:""}<div id="cl">${sk(1)}</div><div id="st">${sk(3)}</div><div id="chs"></div><div id="fo"></div>`);
   if(me.dev)$("#cl").insertAdjacentHTML("beforebegin",`<button class="ghost btn-full" id="dvo" style="margin:8px 0">🛠 Панель разработчика</button>`),$("#dvo").onclick=()=>devV();
+  pack([{k:"ch:"+me.username,action:"challengeList",d:{teacher:me.username}},{k:"qz:"+me.username,action:"quizList"},{k:"ev",action:"eventList"}]);
   challengesBox($("#chs"),me.username,true,my);
   $("#chs").insertAdjacentHTML("afterend",`<div id="qzx"></div><div id="ntx2"></div><div id="evx"></div>`);
   quizBox($("#qzx"),me.username,true,my);noticesBox($("#ntx2"),true);eventsBox($("#evx"),true,my);
@@ -1715,7 +1741,7 @@ function studentModal(u,changed){
 /* ───────── профиль ───────── */
 async function loadX(){
   if(X&&!X.off&&isFresh("x"))return X;
-  const r=await api("extra");if(r.ok)FRESH.x=Date.now();if(dead(r))return null;
+  const r=(PEND.x&&await PEND.x)||await api("extra");if(r.ok)FRESH.x=Date.now();if(dead(r))return null;
   if(r.ok){X=r;cset("x",X);refreshNav()}else X=X&&!X.off?X:{avatar:"",badges:[],teachers:[],off:r.error};
   if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}
   return X;

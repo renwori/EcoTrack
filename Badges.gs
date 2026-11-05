@@ -52,7 +52,7 @@ const now=()=>new Date().toISOString();
 const today=()=>Utilities.formatDate(new Date(),"Europe/Moscow","yyyy-MM-dd");
 const byId=id=>rows("Users").find(u=>u.id===id);
 const byName=un=>rows("Users").find(u=>u.username===String(un||"").toLowerCase().replace(/^@/,""));
-const delRows=(n,list)=>{const sh=SS().getSheetByName(n);list.map(r=>r._row).sort((a,b)=>b-a).forEach(r=>sh.deleteRow(r))};
+const delRows=(n,list)=>{memoDrop(n);const sh=SS().getSheetByName(n);list.map(r=>r._row).sort((a,b)=>b-a).forEach(r=>sh.deleteRow(r))};
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
@@ -67,16 +67,24 @@ const fixD=(k,v)=>DRE.test(v)?(k==="date"?Utilities.formatDate(new Date(v),tz(),
 try{const _r0=rows;rows=function(n){ensure(n);const a=_r0(n);
  if(MY.indexOf(n)>=0)a.forEach(o=>{if("date" in o)o.date=fixD("date",o.date);if("created" in o)o.created=fixD("created",o.created);if("updated" in o)o.updated=fixD("updated",o.updated)});
  return a}}catch(e){}
-const rowsRaw=rows;  // чтение без кэша запроса
+// Кэш чтений на время одного запроса: каждый лист читается из Таблицы один раз,
+// а после записи в лист его кэш сбрасывается - устаревших данных не будет. В триггерах кэша нет.
+let MEMO=null;
+const memoDrop=n=>{if(!MEMO)return;Object.keys(MEMO).forEach(k=>{if(k===n||k.indexOf(n+"|")===0)delete MEMO[k]})};
+const memoAll=()=>{if(MEMO)MEMO={}};
+try{const _r1=rows;rows=function(n){if(!MEMO)return _r1(n);if(!MEMO[n])MEMO[n]=_r1(n);return MEMO[n].slice()}}catch(e){}
+try{const _u=upd;upd=function(n,row,k,v){memoDrop(n);return _u(n,row,k,v)}}catch(e){}
+try{const _a=add;add=function(n,a){memoDrop(n);return _a(n,a)}}catch(e){}
+const rowsRaw=n=>rows(n);
 let held=false;      // держит ли этот запрос общую блокировку
 function withLock(f){if(held)return f();const L=LockService.getScriptLock();L.waitLock(15000);held=true;try{return f()}finally{held=false;try{L.releaseLock()}catch(x){}}}
-function addManyT(n,list){if(!list.length)return;ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1,w=list[0].length;
+function addManyT(n,list){if(!list.length)return;ensure(n);memoDrop(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1,w=list[0].length;
  if(r+list.length>sh.getMaxRows())sh.insertRowsAfter(sh.getMaxRows(),list.length+200);
  sh.getRange(r,1,list.length,w).setNumberFormat("@").setValues(list.map(a=>a.map(String)))})}
-function addT(n,a){ensure(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1;
+function addT(n,a){ensure(n);memoDrop(n);withLock(()=>{const sh=SS().getSheetByName(n),r=sh.getLastRow()+1;
  if(r>sh.getMaxRows())sh.insertRowsAfter(sh.getMaxRows(),200);
  sh.getRange(r,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])})}
-function setRow(n,row,a){SS().getSheetByName(n).getRange(row,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])}
+function setRow(n,row,a){memoDrop(n);SS().getSheetByName(n).getRange(row,1,1,a.length).setNumberFormat("@").setValues([a.map(String)])}
 
 // Разработчик: аккаунт, который первым был замечен с именем пользователя renwori. Дальше узнаётся по id,
 // поэтому смена имени пользователя ничего не ломает и никто другой не сможет «занять» эту роль.
@@ -550,11 +558,11 @@ deleteAccount(d){const u=who(d),id=u.id,dev=isDev(u);
  rowsRaw("Badges").filter(r=>r.teacherId===id).forEach(r=>upd("Badges",r._row,"teacherId",""));  // выданные значки остаются у учеников
  const scrub=(n,col,f)=>{ensure(n);const sh=SS().getSheetByName(n),last=sh.getLastRow();if(last<2)return;
   const rg=sh.getRange(2,1,last-1,H[n].length),v=rg.getValues();let ch=false;
-  v.forEach(r=>{if(String(r[col])===id){f(r);ch=true}});if(ch)rg.setNumberFormat("@").setValues(v.map(r=>r.map(String)))};
+  v.forEach(r=>{if(String(r[col])===id){f(r);ch=true}});if(ch)rg.setNumberFormat("@").setValues(v.map(r=>r.map(String)));memoAll()};
  scrub("Messages",2,r=>{r[2]="";r[3]="del";r[4]=""});scrub("Reactions",2,r=>{r[2]="";r[3]=""});scrub("ChatReads",0,r=>{r[0]=""});
  SS().getSheets().forEach(sh=>{const n=sh.getName();if(MY.indexOf(n)>=0||n==="Users")return;
   const v=sh.getDataRange().getValues();for(let i=v.length-1;i>=1;i--)if(v[i].some(c=>String(c)===id))sh.deleteRow(i+1)});
- const ur=rowsRaw("Users").find(x=>x.id===id);if(ur)SS().getSheetByName("Users").deleteRow(ur._row);
+ memoAll();const ur=rowsRaw("Users").find(x=>x.id===id);if(ur)SS().getSheetByName("Users").deleteRow(ur._row);memoAll();
  if(dev){PropertiesService.getScriptProperties().deleteProperty("DEV_ID");CacheService.getScriptCache().remove("dev_id")}
  CU=null;return{}},
 badgesSeen(d){const u=who(d);rows("Badges").filter(b=>b.studentId===u.id&&b.seen!=="1").forEach(b=>upd("Badges",b._row,"seen","1"));return{}},
@@ -644,7 +652,8 @@ gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная 
 
 /* ───── журналы, счётчики, недели ───── */
 // Большие листы читаются с конца: свежие строки всегда внизу, а вся история не нужна.
-function tail(n,count){ensure(n);const sh=SS().getSheetByName(n),last=sh.getLastRow();if(last<2)return[];
+function tail(n,count){const mk=n+"|"+count;if(MEMO&&MEMO[mk])return MEMO[mk].slice();const t=tailRead(n,count);if(MEMO)MEMO[mk]=t;return t.slice()}
+function tailRead(n,count){ensure(n);const sh=SS().getSheetByName(n),last=sh.getLastRow();if(last<2)return[];
  const from=Math.max(2,last-count+1);
  return sh.getRange(from,1,last-from+1,H[n].length).getValues().map((r,i)=>{const o={_row:from+i};
   H[n].forEach((k,j)=>{const v=r[j];o[k]=v instanceof Date?(k==="date"?Utilities.formatDate(v,tz(),"yyyy-MM-dd"):v.toISOString()):(k==="date"||k==="created"||k==="updated"?fixD(k,String(v)):String(v))});return o})}
@@ -756,7 +765,12 @@ function mapFetch(lat,lon,rad){const dy=rad/111320,dx=rad/(111320*Math.cos(lat*M
  const req=u=>({url:u,method:"post",payload:{data:q},muteHttpExceptions:true}),parse=r=>{try{if(r.getResponseCode()!==200)return null;const j=JSON.parse(r.getContentText());return okOvp(j)?j.elements:null}catch(e){return null}};
  try{for(const r of UrlFetchApp.fetchAll(OVP_SRV.map(req))){const el=parse(r);if(el)return el}return null}catch(e){}
  for(const u of OVP_SRV){try{const el=parse(UrlFetchApp.fetch(u,req(u)));if(el)return el}catch(e){}}
- return null}
+ return mapNominatim(lat,lon,rad)}
+// Запасной источник - Nominatim (поиск OpenStreetMap): до 50 пунктов, отвечает быстро
+function mapNominatim(lat,lon,rad){const dy=rad/111320,dx=rad/(111320*Math.cos(lat*Math.PI/180)),vb=[lon-dx,lat+dy,lon+dx,lat-dy].map(v=>v.toFixed(5)).join(",");
+ try{const r=UrlFetchApp.fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&q="+encodeURIComponent("[amenity=recycling]")+"&viewbox="+vb+"&bounded=1&limit=50&extratags=1&accept-language=ru",
+   {muteHttpExceptions:true,headers:{Referer:"https://renwori.github.io/EcoTrack/"}});if(r.getResponseCode()!==200)return null;const j=JSON.parse(r.getContentText());if(!Array.isArray(j))return null;
+  return j.map(x=>({lat:+x.lat,lon:+x.lon,tags:Object.assign({},x.extratags||{},x.name?{name:x.name}:{})}))}catch(e){return null}}
 const mapKey=(lat,lon,rad)=>"map_"+Number(lat).toFixed(2)+"_"+Number(lon).toFixed(2)+"_"+rad;
 function mapQueueAdd(key){const C=CacheService.getScriptCache();let q=[];try{q=JSON.parse(C.get("map_queue")||"[]")}catch(e){}
  if(q.indexOf(key)<0){q.unshift(key);C.put("map_queue",JSON.stringify(q.slice(0,30)),21600)}}
@@ -1137,10 +1151,44 @@ function newsRefresh(force){const c=CacheService.getScriptCache(),hit=c.get("eco
 ecoNewsRefresh_=newsRefresh;ecoMapRefresh_=mapQueueRun;
 A.news=d=>{who(d);return{news:newsRefresh(false)}};
 
+/* ───── ускорение: готовые ответы в кэше Google ───── */
+// Кто сделал запрос и чьи данные он поменял: после успешного изменения их кэш профиля сбрасывается.
+let REQ_UID=null,TOUCH=null;
+const touch=ids=>{if(TOUCH)(Array.isArray(ids)?ids:[ids]).forEach(id=>{if(id)TOUCH.add(id)})};
+const xVer=uid=>CacheService.getScriptCache().get("xv_"+uid)||"0";
+function flushTouch(){if(!TOUCH||!TOUCH.size)return;const o={},v=String(Date.now())+Math.random().toString(36).slice(2,6);TOUCH.forEach(id=>o["xv_"+id]=v);
+ CacheService.getScriptCache().putAll(o,21600)}
+const classOfTeacher=tid=>rows("Members").filter(m=>m.teacherId===tid).map(m=>m.studentId);
+// Сессия запоминается на 10 минут: лист Sessions не читается на каждый запрос
+try{const _who2=who;who=function(d){const th=sha(d.token||""),C=CacheService.getScriptCache(),id=d.token?C.get("ss_"+th):null;
+ if(id){const u=rows("Users").find(x=>x.id===id);if(u){const b=banOf(u.id);if(b)throw banText(b);REQ_UID=u.id;return u}}
+ const u=_who2(d);if(d.token)C.put("ss_"+th,u.id,600);REQ_UID=u.id;return u}}catch(e){}
+const dropSessions=uid=>{const ks=rows("Sessions").filter(x=>x.userId===uid).map(x=>"ss_"+x.tokenHash);if(ks.length)CacheService.getScriptCache().removeAll(ks)};
+const wrapA=(name,before,after)=>{const f=A[name];if(!f)return;A[name]=function(d){const ctx=before?before(d):null;const r=f(d);if(after)try{after(d,r,ctx)}catch(e){}return r}};
+wrapA("logout",d=>{CacheService.getScriptCache().remove("ss_"+sha(d.token||""))});
+wrapA("changePassword",null,d=>{const u=who(d),th=sha(d.token||"");const ks=rows("Sessions").filter(x=>x.userId===u.id&&x.tokenHash!==th).map(x=>"ss_"+x.tokenHash);if(ks.length)CacheService.getScriptCache().removeAll(ks)});
+wrapA("deleteAccount",d=>{const u=who(d);const ks=rows("Sessions").filter(x=>x.userId===u.id).map(x=>"ss_"+x.tokenHash);
+ return{ks,mem:isStaff(u)?classOfTeacher(u.id):rows("Members").filter(m=>m.studentId===u.id).map(m=>m.teacherId)}},
+ (d,r,c)=>{if(c.ks.length)CacheService.getScriptCache().removeAll(c.ks);touch(c.mem)});
+// изменения, которые видят другие: ученик, учитель и весь класс
+wrapA("badgeGive",null,d=>{const s=byName(d.username);if(s)touch(s.id)});
+wrapA("badgeRevoke",d=>{const b=rows("Badges").find(x=>x.id===String(d.id||""));return b?b.studentId:null},(d,r,sid)=>touch(sid));
+wrapA("classKick",null,d=>{const s=byName(d.username);if(s)touch(s.id)});
+wrapA("classJoin",null,(d,r)=>{const t=r&&r.teacher&&byName(r.teacher.username);if(t)touch(t.id)});
+wrapA("classLeave",null,d=>{const t=byName(d.username);if(t)touch(t.id)});
+wrapA("classRename",null,()=>touch(classOfTeacher(REQ_UID)));
+wrapA("eventAttend",null,d=>touch((Array.isArray(d.usernames)?d.usernames:[]).map(n=>{const v=byName(n);return v&&v.id})));
+wrapA("challengeAdd",d=>{const c=rows("Challenges").find(x=>x.id===String(d.id||""));return c?c.teacherId:null},(d,r,tid)=>{if(r&&r.done&&tid)touch(classOfTeacher(tid))});
+wrapA("noticeAdd",null,()=>touch(classOfTeacher(REQ_UID)));wrapA("noticeDel",null,()=>touch(classOfTeacher(REQ_UID)));
+// Профиль (extra) - самый тяжёлый ответ: до 15 минут из кэша, пока у ученика ничего не поменялось
+{const _x=A.extra;A.extra=function(d){const u=who(d),C=CacheService.getScriptCache(),k="xc_"+u.id+"_"+xVer(u.id)+"_"+today();
+ const c=C.get(k);if(c){try{return JSON.parse(c)}catch(e){}}
+ const o=_x(d);try{const js=JSON.stringify(o);if(js.length<95000)C.put("xc_"+u.id+"_"+xVer(u.id)+"_"+today(),js,900)}catch(e){}return o}}
+
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */
 // Раньше каждый запрос ждал, пока закончится предыдущий. Теперь очередь только у действий,
 // которые меняют данные; чтения выполняются параллельно и читают каждый лист один раз.
-const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0};
+const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0,challengeList:1,quizList:1,eventList:1,recycleList:1,shop:1};
 A.batch=d=>{const out={};(Array.isArray(d.calls)?d.calls:[]).slice(0,8).forEach(c=>{const a=c&&c.action;if(!BATCH[a]||!A[a])return;
  try{out[a]=Object.assign({ok:true},A[a](Object.assign({},c,{token:d.token})))}catch(e){out[a]={ok:false,error:typeof e==="string"?e:"Ошибка сервера: "+e}}});
  return{results:out}};
@@ -1154,12 +1202,14 @@ try{doPost=function(e){
  try{
   d=JSON.parse(e.postData.contents);devId=undefined;CU=null;held=false;
   if(!A[d.action])throw"Неизвестное действие";
-  if(FAST[d.action]){try{const _rows=orig=rows,memo={};rows=n=>(memo[n]||(memo[n]=_rows(n))).slice()}catch(x){orig=null}}
-  else{lock=LockService.getScriptLock();lock.waitLock(20000);held=true}
-  return reply(Object.assign({ok:true},A[d.action](d)));
+  MEMO={};REQ_UID=null;TOUCH=new Set();
+  if(!FAST[d.action]){lock=LockService.getScriptLock();lock.waitLock(20000);held=true}
+  const out=A[d.action](d);
+  if(!FAST[d.action]){touch(REQ_UID);try{flushTouch()}catch(x){}}  // данные изменились - сбросить кэш профиля
+  return reply(Object.assign({ok:true},out));
  }catch(err){
   if(typeof err!=="string")console.error(err);
   return reply({ok:false,error:typeof err==="string"?ruText(err):"Ошибка сервера: "+err});
- }finally{if(orig)rows=orig;if(lock)try{lock.releaseLock()}catch(x){}}
+ }finally{MEMO=null;TOUCH=null;if(lock)try{lock.releaseLock()}catch(x){}}
 }}catch(e){}
 })();
