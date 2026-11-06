@@ -10,7 +10,7 @@ Events:["id","userId","type","emoji","text","created"],Reactions:["msgId","chat"
 Profiles:["userId","cover","pattern","frame","status","emoji","showcase","grade","letter","consent","nameColor"],
 NewsSources:["name","url","filter","status","checked"],NewsArchive:["url","title","source","published","found"],
 XpLog:["userId","date","xp","src"],GameLog:["userId","date","game","score","total"],
-Counters:["userId","games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy","bonus","spent","freeze","chests"],
+Counters:["userId","games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy","bonus","spent","freeze","chests","dayChest"],
 Qotd:["date","userId","answer","ok"],Challenges:["id","teacherId","title","unit","goal","status","created","deadline"],
 Contrib:["chId","userId","amount","created"],Bans:["userId","until","reason","by","created"],
 MapCache:["key","data","updated"],
@@ -493,7 +493,8 @@ tasks(d){const u=who(d),date=today(),ev=activeEvent();let mine=tail("DailyTasks"
  if(!mine.length){mine=shuffle(TASKS).slice(0,3).map((t,i)=>({slot:String(i+1),taskId:String(t.id),done:""}));mine.forEach(r=>addT("DailyTasks",[u.id,date,r.slot,r.taskId,""]))}
  if(ev&&!mine.some(r=>r.slot==="4")){const r={slot:"4",taskId:"e:"+ev.id+":"+ev.year,done:""};mine.push(r);addT("DailyTasks",[u.id,date,r.slot,r.taskId,""])}
  const seen={};mine=mine.filter(r=>!seen[r.slot]&&(seen[r.slot]=1));
- return{event:ev?{id:ev.id,name:ev.name,emoji:ev.emoji,date:ev.date,until:ev.until}:null,
+ const pg=playedGamesToday(u);
+ return{daily:{played:pg,total:DAY_GAMES.length,chest:pg.length===DAY_GAMES.length},event:ev?{id:ev.id,name:ev.name,emoji:ev.emoji,date:ev.date,until:ev.until}:null,
   tasks:mine.map(r=>{const t=taskById(r.taskId)||TASKS[0];
   return{slot:Number(r.slot),done:r.done==="1",icon:t.icon,title:t.title,description:t.description,xp:t.xp,imp:t.imp,map:!!t.map,event:t.event?t.eventName:""}}).sort((a,b)=>a.slot-b.slot)}},
 complete(d){const u=who(d),r=tail("DailyTasks",5000).find(x=>x.userId===u.id&&x.date===today()&&x.slot==String(d.slot));
@@ -646,12 +647,14 @@ gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная 
  const froze=applyFreeze(u,cn),firstGame=cn.games===0;
  const pd=tail("PlayDays",30000),first=!playedToday(u.id,pd);if(first)addT("PlayDays",[u.id,today()]);
  const streak=streakOf(u.id,tail("PlayDays",30000)),chest=first&&streak>0&&streak%7===0;  // каждые 7 дней серии - сундук
+ const pg=playedGamesToday(u),dayChest=pg.length===DAY_GAMES.length&&cn.dayChest!==ymd();      // и сундук дня - за все мини-игры
+ if(dayChest)addEvent(u.id,"chest","🎁","Сундук дня: пройдены все мини-игры");
  if(chest)addEvent(u.id,"chest","🎁","Сундук за "+plural(streak,"день","дня","дней")+" серии");
  if(first&&[3,7,14,30,50,100,200,365].indexOf(streak)>=0)addEvent(u.id,"streak","🔥",plural(streak,"день","дня","дней")+" подряд в мини-играх");
- bumpCounters(u,{games:1,perfect:total&&score===total?1:0,correct:G.order?0:score,best:streak,freeze:-froze,chests:chest?1:0},cn);
+ bumpCounters(u,{games:1,perfect:total&&score===total?1:0,correct:G.order?0:score,best:streak,freeze:-froze,chests:(chest?1:0)+(dayChest?1:0),dayChest:dayChest?ymd()-cn.dayChest:0},cn);
  const goal=goalCheck(u),duo=duoTick(u),invite=firstGame?inviteReward(u):null;
  if(!G.order)recordMistakes(u,d.game,results.filter(r=>!r.ok).map(r=>r.id));
- return{score,total,xp,results,streak,newDay:first,chest,froze,goal,duo,invite,ach:checkAch(u)}}});
+ return{score,total,xp,results,streak,newDay:first,chest,dayChest,daily:{played:pg,total:DAY_GAMES.length,chest:dayChest||cn.dayChest===ymd()},froze,goal,duo,invite,ach:checkAch(u)}}});
 
 
 /* ───── журналы, счётчики, недели ───── */
@@ -666,11 +669,11 @@ const monthStart=off=>{const t=today(),d=new Date(Date.UTC(+t.slice(0,4),+t.slic
 const MONTHS=["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
 // Счётчики: сыгранные игры, игры без ошибок, верные ответы, задания, вопросы дня, лучшая серия и польза.
 // bonus/spent - эко-монеты сверх опыта и потраченные; freeze - заморозки серии; chests - закрытые сундуки
-const CNT=["games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy","bonus","spent","freeze","chests"];
+const CNT=["games","perfect","correct","tasks","qotd","best","water","plastic","paper","co2","energy","bonus","spent","freeze","chests","dayChest"];
 function counters(u,list){const r=(list||rowsRaw("Counters")).find(x=>x.userId===u.id);
  if(r){const o={_row:r._row};CNT.forEach(k=>o[k]=Number(r[k])||0);return o}
  const dt=rowsRaw("DailyTasks").filter(x=>x.userId===u.id&&x.done==="1"),o=impactOf(new Set([u.id]),dt);  // первый раз - из истории
- Object.assign(o,{games:rowsRaw("GamesPlayed").filter(x=>x.userId===u.id).length,perfect:0,correct:0,tasks:dt.length,qotd:0,best:bestStreak(u.id,rowsRaw("PlayDays")),bonus:0,spent:0,freeze:0,chests:0});
+ Object.assign(o,{games:rowsRaw("GamesPlayed").filter(x=>x.userId===u.id).length,perfect:0,correct:0,tasks:dt.length,qotd:0,best:bestStreak(u.id,rowsRaw("PlayDays")),bonus:0,spent:0,freeze:0,chests:0,dayChest:0});
  addT("Counters",[u.id].concat(CNT.map(k=>o[k])));o._row=SS().getSheetByName("Counters").getLastRow();return o}
 function bumpCounters(u,delta,pre){const c=pre||counters(u);  // pre - счётчики, прочитанные до записи действия в историю
  for(const k in delta)c[k]=k==="best"?Math.max(c[k],delta[k]):Math.round((c[k]+(Number(delta[k])||0))*100)/100;
@@ -948,6 +951,10 @@ A.register=function(d){
  return r};
 
 /* ───── эко-монеты, магазин, заморозка серии, сундуки, цели недели ───── */
+// Сундук дня: пройти за день все мини-игры (любой результат, главное - доиграть до конца)
+const DAY_GAMES=["sort","quiz","myth","act","decay"];
+const playedGamesToday=u=>{const t=today(),s={};tail("GameLog",3000).forEach(r=>{if(r.userId===u.id&&r.date===t)s[r.game]=1});return DAY_GAMES.filter(g=>s[g])};
+const ymd=()=>Number(today().replace(/-/g,""));
 // Монеты: каждые 5 опыта = 1 монета, плюс бонусы (сундуки, цели, мероприятия), минус покупки.
 const coinsOf=(u,c)=>Math.max(0,Math.floor((Number(u.xp)||0)/5)+(c.bonus||0)-(c.spent||0));
 const FREEZE_MAX=2,FREEZE_PRICE=40;
