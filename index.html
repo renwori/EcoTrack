@@ -555,6 +555,11 @@ html.big .muted{color:var(--text);opacity:.8}
 .clp{flex:none;min-height:0;padding:8px 12px;border-radius:99px;background:var(--pri2);color:var(--text);box-shadow:none;filter:none;font-weight:800}
 .clp.on{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#422006}
 .cal .evd{min-width:48px}
+img.emj{display:inline-block;width:1.15em;height:1.15em;margin:0 .04em;vertical-align:-.2em;border:0;pointer-events:none}
+.dchg{display:flex;gap:8px;margin-top:10px}
+.dchg span{flex:1;display:grid;place-items:center;height:44px;border-radius:14px;font-size:24px;background:var(--line);filter:grayscale(1);opacity:.55}
+.dchg span.on{filter:none;opacity:1;background:var(--pri2);box-shadow:inset 0 0 0 2px var(--pri)}
+.tile.played em::after{content:" · ✓ сегодня";font-weight:900}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -641,7 +646,7 @@ const tshort=ts=>dayKey(ts)===new Date().toDateString()?hhmm(ts):new Date(ts).to
 const count=(el,to)=>{if(!el)return;if(!to||RM){el.textContent=to;return}let n=0;const t=setInterval(()=>{el.textContent=++n;if(n>=to)clearInterval(t)},170)};
 const countUp=(el,to,ms=1100)=>{if(!el)return;if(RM||!to){el.textContent=to;return}const t0=performance.now();
   const f=t=>{const p=Math.min(1,(t-t0)/ms);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)};
-const busy=(b,fn)=>async()=>{const t=b.textContent;b.disabled=true;b.textContent="Подождите…";try{await fn()}finally{b.disabled=false;b.textContent=t}};
+const busy=(b,fn)=>async()=>{const t=b.innerHTML;b.disabled=true;b.textContent="Подождите…";try{await fn()}finally{b.disabled=false;b.innerHTML=t}};
 
 function theme(t){const r=document.documentElement;t==="auto"?r.removeAttribute("data-theme"):r.setAttribute("data-theme",t);localStorage.setItem("theme",t)}
 theme(localStorage.getItem("theme")||"auto");
@@ -1069,7 +1074,8 @@ function policyModal(){modal(`<div class="policy"><h2 style="padding-right:40px"
   <h3>9. Данные в браузере</h3><p>Сайт сохраняет в вашем браузере вход в аккаунт и последние загруженные данные, чтобы открываться быстрее. Рекламных и следящих cookies нет.</p></div>`)}
 const feedbackCard=()=>`<div class="card"><b>📮 Обратная связь</b><p class="muted sm" style="margin:4px 0 10px">Нашли ошибку, есть идея или вопрос? Напишите нам: <b>${FEEDBACK}</b></p>
   <a class="btn-full" href="mailto:${FEEDBACK}?subject=${encodeURIComponent("ЭкоТрек: обратная связь")}" style="display:block;text-align:center;padding:12px;border-radius:14px;background:var(--pri2);color:var(--pri);font-weight:800;text-decoration:none">✉️ Написать письмо</a>
-  <p class="sm center" style="margin:10px 0 0"><a href="#" data-pol style="color:var(--pri);font-weight:800">Политика конфиденциальности</a></p></div>`;
+  <p class="sm center" style="margin:10px 0 0"><a href="#" data-pol style="color:var(--pri);font-weight:800">Политика конфиденциальности</a></p>
+  <p class="muted sm center" style="margin:6px 0 0">Картинки смайликов - <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a>, лицензия CC-BY 4.0</p></div>`;
 document.addEventListener("click",e=>{const a=e.target.closest("[data-pol]");if(a){e.preventDefault();policyModal()}});
 const gradeTag=u=>{const c=custOf(u);return c.grade?`<span class="tag">🎒 ${esc(c.grade)}${c.letter?" «"+esc(c.letter)+"»":""} класс</span>`:""};
 
@@ -1577,7 +1583,7 @@ function gamesV(){
   <button class="tile" id="tenc" style="--g:linear-gradient(135deg,#f59e0b,#d97706)"><span class="te">📖</span><span class="tt"><b>Эко-энциклопедия</b><span id="tencs">Редкие животные и растения России - собери все карточки</span></span><span class="go">▶</span></button>
   <button class="tile" id="tcal" style="--g:linear-gradient(135deg,#38bdf8,#6366f1)"><span class="te">🗓️</span><span class="tt"><b>Календарь эко-дат</b><span>Экологические праздники года и идеи, как их отметить</span></span><span class="go">▶</span></button>
   <button class="tile" id="tev" style="--g:linear-gradient(135deg,#f472b6,#8b5cf6)"><span class="te">📅</span><span class="tt"><b>Мероприятия</b><span>Субботники, сборы макулатуры и другие дела школы</span></span><span class="go">▶</span></button>
-  <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>
+  <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2><div id="dch"></div>
   <button class="tile" id="tbz" style="--g:linear-gradient(135deg,#facc15,#f97316)"><span class="te">⚡</span><span class="tt"><b>Блиц на время</b><span>Сколько верных ответов успеешь дать за 60 секунд?</span><em>до 20 опыта</em></span><span class="go">▶</span></button>
   <button class="tile" id="tmk" style="--g:linear-gradient(135deg,#fb7185,#e11d48)"><span class="te">🔁</span><span class="tt"><b>Работа над ошибками</b><span id="tmks">Повтори вопросы, где ошибся(лась)</span><em>до 20 опыта</em></span><span class="go">▶</span></button>`+
   Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
@@ -1592,7 +1598,7 @@ function gamesV(){
   swr("mist","mistakes",{},r=>{const e=$("#tmks");if(e&&r&&r.ok)e.textContent=r.count?`Вопросов с ошибками: ${r.count} - исправь их!`:"Ошибок нет - так держать!"},my);
   swr("qotd","qotd",{},r=>drawQotd(r,my),my);
   let T=null;
-  const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}T=r;
+  const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}T=r;dailyCard(r.daily);
     if(!r.tasks.length){box.innerHTML=`<div class="card muted">Задания пока не загрузились. Обновите страницу через минуту.</div>`;return}
     const evb=$("#evb");if(evb)evb.innerHTML=r.event?`<div class="card evb"><div class="row"><div class="eb" style="font-size:40px">${esc(r.event.emoji)}</div><div class="grow"><b>${esc(r.event.name)}</b><div class="muted sm">Эко-праздник до ${fdate(r.event.until+"T12:00:00")}: особое задание дня и рамка «Эко-праздник» за его выполнение</div></div></div></div>`:"";
     box.innerHTML=r.tasks.map(t=>`<div class="card task ${t.done?"done":""}"><div class="ic">${t.icon}</div><div class="grow"><b>${esc(t.title)}</b><div class="muted sm">${esc(t.description)}</div>${t.event?`<span class="tag t">🎉 ${esc(t.event)}</span> `:""}<span class="tag">+${t.xp} опыта</span>${impText(t.imp)?` <span class="tag imp">${impText(t.imp)}</span>`:""}${t.map?`<div style="margin-top:8px"><button class="ghost sm" data-map>🗺️ Открыть эко-карту</button></div>`:""}</div><div class="st">${t.done?`<span class="okc">✓</span>`:`<button data-s="${t.slot}">Готово</button>`}</div></div>`).join("")+
@@ -1923,14 +1929,22 @@ function settingsV(){
 }
 
 /* ───────── эко-монеты, магазин, сундук, цель недели ───────── */
+// Сундук дня: пройти за день все мини-игры. Пройденные сегодня игры отмечены галочкой.
+function dailyCard(d){const b=$("#dch");if(!b||!d)return;const n=d.played.length;
+  b.innerHTML=`<div class="card dchc ${d.chest?"gdone":""}"><div class="row"><b class="grow">🎁 Сундук дня</b><span class="tag">${d.chest?"✓ получен":n+" из "+d.total}</span></div>
+    <div class="dchg">${Object.entries(GAMES).map(([k,g])=>`<span class="${d.played.includes(k)?"on":""}" title="${esc(g.n)}">${g.e}</span>`).join("")}</div>
+    <p class="muted sm" style="margin:6px 0 0">${d.chest?"Все мини-игры сегодня пройдены - сундук уже твой! Открой его в карточке с монетами выше.":"Пройди сегодня все мини-игры до конца - и получишь сундук. Результат не важен."}</p></div>`;
+  document.querySelectorAll("[data-g]").forEach(t=>t.classList.toggle("played",d.played.includes(t.dataset.g)))}
 const backBtn=(id,t)=>`<div class="row" style="margin-top:12px"><button class="ghost sm" id="${id}" aria-label="Назад">←</button><h1 class="grow" style="margin:0">${t}</h1></div>`;
 const extraToasts=s=>{if(!s)return;if(s.froze)toast("🧊 Заморозка сохранила серию дней!");
-  if(s.chest)setTimeout(()=>toast("🎁 Новый сундук! Открой его во вкладке «Игры»"),900);
+  if(s.chest)setTimeout(()=>toast("🎁 Новый сундук за 7 дней серии! Открой его во вкладке «Игры»"),900);
+  if(s.dayChest)setTimeout(()=>{toast("🎁 Сундук дня! Все мини-игры пройдены");sfx("coin")},1300);
+  if(s.daily){const t=cget("tasks");if(t&&t.ok){t.daily=s.daily;cset("tasks",t)}}
   if(s.goal&&s.goal.justDone)setTimeout(()=>toast(`🎯 Цель недели выполнена! +${s.goal.reward.coins} монет и +${s.goal.reward.xp} опыта`),1800);
   if(s.duo&&s.duo.justDone)setTimeout(()=>toast(`🤝 Общая цель с другом выполнена! +${s.duo.reward.coins} монет`),2600);
   if(s.invite)setTimeout(()=>toast(`🎁 Бонус за приглашение: +${s.invite.coins} монет`),3200);
   if(s.duo)FRESH.duo=0;FRESH.mist=0;
-  if(s.chest||s.froze||s.goal||s.invite||(s.duo&&s.duo.justDone))FRESH.x=0};
+  if(s.chest||s.dayChest||s.froze||s.goal||s.invite||(s.duo&&s.duo.justDone))FRESH.x=0};
 function goalH(g){
   if(!g)return`<div class="card"><b>🎯 Цель на неделю</b><p class="muted sm" style="margin:4px 0 8px">Сколько мини-игр и заданий дня сделать до воскресенья? За выполнение - монеты и опыт.</p>
     <div class="row" style="gap:8px"><label class="grow sm">Игр<input id="gg" type="number" min="0" max="35" value="5" inputmode="numeric"></label><label class="grow sm">Заданий<input id="gt" type="number" min="0" max="21" value="7" inputmode="numeric"></label></div>
@@ -1943,7 +1957,7 @@ function ecoCard(){const b=$("#eco");if(!b||!X||X.coins===undefined)return;
   b.innerHTML=`<div class="card ecc"><b class="coin">🪙 ${X.coins} ${plural(X.coins,"монета","монеты","монет").replace(/^\d+ /,"")}</b>
     <div class="muted sm">🧊 Заморозок: ${X.freeze} из 2${X.chests?` · 🎁 Сундуков: ${X.chests}`:""}</div>
     <div class="row" style="margin-top:10px">${X.chests?`<button class="grow" id="chb">🎁 Открыть сундук</button>`:""}<button class="ghost grow" id="shb">🛒 Магазин</button></div>
-    <p class="muted sm" style="margin:6px 0 0">1 монета за каждые 5 опыта. Каждые 7 дней серии - сундук. Заморозка спасает серию, если пропустить день.</p></div>${goalH(X.goal)}`;
+    <p class="muted sm" style="margin:6px 0 0">1 монета за каждые 5 опыта. Сундук - за все мини-игры за день и за каждые 7 дней серии. Заморозка спасает серию, если пропустить день.</p></div>${goalH(X.goal)}`;
   $("#shb").onclick=()=>shopV();if($("#chb"))$("#chb").onclick=chestModal;
   const set=async(g,t,btn)=>{btn.disabled=true;const r=await api("goalSet",{games:g,tasks:t});btn.disabled=false;if(dead(r))return;if(!r.ok)return toast(r.error,"err");
     X.goal=r.goal;cset("x",X);FRESH.x=0;toast(r.goal&&r.goal.justDone?"🎯 Цель уже выполнена!":"Цель поставлена 🎯");ecoCard()};
@@ -2381,6 +2395,32 @@ function offlinePlay(g){const p=ls.get("offpack"),G=GAMES[g];
       <div class="row"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);$("#bk").onclick=()=>go("games");$("#again").onclick=()=>offlinePlay(g)};
   step();
 }
+
+/* ───────── смайлики картинками ───────── */
+// На некоторых телефонах и компьютерах часть смайликов не отображается (пустой квадрат). Поэтому смайлики
+// показываются картинками Twemoji (CC-BY 4.0): из папки emoji/ сайта, а если такой картинки нет - с jsDelivr;
+// если и там нет - остаётся обычный символ. В полях ввода и выпадающих списках остаются символы.
+const EMO_RE=/\p{Regional_Indicator}{2}|[#*0-9]️?⃣|\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?(?:‍\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?)*/gu;
+const EMO_ANY=/\p{Extended_Pictographic}|\p{Regional_Indicator}|⃣/u,EMO_TEXT=new Set([0xA9,0xAE,0x2122]);
+const emoName=e=>{const cp=[...e].map(c=>c.codePointAt(0)),k=cp.includes(0x200D)?cp:cp.filter(c=>c!==0xFE0F);return k.map(c=>c.toString(16)).join("-")};
+function emojify(root){if(!root||root.nodeType!==1&&root.nodeType!==11)return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;
+    return!p||p.closest("script,style,textarea,select,option,title,.noemj")||!EMO_ANY.test(n.nodeValue)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}});
+  const list=[];while(w.nextNode())list.push(w.currentNode);
+  list.forEach(n=>{const t=n.nodeValue,f=document.createDocumentFragment();let last=0,m;EMO_RE.lastIndex=0;
+    while((m=EMO_RE.exec(t))){const e=m[0],nm=emoName(e);if([...e].length===1&&EMO_TEXT.has(e.codePointAt(0))||EMO_SRC[nm]==="none")continue;
+      if(m.index>last)f.append(t.slice(last,m.index));const im=document.createElement("img");im.className="emj";im.alt=e;im.draggable=false;im.decoding="async";im.onerror=emoErr;
+      if(EMO_SRC[nm]==="cdn")im.dataset.cdn=1;im.src=EMO_SRC[nm]==="cdn"?EMO_CDN+nm+".svg":"emoji/"+nm+".svg";f.append(im);last=m.index+e.length}
+    if(!last)return;if(last<t.length)f.append(t.slice(last));n.replaceWith(f)})}
+// нет картинки на сайте - берём с jsDelivr, нет и там - оставляем символ
+// запоминаем, где нашлась картинка, чтобы не запрашивать отсутствующую снова при каждой перерисовке
+const EMO_CDN="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/",EMO_SRC={};
+function emoErr(){const im=this,n=emoName(im.alt);if(!im.dataset.cdn){im.dataset.cdn=1;EMO_SRC[n]="cdn";im.src=EMO_CDN+n+".svg"}else{EMO_SRC[n]="none";im.onerror=null;im.replaceWith(document.createTextNode(im.alt))}}
+{const Q=new Set();let raf=0;
+  new MutationObserver(ms=>{ms.forEach(m=>{if(m.type==="characterData"){if(m.target.parentNode)Q.add(m.target.parentNode)}else m.addedNodes.forEach(n=>Q.add(n.nodeType===3?n.parentNode:n))});
+    if(!raf)raf=requestAnimationFrame(()=>{raf=0;const q=[...Q];Q.clear();q.forEach(n=>{if(n&&n.isConnected)emojify(n)})})})
+   .observe(document.body,{childList:true,subtree:true,characterData:true});
+  emojify(document.body)}
 
 /* ───────── запуск ───────── */
 (async()=>{
