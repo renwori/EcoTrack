@@ -536,6 +536,25 @@ button.bdg.lockd>b{color:var(--muted);font-weight:700}
 .evp input[type=checkbox]{width:20px;height:20px;min-height:0;flex:none;margin:0;padding:0;accent-color:var(--pri)}
 .qed input{margin:6px 0 0}.qeo{gap:8px;align-items:center;margin-top:6px}.qeo input[type=radio]{width:20px;height:20px;flex:none;margin:0}
 .plink input{font-size:13px}
+/* ───── крупный текст, знакомство, блиц, энциклопедия ───── */
+html.big body{zoom:1.15}
+html.big .muted{color:var(--text);opacity:.8}
+.tgl{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;font-weight:700}
+.tgl input{width:22px;height:22px;min-height:0;flex:none;margin:0;padding:0;accent-color:var(--pri)}
+.tour{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.35)}
+.tring{position:fixed;border-radius:18px;box-shadow:0 0 0 3px #fff,0 0 0 9999px rgba(0,0,0,.25);pointer-events:none;transition:all .3s var(--ease)}
+.tbub{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;padding:16px;border-radius:20px;background:var(--solid);color:var(--text);box-shadow:var(--shadow)}
+.tbub p{margin:6px 0 10px}
+.bzt{min-width:36px;text-align:center;font-size:20px;font-variant-numeric:tabular-nums}
+.bzc{padding:30px 16px}.bzn{font-size:96px;font-weight:900;line-height:1.1;animation:pop .6s var(--spring)}
+.encg{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.enc{display:grid;justify-items:center;gap:6px;text-align:center;margin:0;padding:14px 6px;font-size:13px;color:var(--text);min-height:0}
+.enc .ee{font-size:42px;line-height:1}.enc.lockc{opacity:.45;filter:grayscale(1)}
+.duob{display:flex;height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+.duob i{display:block;height:100%;background:linear-gradient(90deg,#34d399,var(--pri))}.duob i.th{background:linear-gradient(90deg,#60a5fa,#2563eb)}
+.clp{flex:none;min-height:0;padding:8px 12px;border-radius:99px;background:var(--pri2);color:var(--text);box-shadow:none;filter:none;font-weight:800}
+.clp.on{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#422006}
+.cal .evd{min-width:48px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -732,7 +751,7 @@ function celebrate(list){
     ${b.track&&b.level?`<p class="center" style="margin:4px 0"><span class="tag">${b.level} уровень · ${TIER[tierOf(b.level)]}</span></p>`:""}
     ${b.description?`<p class="center" style="margin:8px 0">${esc(b.description)}</p>`:""}<p class="muted sm center">${fromT(b)}</p>
     <button class="btn-full" id="nx" style="margin-top:12px">${i<list.length-1?"Дальше →":"Ура! 🎉"}</button>`;
-    setTimeout(()=>burst(innerWidth/2,innerHeight*.4,40),550);
+    setTimeout(()=>{burst(innerWidth/2,innerHeight*.4,40);sfx("win")},550);
     m.el.querySelector("#nx").onclick=()=>{i++;i<list.length?show():m.close()};
   };
   show();list.forEach(b=>{b.seen=true;CELEB.add(celebKey(b))});ls.set("celeb",[...CELEB].slice(-200));
@@ -1087,7 +1106,7 @@ function drawQotd(r,my){const box=$("#qd");if(!box||my!==vid)return;if(!r.ok){bo
       const res=await api("qotdAnswer",{a:r.ix[+b.dataset.qa]});if(dead(res))return;
       if(!res.ok){toast(res.error,"err");box.querySelectorAll(".opt").forEach(x=>x.disabled=false);b.classList.remove("sel");return}
       cset("qotd",res);FRESH.qotd=Date.now();
-      if(res.xp){addXp(res.xp);const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,24);toast(`Верно! +${res.xp} опыта 🎉`)}else toast("Не совсем. Посмотри пояснение 👇");
+      if(res.xp){addXp(res.xp);const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,24);toast(`Верно! +${res.xp} опыта 🎉`);sfx("ok")}else{toast("Не совсем. Посмотри пояснение 👇");sfx("bad")}
       achToast(res.ach);drawQotd(res,my)});
     return}
   const a=r.answered,rk=r.ix.indexOf(a.right),mk=r.ix.indexOf(a.a),st=r.stats;
@@ -1303,13 +1322,14 @@ function drawForm(msg=""){
       if(!tch()&&gl&&!/^[А-ЯЁA-Z]{1,2}$/.test(gl))return er.textContent="Буква класса - одна или две буквы";
       if(!$("#agr").checked)return er.textContent="Чтобы зарегистрироваться, примите политику конфиденциальности";
       body={...body,firstName:$("#fn").value.trim(),lastName:$("#ln").value.trim(),consent:true};
-      if(!tch()){body.grade=$("#gr").value;body.letter=gl}
+      if(!tch()){body.grade=$("#gr").value;body.letter=gl}if(ls.get("ref"))body.ref=ls.get("ref");
       if(tch())body.teacherCode=$("#tc").value.trim();
     }
     b.disabled=true;b.textContent="Подождите…";
     const r=await api(reg?(tch()?"registerTeacher":"register"):"login",body);
     if(!r.ok){b.disabled=false;b.textContent=reg?"Зарегистрироваться":"Войти";return er.textContent=r.error}
-    setSession(r);if(reg)tab=tch()?"class":"profile";shell();
+    setSession(r);if(reg){tab=tch()?"class":"profile";ls.del("ref");ls.set("tourPending",1)}shell();
+    if(ls.get("tourPending")&&!ls.get("tourDone"))setTimeout(tour,1400);
     if(reg)setTimeout(()=>{burst();toast(tch()?"Добро пожаловать, учитель! 🧑‍🏫":"Добро пожаловать! 🌱")},300);
   };
 }
@@ -1344,7 +1364,8 @@ async function prefetch(){
   const R=r.results||{},keep=(k,v)=>{if(v&&v.ok){cset(k,v);FRESH[k]=Date.now()}};
   keep("friends",R.friends);keep("tasks",R.tasks);keep("news",R.news);keep("qotd",R.qotd);
   if(R.chats&&R.chats.ok){CH=R.chats;keep("chats",CH);dots(CH);if(chatsDraw)chatsDraw(CH)}
-  if(R.extra&&R.extra.ok){X=R.extra;keep("x",X);if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}refreshNav();remindCheck()}
+  if(R.extra&&R.extra.ok){X=R.extra;keep("x",X);if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}refreshNav();remindCheck();encCheck()}
+  offlineSync();setTimeout(offlinePackLoad,5000);
 }
 function go(t){
   stopPoll();chatsDraw=null;openChat=null;document.body.classList.remove("chatting");
@@ -1367,6 +1388,8 @@ function feedV(){
     stag(box);
   };
   const b=$("#rf");b.onclick=async()=>{b.disabled=true;$("#nw").innerHTML=sk(2);await swr("news","news",{},draw,my,true);b.disabled=false};
+  {const cs=calSoon()[0];if(cs)$("#nw").insertAdjacentHTML("beforebegin",`<div class="card evb lift" id="fcal"><div class="row"><div class="eb" style="font-size:36px">${cs.emoji}</div><div class="grow"><b>${cs.days?"Завтра":"Сегодня"}: ${esc(cs.name)}</b><div class="muted sm">${esc(cs.idea)}</div></div></div></div>`),$("#fcal").onclick=calendarV}
+  $("#nw").insertAdjacentHTML("beforebegin",`<button class="tile" id="fff" style="--g:linear-gradient(135deg,#f472b6,#f59e0b)"><span class="te">👏</span><span class="tt"><b>Лента друзей</b><span>Новые значки, серии и уровни друзей - поддержи их</span></span><span class="go">▶</span></button>`);$("#fff").onclick=friendsFeedV;
   $("#nw").insertAdjacentHTML("beforebegin",`<div class="card tip"><b>💡 Совет дня</b><p style="margin:6px 0 0">${esc(tipOfDay())}</p></div>`);
   {const N=((X&&X.notices)||[]).filter(n=>!n.own&&Date.now()-new Date(n.created)<7*864e5)[0];
    if(N)$("#nw").insertAdjacentHTML("beforebegin",`<div class="card notice lift" id="fnt"><div class="row"><b class="grow">📢 ${esc(N.teacher.firstName)} ${esc(N.teacher.lastName)}</b><span class="muted sm">${ago(N.created)}</span></div><p style="margin:6px 0 0;white-space:pre-wrap">${esc(N.text)}</p></div>`),$("#fnt").onclick=()=>go("class")}
@@ -1378,7 +1401,8 @@ const ppl=(u,btns)=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf=
 const fb=(a,u,t,g)=>`<button class="${g?"ghost":""}" data-a="${a}" data-u="${esc(u.username)}">${t}</button>`;
 function friendsV(){
   const my=++vid;let users=[];
-  put(`<h1>Друзья</h1><div class="card"><b>Найти по имени пользователя</b><form class="srch" id="sf"><input id="q" placeholder="Имя пользователя (от 3 символов)" autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="submit" id="sq" aria-label="Найти">🔍</button></form><div id="sr"></div></div><div id="fl">${sk(2)}</div>`);
+  put(`<h1>Друзья</h1><div id="ivb"></div><button class="tile" id="ffb2" style="--g:linear-gradient(135deg,#f472b6,#f59e0b)"><span class="te">👏</span><span class="tt"><b>Лента друзей</b><span>Что нового у друзей - поддержи хлопком</span></span><span class="go">▶</span></button><div class="card"><b>Найти по имени пользователя</b><form class="srch" id="sf"><input id="q" placeholder="Имя пользователя (от 3 символов)" autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="search"><button type="submit" id="sq" aria-label="Найти">🔍</button></form><div id="sr"></div></div><div id="fl">${sk(2)}</div>`);
+  inviteCard($("#ivb"));$("#ffb2").onclick=friendsFeedV;
   const drawSr=()=>{$("#sr").innerHTML=users.length?users.map(u=>ppl(u,{none:fb("add",u,"Добавить"),sent:`<span class="tag">Отправлено</span>`,received:fb("ok",u,"Принять"),friend:`<span class="tag">Друг ✓</span>`}[u.rel])).join(""):`<p class="muted sm">Никого не найдено</p>`;loadAv(users)};
   const drawFl=r=>{const box=$("#fl");if(!box||my!==vid)return;
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
@@ -1544,21 +1568,28 @@ const optText=o=>((OI[o]||"")+" "+o).trim();
 // Возрастная группа для сложности вопросов - так же, как на сервере.
 const bandOf=g=>{g=+g||0;return!g?"":g<=4?"1-4 класс":g<=8?"5-8 класс":"9-11 класс"};
 function gamesV(){
-  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"}]);
-  put(`<h1>Игры и задания</h1><div id="evb"></div><div id="qd"></div><div id="eco"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
+  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"},{k:"mist",action:"mistakes"},{k:"duo",action:"duoInfo"}]);
+  put(`<h1>Игры и задания</h1>${navigator.onLine?"":`<div class="card notice"><b>📡 Нет интернета</b><p class="sm" style="margin:4px 0 0">Можно играть в сортировку, викторину, «Миф или правда» и «Как поступить?» - серия засчитается, когда интернет появится.</p></div>`}<div id="evb"></div><div id="qd"></div><div id="eco"></div><div id="duo"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
   <h2 class="sec">Полезное</h2>
   <button class="tile" id="tdi" style="--g:linear-gradient(135deg,#22c55e,#0d9488)"><span class="te">📒</span><span class="tt"><b>Дневник вторсырья</b><span>Записывай, что сдал(а) на переработку, и смотри итоги по месяцам</span></span><span class="go">▶</span></button>
   <button class="tile" id="tfp" style="--g:linear-gradient(135deg,#a3e635,#16a34a)"><span class="te">👣</span><span class="tt"><b>Калькулятор следа</b><span>Насколько твои привычки бережны к природе - и что улучшить</span></span><span class="go">▶</span></button>
+  <button class="tile" id="tenc" style="--g:linear-gradient(135deg,#f59e0b,#d97706)"><span class="te">📖</span><span class="tt"><b>Эко-энциклопедия</b><span id="tencs">Редкие животные и растения России - собери все карточки</span></span><span class="go">▶</span></button>
+  <button class="tile" id="tcal" style="--g:linear-gradient(135deg,#38bdf8,#6366f1)"><span class="te">🗓️</span><span class="tt"><b>Календарь эко-дат</b><span>Экологические праздники года и идеи, как их отметить</span></span><span class="go">▶</span></button>
   <button class="tile" id="tev" style="--g:linear-gradient(135deg,#f472b6,#8b5cf6)"><span class="te">📅</span><span class="tt"><b>Мероприятия</b><span>Субботники, сборы макулатуры и другие дела школы</span></span><span class="go">▶</span></button>
-  <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>`+
+  <h2 class="sec">Эко-карта</h2><button class="tile" id="emap" style="--g:linear-gradient(135deg,#0ea5e9,#16a34a)"><span class="te">🗺️</span><span class="tt"><b>Куда сдать вторсырьё?</b><span>Пункты приёма батареек, пластика, стекла и бумаги рядом с тобой</span></span><span class="go">▶</span></button><h2 class="sec">Мини-игры</h2>
+  <button class="tile" id="tbz" style="--g:linear-gradient(135deg,#facc15,#f97316)"><span class="te">⚡</span><span class="tt"><b>Блиц на время</b><span>Сколько верных ответов успеешь дать за 60 секунд?</span><em>до 20 опыта</em></span><span class="go">▶</span></button>
+  <button class="tile" id="tmk" style="--g:linear-gradient(135deg,#fb7185,#e11d48)"><span class="te">🔁</span><span class="tt"><b>Работа над ошибками</b><span id="tmks">Повтори вопросы, где ошибся(лась)</span><em>до 20 опыта</em></span><span class="go">▶</span></button>`+
   Object.entries(GAMES).map(([k,g])=>`<button class="tile" data-g="${k}" style="--g:${g.g}"><span class="te">${g.e}</span><span class="tt"><b>${g.n}</b><span>${g.d}</span><em>${g.xp}</em></span><span class="go">▶</span></button>`).join("")+
   `<p class="muted sm">Опыт даётся за первое прохождение каждой игры в день. Для тренировки играть можно сколько угодно.</p>`+
   (isT(me)?"":bandOf(custOf(me).grade)?`<p class="muted sm">🎯 Вопросы подобраны для ${bandOf(custOf(me).grade).replace("класс","класса")}. Сложность зависит от класса в профиле.</p>`
     :`<div class="card"><b>🎯 Укажи свой класс</b><p class="muted sm" style="margin:4px 0 8px">Тогда вопросы в играх и вопрос дня будут подходить тебе по сложности.</p><button class="ghost" id="setgr">Открыть профиль</button></div>`));
   if($("#setgr"))$("#setgr").onclick=()=>go("profile");
   $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));$("#emap").onclick=mapV;$("#rtg").onclick=()=>ratingV();
-  $("#tdi").onclick=diaryV;$("#tfp").onclick=footV;$("#tev").onclick=eventsV;ecoCard();loadX().then(()=>{if(my===vid)ecoCard()});
+  $("#tdi").onclick=diaryV;$("#tfp").onclick=footV;$("#tev").onclick=eventsV;$("#tenc").onclick=encV;$("#tcal").onclick=calendarV;$("#tbz").onclick=blitzV;$("#tmk").onclick=mistakesV;
+  const encT=()=>{const e=$("#tencs");if(e&&X&&X.counters)e.textContent=`Открыто ${encOpen(X)} из ${SPECIES.length} карточек редких видов`};
+  ecoCard();encT();loadX().then(()=>{if(my===vid){ecoCard();encT()}});duoBox($("#duo"),my);
+  swr("mist","mistakes",{},r=>{const e=$("#tmks");if(e&&r&&r.ok)e.textContent=r.count?`Вопросов с ошибками: ${r.count} - исправь их!`:"Ошибок нет - так держать!"},my);
   swr("qotd","qotd",{},r=>drawQotd(r,my),my);
   let T=null;
   const draw=r=>{const box=$("#tk");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}T=r;
@@ -1580,9 +1611,11 @@ function gamesV(){
 }
 
 async function play(g){
+  if(!navigator.onLine&&OFF_GAMES[g])return offlinePlay(g);
   const my=++vid,G=GAMES[g];
   put(`<div class="card wait"><div class="qe">${G.e}</div><div class="spin"></div><p class="muted">Готовим вопросы…</p></div>`);
   const r=await api("gameStart",{game:g});if(my!==vid||dead(r))return;
+  if(!r.ok&&/Нет соединения/.test(r.error||"")&&OFF_GAMES[g])return offlinePlay(g);
   if(!r.ok){put(`<div class="card err">${esc(r.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
   if(r.kind==="order")return playOrder(g,G,r,my);
   const items=r.items,ans=[],n=items.length;let i=0;
@@ -1594,7 +1627,7 @@ async function play(g){
     $("#bk").onclick=()=>go("games");raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/n*100+"%"});
     const v=$("#view");
     v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
-      v.querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");
+      v.querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");sfx("tap");
       ans.push({id:it.id,a:it.ix[+b.dataset.k]});setTimeout(()=>{if(my!==vid)return;i++;step()},330);
     });
   };
@@ -1612,7 +1645,7 @@ async function play(g){
       `<div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
     $("#bk").onclick=()=>go("games");$("#again").onclick=()=>play(g);
     raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct)});count($("#cn"),s.score);
-    if(pct>=.6)setTimeout(()=>burst(),500);
+    if(pct>=.6)setTimeout(()=>burst(),500);sfx(pct>=.6?"win":"ok");
   };
   step();
 }
@@ -1649,7 +1682,7 @@ function playOrder(g,G,r,my){
       <div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
     $("#bk").onclick=()=>go("games");$("#again").onclick=()=>play(g);
     raf2(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=289*(1-pct)});count($("#cn"),s.score);
-    if(pct>=.6)setTimeout(()=>burst(),500);
+    if(pct>=.6)setTimeout(()=>burst(),500);sfx(pct>=.6?"win":"ok");
   };
   step();
 }
@@ -1836,6 +1869,11 @@ function settingsV(){
   <div class="row"><select id="rmh" aria-label="Время напоминания" style="flex:1">${[16,17,18,19,20,21].map(h=>`<option value="${h}" ${remindCfg().hour===h?"selected":""}>после ${h}:00</option>`).join("")}</select>
   <button class="${remindCfg().on?"ghost":""}" id="rmb" style="flex:1">${remindCfg().on?"Выключить":"Включить"}</button></div>
   <p class="muted sm" id="rmn" style="margin:8px 0 0">${remindNote()}</p></div>${isT(me)?"":`<div id="pcard"></div>`}
+  <div class="card"><b>♿ Удобство</b>
+    <label class="tgl"><span class="grow">🔠 Крупный текст</span><input type="checkbox" id="ubig" ${optOn("big",false)?"checked":""}></label>
+    <label class="tgl"><span class="grow">🔊 Звуки</span><input type="checkbox" id="usfx" ${optOn("sfx",true)?"checked":""}></label>
+    <label class="tgl"><span class="grow">📳 Вибрация</span><input type="checkbox" id="uvib" ${optOn("vib",true)?"checked":""}></label>
+    <div class="row" style="gap:8px;margin-top:8px"><button class="ghost grow sm" id="utour">🧭 Знакомство с сайтом</button><button class="ghost grow sm" id="ucal">🗓️ Календарь эко-дат</button></div></div>
   <div class="card"><b>📱 Приложение на телефон</b><p class="muted sm" style="margin:4px 0 8px" id="apn">${appNote()}</p>${installEvt?`<button class="btn-full" id="apb">Установить ЭкоТрек</button>`:""}</div>
   ${me.dev?`<div class="card"><button class="btn-full" id="dvb">🛠 Панель разработчика</button></div>`:""}
   ${feedbackCard()}
@@ -1866,6 +1904,8 @@ function settingsV(){
   if($("#dvb"))$("#dvb").onclick=()=>devV();
   if($("#apb"))$("#apb").onclick=async()=>{installEvt.prompt();await installEvt.userChoice.catch(()=>{});installEvt=null;settingsV()};
   parentCard($("#pcard"));
+  $("#ubig").onchange=e=>{ls.set("big",e.target.checked);applyBig()};$("#usfx").onchange=e=>{ls.set("sfx",e.target.checked);if(e.target.checked)sfx("ok")};
+  $("#uvib").onchange=e=>{ls.set("vib",e.target.checked);if(e.target.checked)sfx("tap")};$("#utour").onclick=()=>{go("profile");setTimeout(tour,500)};$("#ucal").onclick=calendarV;
   $("#rmh").onchange=()=>{const c=remindCfg();c.hour=+$("#rmh").value;ls.set("remind",c);syncSW()};
   $("#rmb").onclick=async()=>{const c=remindCfg();
     if(c.on){c.on=false;ls.set("remind",c);syncSW();return settingsV()}
@@ -1887,7 +1927,10 @@ const backBtn=(id,t)=>`<div class="row" style="margin-top:12px"><button class="g
 const extraToasts=s=>{if(!s)return;if(s.froze)toast("🧊 Заморозка сохранила серию дней!");
   if(s.chest)setTimeout(()=>toast("🎁 Новый сундук! Открой его во вкладке «Игры»"),900);
   if(s.goal&&s.goal.justDone)setTimeout(()=>toast(`🎯 Цель недели выполнена! +${s.goal.reward.coins} монет и +${s.goal.reward.xp} опыта`),1800);
-  if(s.chest||s.froze||s.goal)FRESH.x=0};
+  if(s.duo&&s.duo.justDone)setTimeout(()=>toast(`🤝 Общая цель с другом выполнена! +${s.duo.reward.coins} монет`),2600);
+  if(s.invite)setTimeout(()=>toast(`🎁 Бонус за приглашение: +${s.invite.coins} монет`),3200);
+  if(s.duo)FRESH.duo=0;FRESH.mist=0;
+  if(s.chest||s.froze||s.goal||s.invite||(s.duo&&s.duo.justDone))FRESH.x=0};
 function goalH(g){
   if(!g)return`<div class="card"><b>🎯 Цель на неделю</b><p class="muted sm" style="margin:4px 0 8px">Сколько мини-игр и заданий дня сделать до воскресенья? За выполнение - монеты и опыт.</p>
     <div class="row" style="gap:8px"><label class="grow sm">Игр<input id="gg" type="number" min="0" max="35" value="5" inputmode="numeric"></label><label class="grow sm">Заданий<input id="gt" type="number" min="0" max="21" value="7" inputmode="numeric"></label></div>
@@ -1914,7 +1957,7 @@ function chestModal(){
   api("chestOpen").then(r=>{if(dead(r))return m.close();if(!r.ok){m.close();return toast(r.error,"err")}
     setTimeout(()=>{const w=r.reward,ic={coins:"🪙",xp:"⭐",freeze:"🧊",item:"🎨"}[w.type]||"🎁";q("#cht").textContent=ic;q("#cht").classList.add("open");
       q("#chh").textContent=w.text;q("#chp").textContent=w.type==="item"?"Новое украшение уже в оформлении профиля 🎨":w.type==="freeze"?"Заморозка спасёт серию, если пропустишь день":"Награда уже начислена";
-      q("#chx").hidden=false;burst(innerWidth/2,innerHeight*.4,50);if(w.type==="xp")addXp(w.amount);
+      q("#chx").hidden=false;burst(innerWidth/2,innerHeight*.4,50);sfx("coin");if(w.type==="xp")addXp(w.amount);
       if(X){X.coins=r.coins;X.freeze=r.freeze;X.chests=r.chests;cset("x",X)}FRESH.x=0;ecoCard()},1300)});
   q("#chx").onclick=()=>m.close();
 }
@@ -2133,9 +2176,216 @@ async function parentPage(code){
   stag(b);
 }
 
+/* ───────── звуки, вибрация, крупный текст ───────── */
+const optOn=(k,def)=>{const v=ls.get(k);return v===null||v===undefined?def:!!v};
+let AC=null;
+function sfx(kind){try{
+  if(optOn("sfx",true)){AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
+    const N={tap:[[660,.05]],ok:[[660,.09],[880,.13]],bad:[[247,.12],[196,.18]],win:[[523,.1],[659,.1],[784,.1],[1047,.22]],coin:[[988,.07],[1319,.16]]}[kind]||[];let t=AC.currentTime;
+    N.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.03);t+=d*.92})}
+  if(optOn("vib",true)&&navigator.vibrate)navigator.vibrate({tap:8,ok:20,bad:[40,40,40],win:[30,40,70],coin:25}[kind]||0)}catch{}}
+const applyBig=()=>document.documentElement.classList.toggle("big",optOn("big",false));applyBig();
+
+/* ───────── календарь эко-дат ───────── */
+const ECO_CAL=[["01-11","🏞️","День заповедников и национальных парков","В России первый заповедник - Баргузинский - основан в 1917 году.","Найди ближайший к тебе заповедник или национальный парк и расскажи о нём классу."],
+ ["02-02","🦆","Всемирный день водно-болотных угодий","Болота и поймы - дом для птиц и огромный запас углерода и пресной воды.","Узнай, есть ли рядом болото или озеро, и какие птицы там живут."],
+ ["03-03","🦒","Всемирный день дикой природы","В этот день в 1973 году подписана конвенция о торговле редкими животными и растениями (СИТЕС).","Не покупай сувениры из кораллов, слоновой кости и панцирей черепах."],
+ ["03-18","♻️","Всемирный день вторичной переработки","Переработка экономит сырьё и энергию и уменьшает свалки.","Отнеси в пункт приёма бумагу, пластик или батарейки - найди его на эко-карте."],
+ ["03-21","🌲","Международный день лесов","Леса - дом для большей части наземных животных и растений.","Посади дерево или сделай кормушку для лесных птиц."],
+ ["03-22","💧","Всемирный день водных ресурсов","Пресной воды на Земле всего около 3%, и большая её часть - во льдах.","Принимай короткий душ и закрывай кран, пока чистишь зубы."],
+ ["earthhour","🕯️","Час Земли","Последняя суббота марта: на час выключают свет в знак заботы о планете.","Выключи вечером свет и лишние приборы на один час."],
+ ["04-01","🐦","Международный день птиц","Весной возвращаются перелётные птицы.","Повесь скворечник или понаблюдай за птицами во дворе."],
+ ["04-15","📚","День экологических знаний","День, когда вспоминают, как важно знать природу и беречь её.","Пройди мини-игры в ЭкоТреке и расскажи другу интересный факт."],
+ ["04-22","🌍","Международный день Земли","Отмечается с 1970 года - один из самых массовых экологических праздников.","Убери мусор во дворе вместе с друзьями."],
+ ["05-22","🐞","Международный день биологического разнообразия","Разнообразие видов делает природу устойчивой.","Найди во дворе и сфотографируй пять разных растений или насекомых."],
+ ["06-05","🌳","Всемирный день окружающей среды","Главный экологический день ООН, отмечается с 1974 года.","Проведи день без одноразового пластика."],
+ ["06-08","🌊","Всемирный день океанов","Океан покрывает около 70% поверхности Земли.","Откажись от пластиковых пакетов и трубочек - многие из них попадают в море."],
+ ["07-29","🐅","Международный день тигра","В России живёт амурский тигр - самая крупная кошка страны.","Узнай, как охраняют амурского тигра, и расскажи о нём классу."],
+ ["09-16","☀️","Международный день охраны озонового слоя","Озоновый слой защищает всё живое от ультрафиолета.","Узнай, что такое Монреальский протокол и почему озоновая дыра затягивается."],
+ ["09-22","🚲","Всемирный день без автомобиля","Машины - один из главных источников загрязнения воздуха в городах.","Доберись до школы пешком, на велосипеде или на автобусе."],
+ ["10-04","🐾","Всемирный день животных","День защиты всех животных - диких и домашних.","Помоги приюту для животных или насыпь корм в кормушку."],
+ ["11-12","🐦","Синичкин день","Народный праздник: синицы прилетают зимовать ближе к людям.","Повесь кормушку и насыпь несолёных семечек."],
+ ["12-05","🌱","Всемирный день почв","Чтобы образовался 1 см плодородной почвы, нужны сотни лет.","Сложи очистки в компост, а не в общий мусор."],
+ ["12-11","⛰️","Международный день гор","Горы - источник пресной воды для огромного числа людей.","Узнай, какие редкие животные живут в горах России, например снежный барс."]];
+const lastSatMar=y=>{const d=new Date(Date.UTC(y,3,0));while(d.getUTCDay()!==6)d.setUTCDate(d.getUTCDate()-1);return d.toISOString().slice(5,10)};
+function ecoDates(){const t=today0(),y=+t.slice(0,4);
+  return ECO_CAL.map(e=>{const md=e[0]==="earthhour"?lastSatMar(y):e[0];let d=y+"-"+md;if(d<t){const md2=e[0]==="earthhour"?lastSatMar(y+1):e[0];d=(y+1)+"-"+md2}
+    return{date:d,emoji:e[1],name:e[2],about:e[3],idea:e[4],days:Math.round((new Date(d+"T12:00:00")-new Date(t+"T12:00:00"))/864e5)}}).sort((a,b)=>a.date<b.date?-1:1)}
+function calendarV(){const my=++vid,L=ecoDates(),next=L[0];
+  put(backBtn("calb","📅 Календарь эко-дат")+`<p class="muted sm" style="margin:6px 0 10px">Экологические праздники года. Накануне и в сам день ЭкоТрек напомнит о них в ленте.</p>
+    <div class="card hero"><div class="muted sm">${next.days===0?"Сегодня":next.days===1?"Завтра":"Ближайший - через "+plural(next.days,"день","дня","дней")}</div><h2>${next.emoji} ${esc(next.name)}</h2><p style="margin:6px 0 0">${esc(next.about)}</p><p class="sm" style="margin:8px 0 0"><b>Как отметить:</b> ${esc(next.idea)}</p></div>
+    ${L.slice(1).map(e=>`<div class="card cal"><div class="row"><div class="evd"><b>${+e.date.slice(8)}</b><small>${MON[+e.date.slice(5,7)-1]}</small></div><div class="grow"><b>${e.emoji} ${esc(e.name)}</b><div class="muted sm">${esc(e.about)}</div></div></div><p class="sm" style="margin:8px 0 0"><b>Как отметить:</b> ${esc(e.idea)}</p></div>`).join("")}`);
+  $("#calb").onclick=()=>go(tab);stag($("#view"))}
+const calSoon=()=>ecoDates().filter(e=>e.days<=1);
+
+/* ───────── эко-энциклопедия ───────── */
+// Редкие виды из Красной книги России. Карточки открываются за мини-игры и задания дня.
+const SPECIES=[["🐅","Амурский тигр","Самая крупная кошка России. Живёт на Дальнем Востоке - в Приморье и Хабаровском крае.","Рисунок полос у каждого тигра свой, как отпечаток пальца."],
+ ["🐆","Дальневосточный леопард","Одна из самых редких больших кошек мира. Живёт на юге Приморья, в национальном парке «Земля леопарда».","Пятна-розетки у каждого леопарда свои - по ним учёные узнают зверей на фотоловушках."],
+ ["🐈","Снежный барс","Живёт высоко в горах Алтая и Саян, где мало кто может выжить.","Длинный пушистый хвост помогает держать равновесие на скалах, а во сне барс прикрывает им нос от мороза."],
+ ["🦬","Зубр","Самое тяжёлое сухопутное животное Европы.","В начале XX века зубры исчезли в дикой природе. Их спасли благодаря животным из зоопарков."],
+ ["🕊️","Стерх","Белый журавль, который гнездится только в России - в тундре Якутии.","Каждый год стерхи пролетают тысячи километров, чтобы зимовать в Китае."],
+ ["🪶","Дальневосточный аист","Крупная птица Приамурья и Приморья.","Аисты почти не кричат - они громко щёлкают клювом."],
+ ["🦅","Беркут","Один из самых крупных орлов, живёт в горах и на равнинах.","У беркута очень острое зрение - он замечает добычу с огромной высоты."],
+ ["🐦","Сапсан","Сокол, которого встречают по всей России.","В пикировании сапсан разгоняется больше 300 км/ч - это самая быстрая птица на Земле."],
+ ["🦉","Филин","Самая крупная сова России.","Размах крыльев филина может быть больше полутора метров, а летает он почти бесшумно."],
+ ["🦅","Белоплечий орлан","Один из самых крупных орлов мира. Живёт на Камчатке, Сахалине и побережье Охотского моря.","Главная еда орлана - рыба, особенно лосось."],
+ ["🐀","Русская выхухоль","Маленький зверёк, который живёт почти только в России, в поймах рек.","Выхухоль очень плохо видит и ищет еду под водой на ощупь, с помощью чувствительного носа-хоботка."],
+ ["🐱","Манул","Дикий кот с очень густой шерстью. Живёт в горах и степях юга Сибири.","В отличие от домашней кошки, зрачки манула на свету становятся круглыми, а не узкими."],
+ ["🦭","Морж","Крупный морской зверь Арктики.","Клыки моржа вырастают почти до метра. Он помогает ими себе выбираться на лёд."],
+ ["🐻‍❄️","Белый медведь","Самый крупный хищник суши, живёт во льдах Арктики.","Шерсть белого медведя прозрачная, а кожа под ней - чёрная, она лучше впитывает тепло солнца."],
+ ["🪿","Краснозобая казарка","Небольшой яркий гусь, который гнездится только в тундре России - на Таймыре, Ямале и Гыдане.","Казарки часто гнездятся рядом с хищными птицами: те отгоняют песцов от гнёзд."],
+ ["🐦","Розовая чайка","Редкая чайка, гнездится почти только в тундре Якутии.","Весной её оперение становится нежно-розовым."],
+ ["🌸","Венерин башмачок","Красивая лесная орхидея.","Зацветает впервые лишь через много лет после того, как семя проросло, поэтому сорванный цветок - огромная потеря."],
+ ["🌿","Женьшень","Лесное растение Дальнего Востока.","Корень женьшеня может жить больше ста лет. В природе растение почти исчезло из-за сбора."],
+ ["🪷","Лотос Комарова","Водное растение озёр Дальнего Востока.","Семена лотоса могут оставаться живыми сотни лет."],
+ ["🌷","Тюльпан Шренка","Дикий тюльпан степей юга России.","От диких степных тюльпанов произошли многие садовые сорта."],
+ ["🦋","Аполлон","Крупная бабочка, живёт в горах и на сухих склонах.","На белых крыльях аполлона - яркие красные «глазки» в чёрной обводке."],
+ ["🪲","Жук-олень","Самый крупный жук Европы.","Огромные челюсти самцов похожи на оленьи рога - ими жуки сражаются друг с другом."],
+ ["🐬","Черноморская афалина","Дельфин, который живёт в Чёрном море.","Дельфины «видят» звуком: они издают щелчки и слушают эхо (это называется эхолокация)."],
+ ["🐺","Красный волк","Рыжий хищник с длинным пушистым хвостом.","Один из самых редких хищников: в России, возможно, его уже не осталось в дикой природе."]];
+const encOpen=x=>{const c=(x&&x.counters)||{};return Math.min(SPECIES.length,1+Math.floor((c.games||0)/3)+Math.floor((c.tasks||0)/5))};
+function encCheck(){if(!X||!X.counters)return;const n=encOpen(X),was=ls.get("encN");if(was!==null&&n>was)setTimeout(()=>{toast("📖 Новая карточка в эко-энциклопедии!");sfx("coin")},2200);ls.set("encN",n)}
+function encV(){const my=++vid,n=encOpen(X),c=(X&&X.counters)||{};
+  const needG=3-(c.games||0)%3;
+  put(backBtn("enb","📖 Эко-энциклопедия")+`<p class="muted sm" style="margin:6px 0 10px">Редкие животные и растения России. Новая карточка открывается за каждые 3 мини-игры и за каждые 5 заданий дня. Открыто: <b>${n} из ${SPECIES.length}</b>.</p>
+    <div class="encg">${SPECIES.map((s,i)=>i<n?`<button class="card enc" data-i="${i}"><span class="ee">${s[0]}</span><b>${esc(s[1])}</b></button>`:`<div class="card enc lockc"><span class="ee">❔</span><b>Закрыто</b></div>`).join("")}</div>
+    ${n<SPECIES.length?`<p class="muted sm center">До следующей карточки: ${plural(needG,"мини-игра","мини-игры","мини-игр")} или задания дня.</p>`:`<p class="center"><b>Все карточки собраны! 🎉</b></p>`}`);
+  $("#enb").onclick=()=>go(tab);stag($("#view"));
+  $("#view").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const s=SPECIES[+b.dataset.i];
+    modal(`<div class="center"><div style="font-size:72px">${s[0]}</div><h2>${esc(s[1])}</h2><span class="tag">Красная книга России</span></div><p style="margin:12px 0 6px">${esc(s[2])}</p><p class="sm"><b>💡 Интересно:</b> ${esc(s[3])}</p>`)})}
+
+/* ───────── блиц на время ───────── */
+async function blitzV(){
+  const my=++vid;put(`<div class="card wait"><div class="qe">⚡</div><div class="spin"></div><p class="muted">Готовим вопросы…</p></div>`);
+  const r=await api("blitzStart");if(my!==vid||dead(r))return;
+  if(!r.ok){put(`<div class="card err">${esc(r.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
+  const it=r.items,ans=[];let i=0,left=r.seconds,timer=null,over=false;
+  const end=async()=>{if(over)return;over=true;clearInterval(timer);put(`<div class="card wait"><div class="spin"></div><p class="muted">Считаем…</p></div>`);
+    const s=await api("blitzSubmit",{answers:ans});if(my!==vid||dead(s))return;
+    if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
+    if(s.xp)addXp(s.xp);achToast(s.ach);sfx(s.record?"win":"ok");if(s.record)setTimeout(()=>burst(),300);FRESH.x=0;
+    const bad=s.results.filter(x=>!x.ok);
+    put(`<div class="card hero center"><div style="font-size:44px">⚡</div><h2>${s.score} ${plural(s.score,"верный ответ","верных ответа","верных ответов").replace(/^\d+ /,"")}</h2>
+      <p class="muted">Ответов: ${s.answered} за минуту · твой рекорд: ${s.best}${s.record?" - новый рекорд! 🏆":""}</p>
+      ${s.classBest?`<p class="sm" style="margin:6px 0 0">🏫 Рекорд класса: <b>${s.classBest.score}</b> - ${esc(s.classBest.user.firstName)} ${esc(s.classBest.user.lastName)}</p>`:""}
+      <span class="tag pops">${s.xp?`+${s.xp} опыта 🎉`:"Опыт за блиц - один раз в день"}</span></div>
+      ${bad.length?`<h2 class="sec">Где ошибся</h2>`+bad.map(x=>{const q=it.find(t=>t.game===x.game&&t.id===x.id);return q?`<div class="card wrong"><b>${esc(q.q)}</b><div class="good">✓ ${esc(optText(q.o[q.ix.indexOf(x.right)]))}</div><div class="muted sm">${esc(x.e)}</div></div>`:""}).join("")+`<p class="muted sm">Эти вопросы попали в «Работу над ошибками».</p>`:""}
+      <div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
+    $("#bk").onclick=()=>go("games");$("#again").onclick=blitzV};
+  const step=()=>{if(over)return;if(i>=it.length)return end();const q=it[i];
+    put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти">✕</button><div class="grow prog"><i id="bt" style="width:${left/r.seconds*100}%"></i></div><b class="bzt" id="bs">${left}</b></div>
+      <div class="card qcard"><div class="row"><span class="tag">⚡ ${ans.length}</span><span class="grow"></span><span class="muted sm">рекорд: ${r.best}</span></div><h2>${esc(q.q)}</h2>${q.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCD"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}</div>`);
+    $("#bk").onclick=()=>{over=true;clearInterval(timer);go("games")};
+    $("#view").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(over)return;sfx("tap");ans.push({game:q.game,id:q.id,a:q.ix[+b.dataset.k]});i++;step()})};
+  let c=3;put(`<div class="card center bzc"><p class="muted">Ответь на как можно больше вопросов за 60 секунд!</p><div class="bzn" id="bzn">3</div></div>`);
+  const cd=setInterval(()=>{if(my!==vid)return clearInterval(cd);c--;if(c>0){$("#bzn").textContent=c;sfx("tap")}else{clearInterval(cd);sfx("ok");step();
+    timer=setInterval(()=>{if(my!==vid||over)return clearInterval(timer);left--;const s=$("#bs"),b=$("#bt");if(s)s.textContent=left;if(b)b.style.width=left/r.seconds*100+"%";if(left<=0)end()},1000)}},800);
+}
+
+/* ───────── работа над ошибками ───────── */
+async function mistakesV(){
+  const my=++vid;put(`<div class="card wait"><div class="qe">🔁</div><div class="spin"></div><p class="muted">Собираем твои ошибки…</p></div>`);
+  const r=await api("mistakesStart");if(my!==vid||dead(r))return;
+  if(!r.ok){put(`<div class="card empty"><div class="eb">🎉</div><h2>${esc(r.error)}</h2><p class="muted">Ошибки из мини-игр и блица появятся здесь, чтобы ты мог(ла) их исправить.</p></div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
+  const it=r.items,ans=[];let i=0;
+  const step=()=>{if(i>=it.length)return finish();const q=it[i];
+    put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти">✕</button><div class="grow prog"><i style="width:${i/it.length*100}%"></i></div><span class="muted sm">${i+1}/${it.length}</span></div>
+      <div class="card qcard"><div class="qe">🔁</div><h2>${esc(q.q)}</h2>${q.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCDE"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}</div>`);
+    $("#bk").onclick=()=>go("games");
+    $("#view").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{sfx("tap");$("#view").querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");ans.push({game:q.game,id:q.id,a:q.ix[+b.dataset.k]});setTimeout(()=>{if(my!==vid)return;i++;step()},300)})};
+  const finish=async()=>{put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем…</p></div>`);
+    const s=await api("mistakesSubmit",{answers:ans});if(my!==vid||dead(s))return;if(!s.ok){toast(s.error,"err");return go("games")}
+    if(s.xp)addXp(s.xp);sfx(s.fixed?"win":"bad");if(s.fixed)burst();cset("mist",{ok:true,count:s.left});FRESH.mist=Date.now();
+    put(`<div class="card hero center"><div style="font-size:44px">${s.fixed===it.length?"🏆":"🔁"}</div><h2>Исправлено: ${s.fixed} из ${it.length}</h2><p class="muted">${s.left?`Осталось ошибок: ${s.left}`:"Все ошибки исправлены!"}</p><span class="tag pops">${s.xp?`+${s.xp} опыта`:"За исправления - до 20 опыта в день"}</span></div>
+      ${s.results.filter(x=>!x.ok).map(x=>{const q=it.find(t=>t.game===x.game&&t.id===x.id);return`<div class="card wrong"><b>${esc(q.q)}</b><div class="good">✓ ${esc(optText(q.o[q.ix.indexOf(x.right)]))}</div><div class="muted sm">${esc(x.e)}</div></div>`}).join("")}
+      <div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button>${s.left?`<button class="grow" id="again">Ещё раз</button>`:""}</div>`);
+    $("#bk").onclick=()=>go("games");if($("#again"))$("#again").onclick=mistakesV};
+  step();
+}
+
+/* ───────── общая цель с другом ───────── */
+function duoBox(box,my){if(!box)return;
+  const draw=r=>{if(!box.isConnected||my!==vid||!r||!r.ok)return;const d=r.duo,F=((cget("friends")||{}).friends)||[];
+    if(!d){box.innerHTML=`<div class="card"><b>🤝 Общая цель с другом</b><p class="muted sm" style="margin:4px 0 8px">Сыграйте вместе нужное число мини-игр до воскресенья - оба получите 25 монет и 20 опыта.</p>
+      ${F.length?`<div class="row" style="gap:8px"><select id="dfr" style="flex:1.4">${F.map(f=>`<option value="${esc(f.username)}">${esc(f.firstName)} ${esc(f.lastName)}</option>`).join("")}</select><input id="dg" type="number" min="4" max="60" value="10" inputmode="numeric" style="flex:1" aria-label="Игр на двоих"></div><button class="btn-full" id="dgo" style="margin-top:8px">Позвать друга</button>`
+        :`<p class="muted sm" style="margin:0">Сначала добавь друзей во вкладке «Друзья».</p>`}</div>`;
+      if($("#dgo"))$("#dgo").onclick=async()=>{const x=await api("duoCreate",{username:$("#dfr").value,games:+$("#dg").value});if(dead(x))return;if(!x.ok)return toast(x.error,"err");toast("Цель поставлена 🤝");cset("duo",x);FRESH.duo=Date.now();draw(x)};return}
+    const pm=Math.min(100,Math.round(d.mine/d.goal*100)),pt=Math.min(100-pm,Math.round(d.their/d.goal*100));
+    box.innerHTML=`<div class="card ${d.done?"gdone":""}"><div class="row"><b class="grow">🤝 Общая цель с ${d.partner?esc(d.partner.firstName):"другом"}</b>${d.done?`<span class="tag">✓ выполнена</span>`:`<button class="ghost sm" id="dcx">Отменить</button>`}</div>
+      <div class="duob"><i style="width:${pm}%"></i><i class="th" style="width:${pt}%"></i></div>
+      <div class="row sm"><span class="grow">🟢 Ты: ${d.mine}</span><span>🔵 ${d.partner?esc(d.partner.firstName):"Друг"}: ${d.their}</span></div>
+      <p class="muted sm" style="margin:6px 0 0">${d.done?`Готово! Вы оба получили ${d.reward.coins} монет и ${d.reward.xp} опыта.`:`Вместе ${d.mine+d.their} из ${d.goal} игр. Награда каждому: ${d.reward.coins} монет и ${d.reward.xp} опыта.`}</p></div>`;
+    if($("#dcx"))$("#dcx").onclick=async()=>{if(!await ask("Отменить общую цель?","Отменить",1))return;const x=await api("duoCancel");if(dead(x))return;if(!x.ok)return toast(x.error,"err");cset("duo",{ok:true,duo:null});draw({ok:true,duo:null})}};
+  swr("duo","duoInfo",{},draw,my);
+}
+
+/* ───────── лента друзей и приглашения ───────── */
+async function friendsFeedV(){
+  const my=++vid;put(backBtn("ffb","👏 Лента друзей")+`<div id="ffv">${sk(3)}</div>`);$("#ffb").onclick=()=>go(tab);
+  const draw=r=>{const b=$("#ffv");if(!b||my!==vid)return;if(!r.ok){b.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+    b.innerHTML=r.items.length?r.items.map(e=>`<div class="card ffi"><div class="row">${avatar(e.user)}<div class="grow"><b data-pf="${esc(e.user.username)}">${nameH(e.user)}</b><div>${esc(e.emoji)} ${esc(e.text)}</div><div class="muted sm">${ago(e.created)}</div></div>
+      ${e.own?(e.claps?`<span class="tag">👏 ${e.claps}</span>`:""):`<button class="clp ${e.clapped?"on":""}" data-c="${esc(e.id)}" aria-label="Похлопать">👏 <span>${e.claps||""}</span></button>`}</div></div>`).join("")
+      :`<div class="card empty"><div class="eb">👏</div><p class="muted">${r.friends?"У друзей пока нет новостей.":"Добавь друзей - здесь появятся их новые значки, серии и уровни."}</p></div>`;
+    stag(b);loadAv(r.items.map(e=>e.user));
+    b.querySelectorAll("[data-c]").forEach(x=>x.onclick=async()=>{x.disabled=true;const c=await api("clap",{id:x.dataset.c});x.disabled=false;if(dead(c))return;if(!c.ok)return toast(c.error,"err");
+      x.classList.toggle("on",c.clapped);x.querySelector("span").textContent=c.claps||"";if(c.clapped){sfx("tap");const rc=x.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,10)}})};
+  swr("ff","friendsFeed",{},draw,my);
+}
+const inviteUrl=()=>location.origin+location.pathname+"?ref="+encodeURIComponent(me.username);
+function inviteCard(box){if(!box)return;
+  box.innerHTML=`<div class="card"><b>🎁 Пригласи друга</b><p class="muted sm" style="margin:4px 0 8px">Отправь ссылку. Когда друг зарегистрируется и сыграет первую мини-игру, вы оба получите 30 монет.</p>
+    <div class="row" style="gap:8px"><button class="grow" id="ivs">📤 Поделиться</button><button class="ghost grow" id="ivc">📋 Скопировать</button></div><p class="muted sm" id="ivn" style="margin:8px 0 0"></p></div>`;
+  $("#ivs").onclick=async()=>{const u=inviteUrl();if(navigator.share){try{await navigator.share({title:"ЭкоТрек",text:"Присоединяйся ко мне в ЭкоТреке - играем и бережём природу!",url:u});return}catch{}}
+    try{await navigator.clipboard.writeText(u);toast("Ссылка скопирована 📋")}catch{toast(u)}};
+  $("#ivc").onclick=async()=>{try{await navigator.clipboard.writeText(inviteUrl());toast("Ссылка скопирована 📋")}catch{toast(inviteUrl())}};
+  api("inviteInfo").then(r=>{const n=$("#ivn");if(n&&r&&r.ok)n.textContent=r.invited?`Приглашено: ${r.invited}, уже играют: ${r.rewarded}`:"Пока никого не приглашено."});
+}
+
+/* ───────── знакомство для новичков ───────── */
+const TOUR=[["[data-t=games]","🎮 Игры и задания","Мини-игры, блиц и вопрос дня. Каждый день - новые задания: отмечай, что сделал(а) для природы."],
+ ["[data-t=profile]","🌳 Профиль","Твой эко-сад растёт от опыта. Здесь значки, серия дней и оформление профиля 🎨."],
+ ["[data-t=friends]","👥 Друзья","Находи друзей, приглашай их и ставь общие цели."],
+ ["[data-t=chats]","💬 Чаты","Переписка с друзьями и чат класса."],
+ ["#gear","⚙️ Настройки","Напоминания, крупный текст, звуки и тема оформления."]];
+function tour(){let i=0;const ov=document.createElement("div");ov.className="tour";document.body.append(ov);
+  const close=()=>{ov.remove();ls.set("tourDone",1);ls.del("tourPending")};
+  const show=()=>{const st=TOUR[i],el=document.querySelector(st[0]);if(!el){i++;return i<TOUR.length?show():close()}
+    const r=el.getBoundingClientRect(),below=r.top<innerHeight/2;
+    ov.innerHTML=`<div class="tring" style="left:${r.left-6}px;top:${r.top-6}px;width:${r.width+12}px;height:${r.height+12}px"></div>
+      <div class="tbub" style="${below?`top:${r.bottom+14}px`:`bottom:${innerHeight-r.top+14}px`}"><b>${st[1]}</b><p>${esc(st[2])}</p>
+      <div class="row"><span class="muted sm grow">${i+1} из ${TOUR.length}</span><button class="ghost sm" id="tsk">Пропустить</button><button class="sm" id="tnx">${i<TOUR.length-1?"Дальше":"Понятно!"}</button></div></div>`;
+    ov.querySelector("#tsk").onclick=close;ov.querySelector("#tnx").onclick=()=>{i++;sfx("tap");i<TOUR.length?show():(close(),toast("Добро пожаловать в ЭкоТрек! 🌱"))}};
+  show();
+}
+
+/* ───────── игры без интернета ───────── */
+const OFF_GAMES={sort:1,quiz:1,myth:1,act:1};
+async function offlinePackLoad(){try{const p=ls.get("offpack");if(p&&p.t&&Date.now()-p.t<6*864e5)return;const r=await api("offlinePack");if(r&&r.ok)ls.set("offpack",{t:Date.now(),pack:r.pack})}catch{}}
+async function offlineSync(){const days=ls.get("offdays")||[];if(!days.length||!navigator.onLine||!token)return;const r=await api("offlineSync",{days});
+  if(r&&r.ok){ls.del("offdays");if(r.added){toast(`🔥 Игры без интернета засчитаны: серия ${plural(r.streak,"день","дня","дней")}`);FRESH.x=0}}}
+addEventListener("online",()=>setTimeout(offlineSync,1500));
+function offlinePlay(g){const p=ls.get("offpack"),G=GAMES[g];
+  if(!OFF_GAMES[g]||!p||!p.pack||!p.pack[g]||!p.pack[g].length){put(`<div class="card empty"><div class="eb">📡</div><h2>Нет интернета</h2><p class="muted">${OFF_GAMES[g]?"Вопросы для игры без интернета ещё не загружены - они скачаются, когда сайт откроется с интернетом.":"Эта игра работает только с интернетом. Попробуй сортировку, викторину, «Миф или правда» или «Как поступить?»."}</p></div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
+  const my=++vid,qs=p.pack[g].slice().sort(()=>Math.random()-.5).slice(0,5);let i=0,score=0;
+  const step=()=>{if(i>=qs.length)return finish();const q=qs[i];
+    put(`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти">✕</button><div class="grow prog"><i style="width:${i/qs.length*100}%"></i></div><span class="muted sm">${i+1}/${qs.length}</span></div>
+      <p class="muted sm center" style="margin:6px 0 0">📡 Без интернета: серия засчитается позже, опыт - только в обычной игре</p>
+      <div class="card qcard"><div class="qe">${G.e}</div><h2>${esc(q.q)}</h2>${q.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCDE"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}<div id="oe"></div></div>`);
+    $("#bk").onclick=()=>go("games");
+    $("#view").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ok=k===q.right;if(ok)score++;sfx(ok?"ok":"bad");
+      $("#view").querySelectorAll(".opt").forEach((x,j)=>{x.disabled=true;if(j===q.right)x.classList.add("good2");else if(x===b)x.classList.add("bad2")});
+      $("#oe").innerHTML=`<p class="muted sm" style="margin:8px 0">${esc(q.e)}</p><button class="btn-full" id="onx">Дальше</button>`;$("#onx").onclick=()=>{i++;step()}})};
+  const finish=()=>{const d=today0(),days=ls.get("offdays")||[];if(days.indexOf(d)<0){days.push(d);ls.set("offdays",days.slice(-5))}
+    if(score===qs.length)sfx("win");put(`<div class="card hero center"><div style="font-size:44px">📡</div><h2>${score} из ${qs.length}</h2><p class="muted">Игра без интернета сохранена. Когда интернет появится, этот день засчитается в серию.</p></div>
+      <div class="row"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);$("#bk").onclick=()=>go("games");$("#again").onclick=()=>offlinePlay(g)};
+  step();
+}
+
 /* ───────── запуск ───────── */
 (async()=>{
-  const pc=new URLSearchParams(location.search).get("parent");
+  const pc=new URLSearchParams(location.search).get("parent"),rf=new URLSearchParams(location.search).get("ref");
+  if(rf&&/^[a-z0-9_]{3,20}$/i.test(rf)&&!token)ls.set("ref",rf.toLowerCase());
   if(pc&&API_URL)return parentPage(pc);
   if(!API_URL){app.innerHTML=`<div class="card"><h2>⚙️ Сервер не подключён</h2><p class="muted">Вставьте адрес веб-приложения Apps Script в файл config.js. Инструкция - в README.md.</p></div>`;return}
   const cached=token&&ls.get("me");
