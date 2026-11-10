@@ -38,7 +38,7 @@ body.lock{overflow:hidden}
 @keyframes tout{to{opacity:0;transform:translateY(-10px)}}
 @keyframes cf{40%{transform:translate(calc(var(--dx)*.7),var(--dy)) rotate(calc(var(--r)*.5))}100%{transform:translate(var(--dx),calc(var(--dy) + 340px)) rotate(var(--r));opacity:0}}
 @keyframes rip{to{transform:scale(1);opacity:0}}
-@keyframes sheen{0%,65%{transform:translateX(-130%) skewX(-18deg)}100%{transform:translateX(230%) skewX(-18deg)}}
+@keyframes sheen{0%,65%{transform:translateX(-160%) skewX(-18deg)}100%{transform:translateX(290%) skewX(-18deg)}}
 @keyframes shine{0%,70%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
 @keyframes flip{0%{transform:rotateY(-540deg) scale(.2);opacity:0}70%{transform:rotateY(15deg) scale(1.08);opacity:1}100%{transform:none}}
 @keyframes fin{from{opacity:0}}
@@ -47,7 +47,7 @@ body.lock{overflow:hidden}
 @keyframes sdown{to{transform:translateY(100%)}}
 @keyframes zin{from{opacity:0;transform:scale(.9) translateY(20px)}}
 @keyframes zout{to{opacity:0;transform:scale(.94)}}
-@keyframes stripes{to{background-position:28px 0}}
+@keyframes stripes{to{background-position:20px 0}}
 @keyframes glow{50%{box-shadow:0 0 0 8px var(--pri2)}}
 
 #app{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:0 16px calc(120px + env(safe-area-inset-bottom))}
@@ -95,7 +95,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--pri);outline-offset
 .lw::before,.lw::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px dashed var(--pri);opacity:.35;animation:spin 18s linear infinite}
 .lw::after{inset:14px;border-style:dotted;animation-direction:reverse;animation-duration:12s}
 .logo-big{font-size:64px;display:inline-block;animation:float 3.5s ease-in-out infinite;filter:drop-shadow(0 12px 14px rgba(22,163,74,.35))}
-.grad{background:linear-gradient(90deg,var(--pri),#0ea5e9,#f59e0b,var(--pri));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;margin:.1em 0;animation:sh 8s linear infinite;font-size:clamp(32px,9vw,40px)}
+.grad{background:linear-gradient(90deg,var(--pri),#0ea5e9,#f59e0b,var(--pri));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;margin:.1em 0;animation:sh 8s linear infinite;font-size:clamp(32px,9vw,40px)}
 .feat{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 4px}
 .feat span{padding:5px 12px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:700;animation:pop .5s var(--spring) backwards}
 .pw{position:relative}.pw input{padding-right:54px}
@@ -135,7 +135,7 @@ button.cam{position:absolute;left:-2px;bottom:2px;width:32px;height:32px;min-hei
 .bio{margin:14px 0 0;color:var(--muted)}
 .prog{height:12px;border-radius:9px;background:var(--pri2);overflow:hidden}
 .prog i{position:relative;display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--pri),#0ea5e9);transition:width 1s var(--ease);overflow:hidden}
-.prog i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 7px,transparent 7px 14px);animation:stripes 1s linear infinite}
+.prog i::after{content:"";position:absolute;inset:0;background:linear-gradient(45deg,rgba(255,255,255,.18) 25%,transparent 25% 50%,rgba(255,255,255,.18) 50% 75%,transparent 75%) 0 0/20px 20px;animation:stripes .8s linear infinite}
 .xpn{font-size:28px;font-weight:900;letter-spacing:-.02em}
 
 .item{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line);margin-top:8px}
@@ -1163,13 +1163,13 @@ function drawQotd(r,my){const box=$("#qd");if(!box||my!==vid)return;if(!r.ok){bo
     box.querySelectorAll("[data-qa]").forEach(b=>b.onclick=async()=>{box.querySelectorAll(".opt").forEach(x=>x.disabled=true);b.classList.add("sel");
       const a=r.ix[+b.dataset.qa],key=unk(r.k),rc=b.getBoundingClientRect();
       // с ключом ответ виден сразу, сервер подтверждает его и начисляет опыт в фоне
-      if(key){const ok=a===key.r;QLOC=Object.assign({},r,{answered:{a,right:key.r,ok,e:key.e},stats:null});drawQotd(QLOC,my);
+      let pre=0;if(key){const ok=a===key.r;if(ok){pre=10;addXp(10)}QLOC=Object.assign({},r,{answered:{a,right:key.r,ok,e:key.e},stats:null});drawQotd(QLOC,my);
         if(ok){burst(rc.left+rc.width/2,rc.top,24);toast("Верно! +10 опыта 🎉");sfx("ok")}else{toast("Не совсем. Посмотри пояснение 👇");sfx("bad")}}
       const res=await api("qotdAnswer",{a});if(dead(res))return;
-      QLOC=null;if(!res.ok){toast(res.error,"err");drawQotd(r,my);return}
+      QLOC=null;if(!res.ok){if(pre)addXp(-pre);toast(res.error,"err");drawQotd(r,my);return}
       cset("qotd",res);FRESH.qotd=Date.now();
       if(!key){if(res.xp){burst(rc.left+rc.width/2,rc.top,24);toast(`Верно! +${res.xp} опыта 🎉`);sfx("ok")}else{toast("Не совсем. Посмотри пояснение 👇");sfx("bad")}}
-      if(res.xp)addXp(res.xp);achToast(res.ach);drawQotd(res,my)});
+      addXp((res.xp||0)-pre);achToast(res.ach);drawQotd(res,my)});
     return}
   const a=r.answered,rk=r.ix.indexOf(a.right),mk=r.ix.indexOf(a.a),st=r.stats;
   box.innerHTML=`<div class="card"><div class="row"><b class="grow">❓ Вопрос дня</b><span class="tag">${a.ok?"✓ верно":"ответ дан"}</span></div><h3 class="qq">${esc(r.q)}</h3>
@@ -1731,8 +1731,8 @@ const takeGame=g=>{const r=GP[g];delete GP[g];return r&&Date.now()-GPT<55*60e3?r
 // отправка результата в фоне; пока она идёт, новая партия этой игры подождёт её
 function submitGame(g,ans,onDone){GPseq++;
   const p=api("gameSubmit",{game:g,answers:ans}).then(s=>{delete SUB[g];prepGames(true);onDone(s);return s});SUB[g]=p;return p}
-function gameAfter(s,shown){if(!s||!s.ok){if(s&&!dead(s))toast("Результат не сохранился: "+s.error,"err");return}
-  addXp(s.xp);achToast(s.ach);extraToasts(s);
+function gameAfter(s,shown,pre=0){if(!s||!s.ok){if(pre)addXp(-pre);if(s&&!dead(s))toast("Результат не сохранился: "+s.error,"err");return}
+  addXp(s.xp-pre);achToast(s.ach);extraToasts(s);
   if(s.streak!==undefined){if(X){X.streak=s.streak;X.playedToday=true;cset("x",X)}if(s.newDay)setTimeout(()=>toast(`🔥 ${plural(s.streak,"день","дня","дней")} подряд в мини-играх!`),900)}
   if(shown!==s.xp){const t=$("#gxp");if(t)t.textContent=s.xp?`+${s.xp} опыта 🎉`:"Опыт за эту игру сегодня уже получен"}}
 async function play(g){
@@ -1773,7 +1773,7 @@ async function play(g){
     if(key&&key.length===n){   // результат - сразу, сохранение - в фоне
       const results=items.map((it,j)=>{const a=ans.find(x=>x.id===it.id);return{id:it.id,ok:!!a&&a.a===key[j].r,right:key[j].r,e:key[j].e}});
       const score=results.filter(x=>x.ok).length,xp=r.played?0:score*(r.per||0);
-      show({score,total:n,results},xp);submitGame(g,ans,s=>gameAfter(s,xp));return}
+      show({score,total:n,results},xp);addXp(xp);submitGame(g,ans,s=>gameAfter(s,xp,xp));return}
     put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем ответы…</p></div>`);
     const s=await submitGame(g,ans,()=>{});if(my!==vid||dead(s))return;
     if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
@@ -1815,7 +1815,7 @@ function playOrder(g,G,r,my){
     if(key&&key.length===R.length){
       const results=key.map((right,k)=>{const a=ans.find(x=>x.id===k),ord=a?a.order:[],pos=right.filter((x,j)=>ord[j]===x.k).length;return{id:k,ok:pos===right.length,pos,order:ord,right}});
       const score=results.reduce((s,x)=>s+x.pos,0),xp=r.played?0:score*(r.per||0);
-      show({score,total:key.reduce((s,x)=>s+x.length,0),results},xp);submitGame(g,ans,s=>gameAfter(s,xp));return}
+      show({score,total:key.reduce((s,x)=>s+x.length,0),results},xp);addXp(xp);submitGame(g,ans,s=>gameAfter(s,xp,xp));return}
     put(`<div class="card wait"><div class="spin"></div><p class="muted">Проверяем ответы…</p></div>`);
     const s=await submitGame(g,ans,()=>{});if(my!==vid||dead(s))return;
     if(!s.ok){put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
@@ -2496,14 +2496,15 @@ async function blitzV(){
       <div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К играм</button><button class="grow" id="again">Ещё раз</button></div>`);
     $("#bk").onclick=()=>go("games");$("#again").onclick=blitzV};
   const end=async()=>{if(over)return;over=true;clearInterval(timer);
-    let local=null;
-    if(key&&key.length===it.length){const score=loc.filter(x=>x.ok).length;local={score,answered:loc.length,best:Math.max(score,r.best||0),record:score>(r.best||0)&&score>0,results:loc};
-      show(local,true);sfx(local.record?"win":"ok");if(local.record)setTimeout(()=>burst(),300)}
+    let local=null,pre=0;
+    if(key&&key.length===it.length){const score=loc.filter(x=>x.ok).length;pre=ls.get("bzd")===today0()?0:Math.min(score,20);   // опыт за блиц - один раз в день
+      local={score,answered:loc.length,best:Math.max(score,r.best||0),record:score>(r.best||0)&&score>0,results:loc,xp:pre};
+      show(local,false);addXp(pre);sfx(local.record?"win":"ok");if(local.record)setTimeout(()=>burst(),300)}
     else put(`<div class="card wait"><div class="spin"></div><p class="muted">Считаем…</p></div>`);
     const s=await api("blitzSubmit",{answers:ans});if(dead(s))return;
-    if(!s.ok){if(local){toast("Результат не сохранился: "+s.error,"err");const t=$("#gxp");if(my===vid&&t)t.textContent="Опыт не начислен";return}
+    if(!s.ok){if(local){if(pre)addXp(-pre);toast("Результат не сохранился: "+s.error,"err");const t=$("#gxp");if(my===vid&&t)t.textContent="Опыт не начислен";return}
       if(my!==vid)return;put(`<div class="card err">${esc(s.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
-    if(s.xp)addXp(s.xp);achToast(s.ach);FRESH.x=0;if(my!==vid)return;
+    ls.set("bzd",today0());addXp((s.xp||0)-pre);achToast(s.ach);FRESH.x=0;if(my!==vid)return;
     if(!local){sfx(s.record?"win":"ok");if(s.record)setTimeout(()=>burst(),300);return show(s,false)}
     const t=$("#gxp");if(t)t.textContent=s.xp?`+${s.xp} опыта 🎉`:"Опыт за блиц - один раз в день";
     const c=$("#bzc");if(c&&s.classBest)c.innerHTML=`<p class="sm" style="margin:6px 0 0">🏫 Рекорд класса: <b>${s.classBest.score}</b> - ${esc(s.classBest.user.firstName)} ${esc(s.classBest.user.lastName)}</p>`};
