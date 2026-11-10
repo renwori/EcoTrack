@@ -20,8 +20,9 @@ Notices:["id","teacherId","text","created"],SchoolEvents:["id","teacherId","titl
 EventSignups:["eventId","userId","created","attended"],ParentLinks:["code","userId","created"],
 Recycle:["id","userId","date","kind","amount","created"],Footprint:["userId","date","score","parts"],
 Mistakes:["userId","game","qid","created"],Blitz:["userId","best","bestDate","last","lastDate"],Claps:["eventId","userId","created"],
-Invites:["inviterId","inviteeId","created","rewarded"],DuoGoals:["id","aId","bId","week","goal","aGames","bGames","status","created"]});
-function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+Invites:["inviterId","inviteeId","created","rewarded"],DuoGoals:["id","aId","bId","week","goal","aGames","bGames","status","created"],
+PollVotes:["msgId","chat","userId","opt"],Pets:["userId","kind","name","created"]});
+function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals","PollVotes","Pets"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
 
@@ -58,7 +59,7 @@ const delRows=(n,list)=>{memoDrop(n);const sh=SS().getSheetByName(n);list.map(r=
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
-const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals"];
+const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals","PollVotes","Pets"];
 const ensured={};
 function ensure(n){if(ensured[n]||MY.indexOf(n)<0)return;
  if(!SS().getSheetByName(n)){const s=SS().insertSheet(n);s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -180,7 +181,7 @@ function chatOf(u,d,key){key=String(key||"");
 // а проверка «есть новое?» сравнивает версии, не читая Таблицу.
 function bump(c){const ids=c.kind==="f"?c.id.slice(2).split(":"):[c.teacher.id].concat(rows("Members").filter(m=>m.teacherId===c.teacher.id).map(m=>m.studentId));
  const v=String(Date.now())+Math.floor(Math.random()*1000),o={};ids.forEach(id=>o["uv_"+id]=v);CacheService.getScriptCache().putAll(o,21600)}
-const msgOut=(m,u,users)=>({id:m.id,type:m.type,text:m.text,ts:Number(m.created),mine:m.userId===u.id,from:mini(users.find(x=>x.id===m.userId))});
+const msgOut=(m,u,users)=>({id:m.id,type:m.type,text:m.text,ts:Number(m.created),mine:m.userId===u.id,from:mini(users.find(x=>x.id===m.userId)),re:(()=>{try{return m.media?JSON.parse(m.media):null}catch(e){return null}})()});
 function spam(u){const c=CacheService.getScriptCache(),k="ms_"+u.id,n=Number(c.get(k)||0);if(n>=30)throw"Слишком много сообщений. Подождите минуту";c.put(k,String(n+1),60)}
 function markRead(u,chat){const r=rows("ChatReads").find(x=>x.userId===u.id&&x.chat===chat);
  if(r)upd("ChatReads",r._row,"ts",Date.now());else addT("ChatReads",[u.id,chat,Date.now()])}
@@ -377,6 +378,8 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
 const BANDS={lo:[1],mid:[1,2],hi:[2,3]},BAND_NAME={lo:"1-4 класс",mid:"5-8 класс",hi:"9-11 класс"};
 function bandOf(u){if(u.role==="teacher"||u.role==="admin")return"";const g=Number((custOf(u.id)||{}).grade)||0;return!g?"":g<=4?"lo":g<=8?"mid":"hi"}
 function poolOf(G,band){const all=G.q.map((q,i)=>i);return band?all.filter(i=>BANDS[band].indexOf(G.q[i][3]||2)>=0):all}
+// Ключ ответов для мгновенной проверки на телефоне (без ожидания сервера). Опыт всё равно начисляет сервер по своей проверке.
+const enc=o=>Utilities.base64Encode(JSON.stringify(o),Utilities.Charset.UTF_8).split("").reverse().join("");
 const gameRight=(G,q)=>G.opts||G===GAMES.sort?q[1]:0;
 // «Что дольше разлагается»: 3 раунда по 4 предмета, сроки в раунде заметно различаются
 // Чем младше класс, тем сильнее различаются сроки в раунде (так проще угадать порядок).
@@ -550,7 +553,7 @@ badgeRevoke(d){const t=who(d);needTeacher(t);const b=rows("Badges").find(x=>x.id
 deleteAccount(d){const u=who(d),id=u.id,dev=isDev(u);
  if(typeof verify==="function")verify(u,d.password);else if(hashPw(String(d.password||""),u.salt)!==u.hash)throw"Неверный пароль";
  ["Avatars","Profiles","DailyTasks","PlayDays","GamesPlayed","Events","Counters","XpLog","GameLog","GameQueue","Qotd","Contrib","ChatReads","Reactions",
-  "Owned","Goals","QuizResults","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps"].forEach(n=>delRows(n,rowsRaw(n).filter(r=>r.userId===id)));
+  "Owned","Goals","QuizResults","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","PollVotes","Pets"].forEach(n=>delRows(n,rowsRaw(n).filter(r=>r.userId===id)));
  // тесты, объявления и мероприятия учителя удаляются вместе с ответами и записями учеников
  const qz=rowsRaw("Quizzes").filter(r=>r.teacherId===id),qi=new Set(qz.map(r=>r.id));delRows("QuizResults",rowsRaw("QuizResults").filter(r=>qi.has(r.quizId)));delRows("Quizzes",qz);
  const se=rowsRaw("SchoolEvents").filter(r=>r.teacherId===id),si=new Set(se.map(r=>r.id));delRows("EventSignups",rowsRaw("EventSignups").filter(r=>si.has(r.eventId)));delRows("SchoolEvents",se);
@@ -579,8 +582,9 @@ chats(d){const u=who(d),F=friendsOf(d),users=rows("Users"),classes=rows("Classes
  rows("Members").filter(m=>m.studentId===u.id).forEach(m=>{const t=users.find(x=>x.id===m.teacherId),c=classes.find(x=>x.teacherId===m.teacherId);
   if(t&&c)list.push({key:"c:"+t.username,id:"c:"+t.id,kind:"c",title:c.name,sub:"Учитель: "+t.firstName+" "+t.lastName})});
  const ids=list.map(c=>c.id),msgs=msgTail(3000).filter(m=>ids.indexOf(m.chat)>=0&&m.type!=="del"),reads=rows("ChatReads").filter(r=>r.userId===u.id);
- list.forEach(ch=>{const ms=msgs.filter(m=>m.chat===ch.id),l=ms[ms.length-1],r=reads.find(x=>x.chat===ch.id),rd=r?Number(r.ts):0;
-  ch.last=l?{text:l.text.slice(0,80),type:l.type,mine:l.userId===u.id,from:(users.find(x=>x.id===l.userId)||{}).firstName||"",ts:Number(l.created)}:null;
+ const rdc=list.length?CacheService.getScriptCache().getAll(list.map(c=>"rd_"+u.id+"_"+c.id)):{};
+ list.forEach(ch=>{const ms=msgs.filter(m=>m.chat===ch.id),l=ms[ms.length-1],r=reads.find(x=>x.chat===ch.id),rd=Math.max(r?Number(r.ts):0,Number(rdc["rd_"+u.id+"_"+ch.id])||0);
+  ch.last=l?{text:l.type==="st"?"Наклейка":l.type==="poll"?"📊 Опрос":l.text.slice(0,80),type:l.type,mine:l.userId===u.id,from:(users.find(x=>x.id===l.userId)||{}).firstName||"",ts:Number(l.created)}:null;
   ch.unread=ms.filter(m=>Number(m.created)>rd&&m.userId!==u.id).length;delete ch.id});
  list.sort((a,b)=>(b.last?b.last.ts:0)-(a.last?a.last.ts:0));
  return{chats:list,requests:(F.incoming||[]).length}},
@@ -612,22 +616,28 @@ chatDelete(d){const u=who(d),c=chatOf(u,d,d.chat),m=msgTail(3000).find(x=>x.id==
  upd("Messages",m._row,"type","del");upd("Messages",m._row,"text","");bump(c);return{}},
 
 gameStart(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная игра";const band=bandOf(u);
- if(G.order){const rounds=decayRounds(band);CacheService.getScriptCache().put("gm_"+u.id+"_"+d.game,JSON.stringify(rounds),3600);
-  return{kind:"order",rounds:rounds.map((r,k)=>({id:k,items:shuffle(r).map(i=>({k:i,name:G.items[i][0],icon:G.items[i][1]}))})),played:played(u,d.game)}}
+ // начатая, но не сыгранная игра выдаётся снова (сайт загружает игры заранее, очередь вопросов при этом не тратится)
+ const gk="gm_"+u.id+"_"+d.game;let prev=null;if(!d.fresh){try{prev=JSON.parse(CacheService.getScriptCache().get(gk)||"null")}catch(e){}}
+ if(G.order){const rounds=prev&&Array.isArray(prev[0])?prev:decayRounds(band);CacheService.getScriptCache().put(gk,JSON.stringify(rounds),3600);
+  return{kind:"order",rounds:rounds.map((r,k)=>({id:k,items:shuffle(r).map(i=>({k:i,name:G.items[i][0],icon:G.items[i][1]}))})),played:played(u,d.game),per:G.per,
+   k:enc(rounds.map(r=>r.slice().sort((a,b)=>G.items[a][2]-G.items[b][2]).map(i=>({k:i,name:G.items[i][0],icon:G.items[i][1],time:G.items[i][3]}))))}}
  // у каждого своя перемешанная очередь вопросов: повтор - только когда пройдены все вопросы игры
  const qrow=rowsRaw("GameQueue").find(r=>r.userId===u.id&&r.game===d.game);let order=[],pos=0;
  try{order=JSON.parse(qrow?qrow.order:"[]")}catch(e){}pos=qrow?Number(qrow.pos)||0:0;
  // очередь строится из вопросов по сложности; если класс в профиле сменился - очередь собирается заново
  const pool=poolOf(G,band),inPool={};pool.forEach(i=>inPool[i]=1);
- const same=order.length===pool.length&&order.every(i=>inPool[i]);
- if(!same||pos+5>order.length){const rest=same?order.slice(pos):[];
-  order=rest.concat(shuffle(pool.filter(i=>rest.indexOf(i)<0)));pos=0}
- const picked=order.slice(pos,pos+5),qnext=[u.id,d.game,JSON.stringify(order),pos+5];
- if(qrow)setRow("GameQueue",qrow._row,qnext);else addT("GameQueue",qnext);
- CacheService.getScriptCache().put("gm_"+u.id+"_"+d.game,JSON.stringify(picked),3600);
+ let picked=prev&&prev.length&&prev.every(i=>typeof i==="number"&&inPool[i])?prev:null;
+ if(!picked){const same=order.length===pool.length&&order.every(i=>inPool[i]);
+  if(!same||pos+5>order.length){const rest=same?order.slice(pos):[];
+   order=rest.concat(shuffle(pool.filter(i=>rest.indexOf(i)<0)));pos=0}
+  picked=order.slice(pos,pos+5);const qnext=[u.id,d.game,JSON.stringify(order),pos+5];
+  if(qrow)setRow("GameQueue",qrow._row,qnext);else addT("GameQueue",qnext)}
+ CacheService.getScriptCache().put(gk,JSON.stringify(picked),3600);
  const items=picked.map(i=>{const q=G.q[i],o=G===GAMES.sort?BINS:G.opts||q[1],ix=G.fixed?o.map((x,k)=>k):shuffle(o.map((x,k)=>k));
   return{id:i,q:G===GAMES.sort?"Куда выбросить: "+q[0]+"?":q[0],o:ix.map(k=>o[k]),ix}});
- return{items,played:played(u,d.game),band:BAND_NAME[band]||""}},
+ return{items,played:played(u,d.game),band:BAND_NAME[band]||"",per:G.per,k:enc(picked.map(i=>({r:gameRight(G,G.q[i]),e:G.q[i][2]})))}},
+// Все игры сразу одним запросом - сайт готовит их заранее, и игра открывается мгновенно
+gamePrep(d){const out={};Object.keys(GAMES).forEach(g=>{try{out[g]=Object.assign({ok:true},A.gameStart(Object.assign({},d,{game:g,fresh:false})))}catch(e){out[g]={ok:false,error:String(e)}}});return{games:out}},
 gameSubmit(d){const u=who(d),G=GAMES[d.game];if(!G)throw"Неизвестная игра";
  const c=CacheService.getScriptCache(),k="gm_"+u.id+"_"+d.game,ids=JSON.parse(c.get(k)||"null");
  if(!ids)throw"Игра устарела - начните заново";c.remove(k);
@@ -818,6 +828,7 @@ function qotdOut(u){const band=bandOf(u),it=qotdItem(band),my=rows("Qotd").find(
  const U={};rows("Users").forEach(x=>U[x.id]=x);
  const all=rows("Qotd").filter(r=>r.date===today()&&U[r.userId]&&bandOf(U[r.userId])===band);
  const o={q:it.q,o:it.o,ix:it.ix,answered:null,band:BAND_NAME[band]||""};
+ if(!my)o.k=enc({r:it.right,e:it.e});
  if(my)Object.assign(o,{answered:{a:Number(my.answer),ok:my.ok==="1",right:it.right,e:it.e},stats:{n:all.length,ok:all.filter(r=>r.ok==="1").length}});
  return o}
 
@@ -1193,8 +1204,9 @@ wrapA("challengeAdd",d=>{const c=rows("Challenges").find(x=>x.id===String(d.id||
 wrapA("noticeAdd",null,()=>touch(classOfTeacher(REQ_UID)));wrapA("noticeDel",null,()=>touch(classOfTeacher(REQ_UID)));
 // Профиль (extra) - самый тяжёлый ответ: до 15 минут из кэша, пока у ученика ничего не поменялось
 {const _x=A.extra;A.extra=function(d){const u=who(d),C=CacheService.getScriptCache(),k="xc_"+u.id+"_"+xVer(u.id)+"_"+today();
+ C.put("on_"+u.id,String(Date.now()),21600);  // «в сети»
  const c=C.get(k);if(c){try{return JSON.parse(c)}catch(e){}}
- const o=_x(d);try{const js=JSON.stringify(o);if(js.length<95000)C.put("xc_"+u.id+"_"+xVer(u.id)+"_"+today(),js,900)}catch(e){}return o}}
+ const o=_x(d);try{o.pet=petOf(u)}catch(e){}try{const js=JSON.stringify(o);if(js.length<95000)C.put("xc_"+u.id+"_"+xVer(u.id)+"_"+today(),js,900)}catch(e){}return o}}
 
 /* ───── блиц, работа над ошибками, лента друзей, приглашения, общая цель, игры без интернета ───── */
 // Вопрос для показа: варианты перемешаны, ix - исходные номера вариантов (ответ проверяет сервер)
@@ -1238,7 +1250,7 @@ mistakesSubmit(d){const u=who(d),C=CacheService.getScriptCache(),pend=JSON.parse
  return{results,fixed:fixed.length,left:mistakesOf(u).length,xp}},
 blitzStart(d){const u=who(d),band=bandOf(u),pool=shuffle(poolOf(GAMES.quiz,band).map(i=>["quiz",i]).concat(poolOf(GAMES.myth,band).map(i=>["myth",i]))).slice(0,40);
  CacheService.getScriptCache().put("bz_"+u.id,JSON.stringify({ids:pool,t:Date.now()}),900);
- const r=rowsRaw("Blitz").find(x=>x.userId===u.id);return{items:pool.map(([g,i])=>itemOf(g,i)),seconds:60,best:r?Number(r.best):0}},
+ const r=rowsRaw("Blitz").find(x=>x.userId===u.id);return{items:pool.map(([g,i])=>itemOf(g,i)),seconds:60,best:r?Number(r.best):0,k:enc(pool.map(([g,i])=>rightOf(g,i)))}},
 blitzSubmit(d){const u=who(d),C=CacheService.getScriptCache(),s=JSON.parse(C.get("bz_"+u.id)||"null");if(!s)throw"Блиц устарел - начните заново";C.remove("bz_"+u.id);
  if(Date.now()-s.t>95000)throw"Время блица вышло - начните заново";
  const ans=Array.isArray(d.answers)?d.answers:[],keys=new Set(s.ids.map(([g,i])=>g+":"+i)),results=[],wrong={quiz:[],myth:[]};
@@ -1279,6 +1291,149 @@ wrapA("register",null,(d,r)=>{const ref=String(d.ref||"").toLowerCase().replace(
  const inv=byName(ref),me=byName(r.user.username);if(!inv||!me||inv.id===me.id)return;
  if(!rowsRaw("Invites").some(x=>x.inviteeId===me.id))addT("Invites",[inv.id,me.id,now(),""])});
 
+/* ───── быстрые чаты: последние сообщения хранятся в памяти Google, Таблица читается только при открытии чата ───── */
+const CC=()=>CacheService.getScriptCache();
+const jp=s=>{try{return s?JSON.parse(s):null}catch(e){return null}};
+const STICKER=/^s([1-9]|1[0-6])$/;
+// Кто с кем переписывается - запоминается на 5 минут, чтобы не проверять дружбу и класс на каждое сообщение
+function ckMake(u,c,key){const ck={id:c.id,kind:c.kind,me:mini(u),o:c.kind==="f"?c.other.id:"",t:c.kind==="c"?c.teacher.id:"",mod:c.kind==="c"&&(c.teacher.id===u.id||isDev(u))};
+ CC().put("ck_"+u.id+"_"+key,JSON.stringify(ck),300);return ck}
+function ckIds(ck){if(ck.kind==="f")return ck.id.slice(2).split(":");const k="cmem_"+ck.t;let ids=jp(CC().get(k));
+ if(!ids){ids=[ck.t].concat(rows("Members").filter(m=>m.teacherId===ck.t).map(m=>m.studentId));CC().put(k,JSON.stringify(ids),300)}return ids}
+function bumpIds(ids){const v=String(Date.now())+Math.floor(Math.random()*1000),o={};ids.forEach(id=>o["uv_"+id]=v);CC().putAll(o,21600)}
+// cm_<чат>: m - последние сообщения, b - время, начиная с которого список полный, rt - метка изменений (реакции, удаления, голоса)
+function cmPut(id,cm){while(cm.m.length>1&&JSON.stringify(cm).length>30000)cm.b=cm.m.shift().ts;try{CC().put("cm_"+id,JSON.stringify(cm),21600)}catch(e){CC().remove("cm_"+id)}}
+function cmTouch(id,goneId){if(!CC().get("cm_"+id))return;withLock(()=>{const cm=jp(CC().get("cm_"+id));if(!cm)return;cm.rt=String(Date.now());if(goneId)cm.m=cm.m.filter(m=>m.id!==goneId);cmPut(id,cm)})}
+const cmOut=(m,uid)=>({id:m.id,type:m.type,text:m.text,ts:m.ts,mine:m.uid===uid,from:m.from,re:m.re||null});
+const quoteOf=(id,name,type,text)=>({id,n:name||"",t:type==="st"?"Наклейка":type==="poll"?"Опрос: "+((jp(text)||{}).q||""):String(text).slice(0,80)});
+// «печатает…» и «в сети» - только в быстрой памяти, без Таблицы
+function chatLive(ck,uid,d){const C=CC(),now=Date.now(),tk="ty_"+ck.id,o={},g=C.getAll([tk].concat(ck.o?["on_"+ck.o]:[]));const ty=jp(g[tk])||{};
+ if(d.typing){ty[uid]={t:now,n:ck.me.firstName};C.put(tk,JSON.stringify(ty),10)}
+ o.typing=Object.keys(ty).filter(k=>k!==uid&&now-ty[k].t<5000).map(k=>ty[k].n);if(ck.o)o.seen=Number(g["on_"+ck.o])||0;
+ C.put("on_"+uid,String(now),21600);return o}
+// Опросы в чате класса: голоса в листе PollVotes, последний голос пользователя - действующий
+function pollsFor(chat,ids,u,list){const o={},last={};(list||rows("PollVotes")).forEach(r=>{if(r.chat===chat&&ids.has(r.msgId))last[r.msgId+"|"+r.userId]=r});
+ Object.keys(last).forEach(k=>{const r=last[k];if(r.opt==="")return;const x=o[r.msgId]=o[r.msgId]||{c:[],mine:-1,n:0};const i=Number(r.opt);
+  x.c[i]=(x.c[i]||0)+1;x.n++;if(r.userId===u.id)x.mine=i});return o}
+function pollCheck(p){const q=String(p&&p.q||"").trim(),o=(Array.isArray(p&&p.o)?p.o:[]).map(x=>String(x).trim()).filter(Boolean);
+ if(q.length<3||q.length>120)throw"Вопрос опроса: от 3 до 120 символов";if(o.length<2||o.length>6)throw"В опросе от 2 до 6 вариантов";
+ if(o.some(x=>x.length>60))throw"Вариант не длиннее 60 символов";if(new Set(o).size!==o.length)throw"Варианты не должны повторяться";return JSON.stringify({q,o})}
+A.chatSend=function(d){const C=CC(),key=String(d.chat||""),th=sha(String(d.token||""));
+ let uid=d.token?C.get("ss_"+th):null,ck=uid?jp(C.get("ck_"+uid+"_"+key)):null;
+ if(ck){const b=banOf(uid);if(b)throw banText(b);REQ_UID=uid}else{const u=who(d),c=chatOf(u,d,key);ck=ckMake(u,c,key);uid=u.id}
+ const type=d.type==="st"?"st":d.type==="poll"?"poll":"text";let text=String(d.text||"").trim();
+ if(type==="st"){if(!STICKER.test(text))throw"Такой наклейки нет"}
+ else if(type==="poll"){if(ck.kind!=="c")throw"Опрос можно создать только в чате класса";text=pollCheck(d.poll)}
+ else{if(!text)throw"Пустое сообщение";if(text.length>1000)throw"Сообщение не длиннее 1000 символов"}
+ spam({id:uid});
+ let re=null;const rid=String(d.re||"");
+ if(rid){const cm=jp(C.get("cm_"+ck.id)),hit=cm&&cm.m.find(x=>x.id===rid);
+  if(hit)re=quoteOf(hit.id,hit.from.firstName,hit.type,hit.text);
+  else{const o=msgTail(3000).find(x=>x.id===rid&&x.chat===ck.id&&x.type!=="del"),w=o&&byId(o.userId);if(o)re=quoteOf(o.id,w?w.firstName:"",o.type,o.text)}}
+ let out=null;const ids=ckIds(ck);
+ // сначала - в быструю память и сигнал собеседникам (они увидят сообщение сразу), потом - в Таблицу
+ withLock(()=>{const cm=jp(C.get("cm_"+ck.id));let ts=Date.now();if(cm&&cm.m.length&&ts<=cm.m[cm.m.length-1].ts)ts=cm.m[cm.m.length-1].ts+1;
+  const id=Utilities.getUuid();out={id,type,text,ts,uid,from:ck.me,re};
+  if(cm){cm.m.push(out);if(cm.m.length>40)cm.b=cm.m.shift().ts;cmPut(ck.id,cm)}
+  bumpIds(ids);addT("Messages",[id,ck.id,uid,type,text,re?JSON.stringify(re):"",ts])});
+ return{message:cmOut(out,uid)}};
+A.chatMessages=function(d){const C=CC(),key=String(d.chat||""),th=sha(String(d.token||"")),after=Number(d.after||0);
+ const uid0=d.token?C.get("tk_"+th):null;
+ if(d.v&&uid0){const g=C.getAll(["uv_"+uid0,"ck_"+uid0+"_"+key]),ver=g["uv_"+uid0]||"0",ck=jp(g["ck_"+uid0+"_"+key]);
+  if(ck&&!banOf(uid0)){const live=chatLive(ck,uid0,d);
+   if(ver===String(d.v))return Object.assign({same:true,v:ver},live);
+   // есть новое: если это только сообщения - отдаём их из памяти, не читая Таблицу
+   const cm=jp(C.get("cm_"+ck.id));
+   if(cm&&after&&after>=cm.b&&String(d.rt||"")===String(cm.rt||"0")){const fresh=cm.m.filter(m=>m.ts>after);
+    if(fresh.some(m=>m.uid!==uid0))C.put("rd_"+uid0+"_"+ck.id,String(Date.now()),21600);
+    return Object.assign({messages:fresh.map(m=>cmOut(m,uid0)),v:ver,rt:String(cm.rt||"0"),fast:true},live)}}
+  else if(!ck&&ver===String(d.v))return{same:true,v:ver}}
+ const u=who(d),c=chatOf(u,d,key),users=rows("Users");
+ C.put("tk_"+th,u.id,21600);const ver=C.get("uv_"+u.id)||"0",ck=ckMake(u,c,key);
+ const all=msgTail(3000).filter(m=>m.chat===c.id),alive=all.filter(m=>m.type!=="del"),fresh=alive.filter(m=>Number(m.created)>after).slice(-150);
+ let cm=jp(C.get("cm_"+c.id));
+ if(!cm){cm={b:alive.length>40?Number(alive[alive.length-41].created):0,rt:"0",
+   m:alive.slice(-40).map(m=>({id:m.id,type:m.type,text:m.text,ts:Number(m.created),uid:m.userId,from:mini(users.find(x=>x.id===m.userId)),re:jp(m.media)}))};cmPut(c.id,cm)}
+ const recent=new Set(all.slice(-200).map(m=>m.id));
+ const o={messages:fresh.map(m=>msgOut(m,u,users)),gone:all.filter(m=>m.type==="del").slice(-50).map(m=>m.id),
+  reacts:reactsFor(c.id,recent,u),polls:c.kind==="c"?pollsFor(c.id,recent,u):{},v:ver,rt:String(cm.rt||"0"),mod:ck.mod};
+ if(!after){o.info=c.kind==="f"?{title:c.other.firstName+" "+c.other.lastName,user:pub(c.other)}
+  :{title:c.cls.name,sub:"Учитель и "+rows("Members").filter(m=>m.teacherId===c.teacher.id).length+" учен.",teacher:c.teacher.username}}
+ if(!after||fresh.some(m=>m.userId!==u.id))markRead(u,c.id);
+ return Object.assign(o,chatLive(ck,u.id,d))};
+Object.assign(A,{
+pollVote(d){const u=who(d),c=chatOf(u,d,d.chat),id=String(d.id||""),opt=d.opt===null||d.opt===undefined||d.opt===""?"":Number(d.opt);
+ const m=msgTail(3000).find(x=>x.id===id&&x.chat===c.id&&x.type==="poll");if(!m)throw"Опрос не найден";const p=jp(m.text)||{o:[]};
+ if(opt!==""&&!(opt>=0&&opt<p.o.length&&Math.floor(opt)===opt))throw"Такого варианта нет";
+ const mine=rowsRaw("PollVotes").filter(x=>x.msgId===id&&x.userId===u.id),r=mine[mine.length-1];
+ if(r)upd("PollVotes",r._row,"opt",opt);else addT("PollVotes",[id,c.id,u.id,opt]);
+ cmTouch(c.id);bump(c);return{poll:pollsFor(c.id,new Set([id]),u,rowsRaw("PollVotes"))[id]||{c:[],mine:-1,n:0}}}
+});
+wrapA("chatReact",null,d=>{const u=who(d),c=chatOf(u,d,d.chat);cmTouch(c.id);bump(c)});
+wrapA("chatDelete",null,d=>{const u=who(d),c=chatOf(u,d,d.chat);cmTouch(c.id,String(d.id||""));bump(c)});
+wrapA("classJoin",null,(d,r)=>{const t=r&&r.teacher&&byName(r.teacher.username);if(t)CC().remove("cmem_"+t.id)});
+wrapA("classLeave",null,d=>{const t=byName(d.username);if(t)CC().removeAll(["cmem_"+t.id,"ck_"+REQ_UID+"_c:"+t.username])});
+wrapA("classKick",null,d=>{const s=byName(d.username),t=byId(REQ_UID);CC().remove("cmem_"+REQ_UID);if(s&&t)CC().remove("ck_"+s.id+"_c:"+t.username)});
+wrapA("chats",null,()=>{if(REQ_UID)CC().put("on_"+REQ_UID,String(Date.now()),21600)});  // «в сети» - пока открыт сайт
+wrapA("friendRemove",null,d=>{const u=byId(REQ_UID),o=byName(d.username);if(u&&o)CC().removeAll(["ck_"+u.id+"_f:"+o.username,"ck_"+o.id+"_f:"+u.username])});
+
+/* ───── секретные значки: условия не показываются, пока значок не получен ───── */
+// [код, смайлик, цвет, название, за что (видно после получения), подсказка]
+const SECRETS=[["owl","🦉","purple","Ночная сова","Сыграть в мини-игру поздно вечером, после 22 часов","Совы не спят…"],
+ ["early","🐦","orange","Ранняя пташка","Сыграть в мини-игру рано утром, до 7 часов","Кто рано встаёт…"],
+ ["perfect3","🎯","gold","Снайпер","Пройти три мини-игры подряд без единой ошибки","Ни одной ошибки - и так несколько раз подряд"],
+ ["marathon","🏃","blue","Марафонец","Сыграть 15 мини-игр за один день","Очень-очень много игр за один день"],
+ ["comeback","🔄","green","С возвращением!","Вернуться в мини-игры после перерыва в неделю и больше","Иногда стоит вернуться"],
+ ["newyear","🎄","green","Новогоднее чудо","Сыграть в мини-игру в новогодние праздники","Праздничное настроение ❄️"],
+ ["blitz25","⚡","gold","Быстрее молнии","Дать 25 верных ответов в блице","Нужно быть очень-очень быстрым"]];
+function secretCheck(u,ev){const has=new Set(rowsRaw("Badges").filter(b=>b.studentId===u.id).map(b=>b.id)),got=[];
+ const h=Number(Utilities.formatDate(new Date(),"Europe/Moscow","H")),md=today().slice(5),mine=r=>r.userId===u.id;
+ const T={owl:()=>ev.game&&(h>=22||h<5),early:()=>ev.game&&h>=5&&h<7,
+  perfect3:()=>{if(!ev.game)return false;const g=tail("GameLog",30000).filter(mine).slice(-3);return g.length===3&&g.every(r=>Number(r.total)>0&&Number(r.score)===Number(r.total))},
+  marathon:()=>ev.game&&tail("GameLog",30000).filter(r=>mine(r)&&r.date===today()).length>=15,
+  comeback:()=>{if(!ev.game)return false;const ds=tail("PlayDays",30000).filter(r=>mine(r)&&r.date<today()).map(r=>r.date).sort(),p=ds[ds.length-1];return!!p&&p<=dayShift(today(),-8)},
+  newyear:()=>ev.game&&(md>="12-25"||md<="01-08"),blitz25:()=>Number(ev.blitz)>=25};
+ SECRETS.forEach(s=>{const id="ach_sec_"+s[0]+"_"+u.id;if(has.has(id))return;try{if(T[s[0]]()){grant(u.id,id,s[1],s[2],s[3],s[4]);got.push(s[3])}}catch(e){}});return got}
+const secretList=(u,by)=>SECRETS.map(s=>{const b=by["ach_sec_"+s[0]+"_"+u.id];
+ return b?{code:"sec_"+s[0],emoji:s[1],color:s[2],title:s[3],level:1,max:1,goal:"",levels:[],id:b.id,secret:true}
+  :{code:"sec_"+s[0],emoji:"❔",color:"purple",title:"Секретный значок",level:0,max:1,goal:"Это секрет! Подсказка: "+s[5],levels:[],id:null,secret:true}});
+{const _l=achList;achList=function(u,mine,x){const by={};(mine||[]).forEach(b=>by[b.id]=b);return _l(u,mine,x).concat(secretList(u,by))}}
+wrapA("gameSubmit",null,(d,r)=>{const u=REQ_UID&&byId(REQ_UID);if(u&&r){const s=secretCheck(u,{game:1});if(s.length)r.ach=(r.ach||[]).concat(s)}});
+wrapA("blitzSubmit",null,(d,r)=>{const u=REQ_UID&&byId(REQ_UID);if(u&&r){const s=secretCheck(u,{blitz:r.score});if(s.length)r.ach=(r.ach||[]).concat(s)}});
+
+/* ───── эко-питомец: растёт от опыта, настроение - от того, как давно ты что-то делал(а) ───── */
+const PETS={turtle:["🐢","Черепашка"],fox:["🦊","Лисёнок"],owl:["🦉","Совёнок"],bee:["🐝","Пчёлка"],penguin:["🐧","Пингвинёнок"],hedgehog:["🦔","Ёжик"]};
+const PET_STAGE=[[0,"Малыш"],[100,"Подросток"],[300,"Взрослый"],[700,"Мудрый"],[1500,"Легенда"]];
+function petOf(u){const r=rowsRaw("Pets").find(x=>x.userId===u.id);if(!r||!PETS[r.kind])return null;
+ const since=String(r.created||"").slice(0,10),log=tail("XpLog",30000).filter(x=>x.userId===u.id);
+ const xp=log.filter(x=>x.date>=since).reduce((s,x)=>s+(Number(x.xp)||0),0),last=log.reduce((m,x)=>x.date>m?x.date:m,"");
+ const days=last?Math.round((new Date(today()+"T12:00:00Z")-new Date(last+"T12:00:00Z"))/864e5):99;
+ let st=0;PET_STAGE.forEach((s,i)=>{if(xp>=s[0])st=i});const nx=PET_STAGE[st+1];
+ return{kind:r.kind,emoji:PETS[r.kind][0],type:PETS[r.kind][1],name:r.name,created:r.created,xp,stage:st,stageName:PET_STAGE[st][1],next:nx?nx[0]:null,
+  mood:days<=0?3:days===1?2:days<=3?1:0,days}}
+Object.assign(A,{
+petSet(d){const u=who(d),kind=String(d.kind||""),name=String(d.name||"").trim().replace(/\s+/g," ");
+ if(!PETS[kind])throw"Выберите питомца";if(name.length<2||name.length>16)throw"Имя питомца: от 2 до 16 символов";
+ if(!/^[A-Za-zА-Яа-яЁё0-9 -]+$/.test(name))throw"В имени питомца - только буквы, цифры, пробел и дефис";
+ const r=rowsRaw("Pets").find(x=>x.userId===u.id);
+ if(r){upd("Pets",r._row,"kind",kind);upd("Pets",r._row,"name",name)}else addT("Pets",[u.id,kind,name,now()]);
+ MEMO={};return{pet:petOf(u)}},
+/* ───── итоги года: считаются только по запросу ───── */
+yearSummary(d){const u=who(d),y=String(Number(d.year)||Number(today().slice(0,4))),inY=r=>String(r.date||"").slice(0,4)===y,me=r=>r.userId===u.id;
+ const xl=tail("XpLog",30000).filter(r=>me(r)&&inY(r)),gl=tail("GameLog",30000).filter(r=>me(r)&&inY(r));
+ const days=[...new Set(tail("PlayDays",30000).filter(r=>me(r)&&inY(r)).map(r=>r.date))].sort();let best=0,run=0,prev="";
+ days.forEach(x=>{run=prev&&dayShift(prev,1)===x?run+1:1;best=Math.max(best,run);prev=x});
+ const fav={};gl.forEach(r=>fav[r.game]=(fav[r.game]||0)+1);const favG=Object.keys(fav).sort((a,b)=>fav[b]-fav[a])[0]||"";
+ const rec={};rowsRaw("Recycle").filter(r=>me(r)&&inY(r)).forEach(r=>rec[r.kind]=Math.round(((rec[r.kind]||0)+Number(r.amount||0))*100)/100);
+ const bd=rowsRaw("Badges").filter(b=>b.studentId===u.id&&String(b.created||"").slice(0,4)===y);
+ const tk=tail("DailyTasks",30000).filter(r=>me(r)&&inY(r)&&r.done==="1").length,qo=rowsRaw("Qotd").filter(r=>me(r)&&inY(r)&&String(r.ok)==="1").length;
+ const active=new Set(xl.map(r=>r.date).concat(days)).size,bz=rowsRaw("Blitz").find(me);
+ return{year:Number(y),xp:xl.reduce((s,r)=>s+(Number(r.xp)||0),0),games:gl.length,perfect:gl.filter(r=>Number(r.total)>0&&Number(r.score)===Number(r.total)).length,
+  correct:gl.reduce((s,r)=>s+(Number(r.score)||0),0),fav:favG,favN:fav[favG]||0,streak:best,active,tasks:tk,qotd:qo,recycle:rec,
+  badges:bd.slice(-12).map(b=>({emoji:b.emoji,color:b.color,title:b.title})),badgeN:bd.length,blitz:bz&&String(bz.bestDate||"").slice(0,4)===y?Number(bz.best)||0:0,
+  name:u.firstName,since:String(u.created||"").slice(0,10)}}
+});
+
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */
 // Раньше каждый запрос ждал, пока закончится предыдущий. Теперь очередь только у действий,
 // которые меняют данные; чтения выполняются параллельно и читают каждый лист один раз.
@@ -1286,7 +1441,7 @@ const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0,ch
 A.batch=d=>{const out={};(Array.isArray(d.calls)?d.calls:[]).slice(0,8).forEach(c=>{const a=c&&c.action;if(!BATCH[a]||!A[a])return;
  try{out[a]=Object.assign({ok:true},A[a](Object.assign({},c,{token:d.token})))}catch(e){out[a]={ok:false,error:typeof e==="string"?e:"Ошибка сервера: "+e}}});
  return{results:out}};
-const FAST={mistakes:1,friendsFeed:1,inviteInfo:1,duoInfo:1,offlinePack:1,shop:1,quizList:1,quizGet:1,quizResults:1,eventList:1,parentView:1,recycleList:1,mapPoints:1,qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
+const FAST={yearSummary:1,mistakes:1,friendsFeed:1,inviteInfo:1,duoInfo:1,offlinePack:1,shop:1,quizList:1,quizGet:1,quizResults:1,eventList:1,parentView:1,recycleList:1,mapPoints:1,qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
 // Сообщения из Code.gs - русскими словами вместо «юзернейм» и длинного тире
 const RU_ERR={"Неверный юзернейм или пароль":"Неверное имя пользователя или пароль","Этот юзернейм уже занят":"Это имя пользователя уже занято"};
 const ruText=t=>{t=String(t);return(RU_ERR[t]||t).replace(/Юзернейм/g,"Имя пользователя").replace(/юзернейм/g,"имя пользователя").replace(/[\u2013\u2014]/g,"-")};
