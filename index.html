@@ -650,7 +650,9 @@ const FRESH={},FRESH_MS=15000,isFresh=k=>Date.now()-(FRESH[k]||0)<FRESH_MS;
 const PEND={};
 function pack(list){const need=list.filter(x=>!isFresh(x.k)&&!PEND[x.k]);if(need.length<2)return;
   const p=api("batch",{calls:need.map(x=>Object.assign({action:x.action},x.d||{}))}).then(r=>(r&&r.ok&&r.results)||{}).catch(()=>({}));
-  need.forEach(x=>{PEND[x.k]=p.then(R=>R[x.action]&&R[x.action].ok?R[x.action]:null);p.then(()=>delete PEND[x.k])})}
+  need.forEach(x=>{PEND[x.k]=p.then(R=>R[x.action]&&R[x.action].ok?R[x.action]:null);
+    // готовый ответ сохраняется сразу - раздел потом откроется мгновенно, даже если его откроют позже
+    p.then(R=>{delete PEND[x.k];const v=R[x.action];if(v&&v.ok){cset(x.k,v);FRESH[x.k]=Date.now()}})})}
 async function swr(k,action,d,draw,my,force){
   const c=force?null:cget(k);if(c)draw(c);
   if(c&&isFresh(k))return c;
@@ -1676,7 +1678,7 @@ const optText=o=>((OI[o]||"")+" "+o).trim();
 // Возрастная группа для сложности вопросов - так же, как на сервере.
 const bandOf=g=>{g=+g||0;return!g?"":g<=4?"1-4 класс":g<=8?"5-8 класс":"9-11 класс"};
 function gamesV(){
-  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"},{k:"mist",action:"mistakes"},{k:"duo",action:"duoInfo"}]);
+  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"},{k:"mist",action:"mistakes"},{k:"duo",action:"duoInfo"},{k:"shop",action:"shop"}]);
   put(`<h1>Игры и задания</h1>${navigator.onLine?"":`<div class="card notice"><b>📡 Нет интернета</b><p class="sm" style="margin:4px 0 0">Можно играть в сортировку, викторину, «Миф или правда» и «Как поступить?» - серия засчитается, когда интернет появится.</p></div>`}<div id="evb"></div><div id="qd"></div><div id="eco"></div><div id="duo"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
   <h2 class="sec">Полезное</h2>
@@ -2183,19 +2185,29 @@ function chestModal(){
 const SHOP_KIND=[["cover","Обложки"],["pattern","Узоры"],["frame","Рамки фото"],["nameColor","Цвет имени"]];
 async function shopV(){
   const my=++vid;put(backBtn("shb2","🛒 Магазин")+`<div id="shv">${sk(3)}</div>`);$("#shb2").onclick=()=>go(tab);
-  const r=await api("shop");if(my!==vid||dead(r))return;const box=$("#shv");if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+  let r=null,busyN=0;
   const prev=(k,i)=>k==="cover"?`<div class="hero cv-${i.id} shp"></div>`:k==="pattern"?`<div class="hero pt-${i.id} shp"><i class="pat"></i></div>`:k==="frame"?avatar(me,1,i.id):`<span class="nm n-${i.id} shn">${esc(me.firstName)}</span>`;
-  const draw=()=>{box.innerHTML=`<div class="card hero"><b class="coin" style="font-size:22px">🪙 ${r.coins}</b><div class="muted sm">монет · 1 монета за каждые 5 опыта, бонусы - из сундуков, целей недели и мероприятий</div></div>
+  const sync=()=>{cset("shop",r);if(X){X.coins=r.coins;X.freeze=r.freeze;X.cosm=r.cosm;cset("x",X)}};
+  const draw=()=>{const box=$("#shv");if(!box||my!==vid)return;if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
+    box.innerHTML=`<div class="card hero"><b class="coin" style="font-size:22px">🪙 ${r.coins}</b><div class="muted sm">монет · 1 монета за каждые 5 опыта, бонусы - из сундуков, целей недели и мероприятий</div></div>
     <div class="card"><div class="row"><div class="eb" style="font-size:34px">🧊</div><div class="grow"><b>Заморозка серии</b><div class="muted sm">Если пропустишь день, серия не сгорит. У тебя: ${r.freeze} из ${r.freezeMax}</div></div>
-      <button class="sm" data-buy="freeze" ${r.freeze>=r.freezeMax?"disabled":""}>🪙 ${r.freezePrice}</button></div></div>
+      <button class="sm" data-buy="freeze" ${r.freeze>=r.freezeMax||r.coins<r.freezePrice?"disabled":""}>🪙 ${r.freezePrice}</button></div></div>
     ${SHOP_KIND.map(([k,t])=>{const its=(r.cosm[k]||[]).filter(i=>i.price||i.chest);return its.length?`<h2 class="sec">${t}</h2><div class="shg">${its.map(i=>`<div class="card shi ${i.open?"own":""}">${prev(k,i)}<b>${esc(i.name)}</b>
       ${i.open?`<span class="tag">✓ есть</span>`:i.chest?`<span class="muted sm">🎁 только из сундука</span>`:`<button class="sm" data-buy="${k}:${i.id}" ${r.coins<i.price?"disabled":""}>🪙 ${i.price}</button>`}</div>`).join("")}</div>`:""}).join("")}
     <p class="muted sm">Купленные украшения выбираются в профиле: кнопка 🎨.</p>`;
-    stag(box);box.querySelectorAll("[data-buy]").forEach(b=>b.onclick=async()=>{const it=b.dataset.buy,name=it==="freeze"?"заморозку серии":"это украшение";
-      if(!await ask("Купить "+name+"?","Купить"))return;b.disabled=true;const x=await api("shopBuy",{item:it});if(dead(x))return;if(!x.ok){b.disabled=false;return toast(x.error,"err")}
-      r.coins=x.coins;r.freeze=x.freeze;if(x.cosm)r.cosm=x.cosm;if(X){X.coins=x.coins;X.freeze=x.freeze;if(x.cosm)X.cosm=x.cosm;cset("x",X)}FRESH.x=0;
-      toast(it==="freeze"?"🧊 Заморозка куплена":"Куплено! Выбери его в оформлении профиля 🎨");burst();draw()})};
-  draw();
+    stag(box);
+    // покупка видна сразу: монеты списываются на экране, сервер подтверждает её в фоне
+    box.querySelectorAll("[data-buy]").forEach(b=>b.onclick=async()=>{const it=b.dataset.buy,name=it==="freeze"?"заморозку серии":"это украшение";
+      if(!await ask("Купить "+name+"?","Купить"))return;
+      const was=JSON.parse(JSON.stringify(r)),[k,id]=it.split(":"),item=it==="freeze"?null:(r.cosm[k]||[]).find(i=>i.id===id);
+      const price=it==="freeze"?r.freezePrice:item&&item.price;if(!price||r.coins<price)return toast("Не хватает монет","err");
+      r.coins-=price;if(item)item.open=true;else r.freeze++;busyN++;sync();
+      const rc=b.getBoundingClientRect();burst(rc.left+rc.width/2,rc.top,24);sfx("ok");toast(it==="freeze"?"🧊 Заморозка куплена":"Куплено! Выбери его в оформлении профиля 🎨");draw();
+      const x=await api("shopBuy",{item:it});busyN--;if(dead(x))return;
+      if(!x.ok){r=was;sync();draw();return toast(x.error,"err")}
+      r.coins=x.coins;r.freeze=x.freeze;if(x.cosm)r.cosm=x.cosm;sync();FRESH.x=0;draw()})};
+  // магазин открывается сразу из сохранённых данных и обновляется в фоне (пока идёт покупка - не перерисовываем)
+  swr("shop","shop",{},x=>{if(busyN)return;r=JSON.parse(JSON.stringify(x));draw()},my);
 }
 
 /* ───────── дневник вторсырья ───────── */
