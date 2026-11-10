@@ -1524,7 +1524,7 @@ const closePick=()=>document.querySelectorAll(".rpick").forEach(p=>p.remove());
 document.addEventListener("pointerdown",e=>{if(!e.target.closest(".rpick"))closePick()},true);
 addEventListener("scroll",closePick,{passive:true});
 const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
-const STK=[["👍","Молодец!"],["🙏","Спасибо!"],["🎉","Ура!"],["🌱","Растём!"],["♻️","Сортирую!"],["💧","Берегу воду"],["🌍","За планету!"],["🔥","Серия!"],["💪","Так держать!"],["👏","Браво!"],["❤️","Люблю природу"],["😂","Смешно!"],["🏆","Победа!"],["🤝","Вместе!"],["👋","Привет!"],["🌳","Сажаю дерево"]];
+const STK=[["👍","Молодец!"],["🫂","Спасибо!"],["🎉","Ура!"],["🌱","Растём!"],["♻️","Сортирую!"],["💧","Берегу воду"],["🌍","За планету!"],["🔥","Серия!"],["💪","Так держать!"],["👏","Браво!"],["❤️","Люблю природу"],["😂","Смешно!"],["🏆","Победа!"],["🤝","Вместе!"],["👋","Привет!"],["🌳","Сажаю дерево"]];
 const stkOf=t=>STK[(+String(t).slice(1)||1)-1]||STK[0];
 const pollOf=t=>{try{const p=JSON.parse(t);return p&&Array.isArray(p.o)?p:{q:"",o:[]}}catch(e){return{q:"",o:[]}}};
 const pollHtml=(m,v)=>{const p=pollOf(m.text);v=v||{c:[],mine:-1,n:0};const pend=m.pending;
@@ -1537,7 +1537,7 @@ async function chatV(key){
   put(`<div class="chead"><button class="ghost sm" id="cb" aria-label="Назад">←</button>${chatIcon(meta)}<div class="grow" style="min-width:0"><b class="el" id="ctt">${esc(meta.title)}${meta.user?emo(meta.user):""}</b><div class="muted sm el" id="csub">${meta.user?"@"+esc(meta.user.username):esc(meta.sub||"Чат класса")}</div></div></div>
    <div class="msgs" id="ms"></div>
    <form class="composer" id="cf"><div id="rbar"></div><div class="stp" id="stp" hidden>${STK.map((x,i)=>`<button type="button" data-st="s${i+1}">${x[0]}<small>${x[1]}</small></button>`).join("")}</div>
-   <button type="button" class="ghost" id="stb" aria-label="Наклейки">😊</button>${grp?`<button type="button" class="ghost" id="plb" aria-label="Создать опрос">📊</button>`:""}<textarea id="mt" rows="1" maxlength="1000" placeholder="Сообщение…" enterkeyhint="send"></textarea><button type="submit" id="snd" aria-label="Отправить">➤</button></form>`);
+   <button type="button" class="ghost" id="stb" aria-label="Наклейки">🙂</button>${grp?`<button type="button" class="ghost" id="plb" aria-label="Создать опрос">📊</button>`:""}<textarea id="mt" rows="1" maxlength="1000" placeholder="Сообщение…" enterkeyhint="send"></textarea><button type="submit" id="snd" aria-label="Отправить">➤</button></form>`);
   document.documentElement.style.setProperty("--toph",($(".top")?.offsetHeight||62)+"px");
   if(meta.user)loadAv([meta.user]);
   $("#cb").onclick=()=>go("chats");
@@ -1548,7 +1548,7 @@ async function chatV(key){
     if(ty.length){el.textContent=grp?ty.slice(0,2).join(", ")+(ty.length>1?" печатают…":" печатает…"):"печатает…";el.classList.add("typing");return}
     el.classList.remove("typing");el.textContent=!grp&&p.seen?(Date.now()-p.seen<90000?"в сети":"был(а) в сети "+ago(new Date(p.seen).toISOString())):subDef};
   const quote=m=>({id:m.id,n:m.mine?me.firstName:m.from.firstName,t:m.type==="st"?"Наклейка":m.type==="poll"?"Опрос: "+pollOf(m.text).q:m.text.slice(0,80)});
-  const setReply=m=>{replyTo=m;$("#rbar").innerHTML=m?`<div class="rbar"><div class="grow el"><b>↩ ${esc(quote(m).n)}:</b> ${esc(quote(m).t)}</div><button type="button" class="ghost" id="rbx" aria-label="Отменить ответ">✕</button></div>`:"";
+  const setReply=m=>{replyTo=m;$("#rbar").innerHTML=m?`<div class="rbar"><div class="grow el"><b>💬 ${esc(quote(m).n)}:</b> ${esc(quote(m).t)}</div><button type="button" class="ghost" id="rbx" aria-label="Отменить ответ">✕</button></div>`:"";
     if(m){$("#rbx").onclick=()=>setReply(null);$("#mt").focus()}};
   const jump=id=>{const el=box.querySelector(`[data-id="${CSS.escape(id)}"]`);if(!el)return toast("Это сообщение выше - его уже нет на экране");
     el.scrollIntoView({block:"center",behavior:RM?"auto":"smooth"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),1600)};
@@ -1623,7 +1623,7 @@ async function chatV(key){
   };
   const pick=el=>{closePick();const id=el.dataset.id,m=list.find(x=>x.id===id);if(!m)return;
     const b=el.querySelector(".bub").getBoundingClientRect(),p=document.createElement("div");p.className="rpick";
-    p.innerHTML=REACTS.map(e=>`<button type="button" data-pe="${e}" aria-label="Реакция ${e}">${e}</button>`).join("")+`<button type="button" data-rep aria-label="Ответить">↩️</button>`+(m.mine||canMod?`<button type="button" data-del aria-label="Удалить сообщение">🗑</button>`:"");
+    p.innerHTML=REACTS.map(e=>`<button type="button" data-pe="${e}" aria-label="Реакция ${e}">${e}</button>`).join("")+`<button type="button" data-rep aria-label="Ответить">💬</button>`+(m.mine||canMod?`<button type="button" data-del aria-label="Удалить сообщение">🗑</button>`:"");
     document.body.append(p);const w=p.offsetWidth;p.style.left=Math.max(8,Math.min(innerWidth-w-8,m.mine?b.right-w:b.left))+"px";
     const y=b.top-p.offsetHeight-8;p.style.top=(y<70?b.bottom+8:y)+"px";
     p.onclick=ev=>{const t=ev.target.closest("button");if(!t)return;closePick();if(t.hasAttribute("data-del"))return del(el);if(t.hasAttribute("data-rep"))return setReply(m);react(id,t.dataset.pe)}};
@@ -1917,13 +1917,13 @@ async function loadX(){
   return X;
 }
 /* ───────── эко-питомец ───────── */
-const PETS=[["turtle","🐢","Черепашка"],["fox","🦊","Лисёнок"],["owl","🦉","Совёнок"],["bee","🐝","Пчёлка"],["penguin","🐧","Пингвинёнок"],["hedgehog","🦔","Ёжик"]];
+const PETS=[["turtle","🐢","Черепашка"],["fox","🦊","Лисёнок"],["owl","🦉","Совёнок"],["bee","🐝","Пчёлка"],["seal","🦭","Тюленёнок"],["panda","🐼","Панда"]];
 const MOOD=[["😢","Очень скучает","Давно не виделись! Сыграй в мини-игру или выполни задание дня - и питомец снова обрадуется."],
-  ["😟","Грустит","Питомцу не хватает тебя. Загляни в мини-игры или задания дня."],
+  ["💧","Грустит","Питомцу не хватает тебя. Загляни в мини-игры или задания дня."],
   ["🙂","Ждёт тебя","Вчера вы были вместе. Сыграй сегодня - и питомец будет счастлив."],
-  ["😊","Радуется","Сегодня ты уже позаботился(лась) о природе - питомец доволен!"]];
+  ["🙌","Радуется","Сегодня ты уже позаботился(лась) о природе - питомец доволен!"]];
 function petCard(p){
-  if(!p)return`<div class="card petc"><div class="row"><div class="pete" style="font-size:46px">🥚</div><div class="grow"><b>Эко-питомец</b><div class="muted sm">Заведи друга: он растёт от твоего опыта и радуется, когда ты играешь и выполняешь задания.</div></div></div>
+  if(!p)return`<div class="card petc"><div class="row"><div class="pete" style="font-size:46px">🐾</div><div class="grow"><b>Эко-питомец</b><div class="muted sm">Заведи друга: он растёт от твоего опыта и радуется, когда ты играешь и выполняешь задания.</div></div></div>
     <button class="btn-full" id="pnew" style="margin-top:10px">Завести питомца</button></div>`;
   const m=MOOD[p.mood]||MOOD[3],pct=p.next?Math.min(100,Math.round(p.xp/p.next*100)):100;
   return`<div class="card petc m${p.mood}"><div class="row"><button type="button" class="pete" id="ppet" aria-label="Погладить питомца" style="font-size:${46+p.stage*7}px">${p.emoji}</button>
@@ -1934,7 +1934,7 @@ function petCard(p){
     <p class="muted sm" style="margin:6px 0 0">Питомец растёт от опыта, полученного после его появления. Нажми на него, чтобы погладить.</p></div>`}
 function petModal(cur){
   let kind=cur?cur.kind:"fox";
-  const md=modal(`<h2 style="padding-right:40px">${cur?"✏️ Мой питомец":"🥚 Новый питомец"}</h2><div class="petg">${PETS.map(([k,e,n])=>`<button type="button" data-pk="${k}" class="${k===kind?"on":""}"><span>${e}</span><small>${n}</small></button>`).join("")}</div>
+  const md=modal(`<h2 style="padding-right:40px">${cur?"✏️ Мой питомец":"🐾 Новый питомец"}</h2><div class="petg">${PETS.map(([k,e,n])=>`<button type="button" data-pk="${k}" class="${k===kind?"on":""}"><span>${e}</span><small>${n}</small></button>`).join("")}</div>
     <label class="lbl" for="pnm">Имя питомца</label><input id="pnm" maxlength="16" placeholder="Например: Рыжик" value="${esc(cur?cur.name:"")}">
     ${cur?`<p class="muted sm" style="margin:6px 0 0">Рост и настроение сохранятся.</p>`:""}<div class="err" id="pe"></div><button class="btn-full" id="pok" style="margin-top:10px">${cur?"Сохранить":"Завести питомца"}</button>`);
   const q=x=>md.el.querySelector(x);
@@ -1950,7 +1950,7 @@ function petModal(cur){
     if(!r.ok){X.pet=was;drawX();return toast(r.error,"err")}X.pet=r.pet;cset("x",X);FRESH.x=0;drawX()};
   if(!cur)setTimeout(()=>q("#pnm").focus(),50)}
 function petPat(el){sfx("tap");el.classList.remove("pat2");void el.offsetWidth;el.classList.add("pat2");if(RM)return;
-  const r=el.getBoundingClientRect();for(let i=0;i<5;i++){const h=document.createElement("span");h.className="heart";h.textContent=["❤️","💚","💛"][i%3];
+  const r=el.getBoundingClientRect();for(let i=0;i<5;i++){const h=document.createElement("span");h.className="heart";h.textContent=["❤️","💜","✨"][i%3];
     h.style.left=r.left+r.width/2+(Math.random()*60-30)+"px";h.style.top=r.top+scrollY+"px";h.style.animationDelay=i*90+"ms";document.body.append(h);setTimeout(()=>h.remove(),1500)}}
 
 /* ───────── итоги года ───────── */
@@ -2053,7 +2053,7 @@ async function profileV(){
     if($("#pg")){const g=$("#pg").value,l=$("#pl2").value.trim().toUpperCase();
       if(g!==(cust.grade||"")||l!==(cust.letter||"")){const p=await api("profileSet",{grade:g,letter:l});if(dead(p))return;
         if(!p.ok){saveMe();return $("#er").textContent=p.error}me.cust=p.cust;
-        if(bandOf(g)!==bandOf(cust.grade)){cset("qotd",null);FRESH.qotd=0;bm=". Вопросы в играх теперь для "+(bandOf(g)?bandOf(g).replace("класс","класса"):"всех классов")}}}
+        if(bandOf(g)!==bandOf(cust.grade)){cset("qotd",null);FRESH.qotd=0;GP={};GPT=0;GPseq++;bm=". Вопросы в играх теперь для "+(bandOf(g)?bandOf(g).replace("класс","класса"):"всех классов")}}}
     saveMe();toast("Сохранено ✓"+bm);profileV();
   });
   if(X)drawX();

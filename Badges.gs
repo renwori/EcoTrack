@@ -1382,9 +1382,9 @@ wrapA("friendRemove",null,d=>{const u=byId(REQ_UID),o=byName(d.username);if(u&&o
 const SECRETS=[["owl","🦉","purple","Ночная сова","Сыграть в мини-игру поздно вечером, после 22 часов","Совы не спят…"],
  ["early","🐦","orange","Ранняя пташка","Сыграть в мини-игру рано утром, до 7 часов","Кто рано встаёт…"],
  ["perfect3","🎯","gold","Снайпер","Пройти три мини-игры подряд без единой ошибки","Ни одной ошибки - и так несколько раз подряд"],
- ["marathon","🏃","blue","Марафонец","Сыграть 15 мини-игр за один день","Очень-очень много игр за один день"],
+ ["marathon","🥾","blue","Марафонец","Сыграть 15 мини-игр за один день","Очень-очень много игр за один день"],
  ["comeback","🔄","green","С возвращением!","Вернуться в мини-игры после перерыва в неделю и больше","Иногда стоит вернуться"],
- ["newyear","🎄","green","Новогоднее чудо","Сыграть в мини-игру в новогодние праздники","Праздничное настроение ❄️"],
+ ["newyear","🌲","green","Новогоднее чудо","Сыграть в мини-игру в новогодние праздники","Праздничное настроение ✨"],
  ["blitz25","⚡","gold","Быстрее молнии","Дать 25 верных ответов в блице","Нужно быть очень-очень быстрым"]];
 function secretCheck(u,ev){const has=new Set(rowsRaw("Badges").filter(b=>b.studentId===u.id).map(b=>b.id)),got=[];
  const h=Number(Utilities.formatDate(new Date(),"Europe/Moscow","H")),md=today().slice(5),mine=r=>r.userId===u.id;
@@ -1402,7 +1402,7 @@ wrapA("gameSubmit",null,(d,r)=>{const u=REQ_UID&&byId(REQ_UID);if(u&&r){const s=
 wrapA("blitzSubmit",null,(d,r)=>{const u=REQ_UID&&byId(REQ_UID);if(u&&r){const s=secretCheck(u,{blitz:r.score});if(s.length)r.ach=(r.ach||[]).concat(s)}});
 
 /* ───── эко-питомец: растёт от опыта, настроение - от того, как давно ты что-то делал(а) ───── */
-const PETS={turtle:["🐢","Черепашка"],fox:["🦊","Лисёнок"],owl:["🦉","Совёнок"],bee:["🐝","Пчёлка"],penguin:["🐧","Пингвинёнок"],hedgehog:["🦔","Ёжик"]};
+const PETS={turtle:["🐢","Черепашка"],fox:["🦊","Лисёнок"],owl:["🦉","Совёнок"],bee:["🐝","Пчёлка"],seal:["🦭","Тюленёнок"],panda:["🐼","Панда"]};
 const PET_STAGE=[[0,"Малыш"],[100,"Подросток"],[300,"Взрослый"],[700,"Мудрый"],[1500,"Легенда"]];
 function petOf(u){const r=rowsRaw("Pets").find(x=>x.userId===u.id);if(!r||!PETS[r.kind])return null;
  const since=String(r.created||"").slice(0,10),log=tail("XpLog",30000).filter(x=>x.userId===u.id);
