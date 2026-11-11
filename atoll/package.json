@@ -1,0 +1,38 @@
+{
+  "name": "atoll",
+  "productName": "Atoll",
+  "version": "0.1.0",
+  "description": "Остров сверху экрана Windows: музыка (Яндекс Музыка, радио, свои файлы), погода, таймер, заметки",
+  "main": "src/main.js",
+  "author": "renwori",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/yandex-preload.js && node --check src/island/app.js",
+    "dist": "electron-builder --win --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.atoll.island",
+    "productName": "Atoll",
+    "directories": { "output": "dist" },
+    "files": ["src/**/*", "assets/**/*", "package.json"],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "artifactName": "Atoll-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Atoll-Portable-${version}.${ext}"
+    }
+  }
+}
