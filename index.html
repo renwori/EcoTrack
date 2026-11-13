@@ -300,6 +300,51 @@ button.chi{display:flex;gap:12px;align-items:center;width:100%;text-align:left;c
 .ybg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}.ybg .md{--s:52px}
 .ydots{display:flex;gap:6px;justify-content:center;margin-top:8px}.ydots i{width:8px;height:8px;border-radius:50%;background:var(--line)}.ydots i.on{background:var(--pri);width:20px;border-radius:4px}
 @media(prefers-reduced-motion:reduce){.petc.m3 .pete,.pete.pat2,.ysl{animation:none}}
+
+/* эко-курс */
+.crs .hearts{font-size:18px;letter-spacing:-2px}.hx{filter:grayscale(1);opacity:.35}
+.crt{margin:18px 0 6px}.crh{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:18px;background:var(--pri2)}.cre{font-size:26px}
+.path{display:grid;justify-items:center;gap:6px;padding:10px 0}
+.pn{display:grid;justify-items:center;gap:4px;transform:translateX(calc(var(--o)*56px))}.pn small{font-size:12px;font-weight:700;color:var(--muted);max-width:140px;text-align:center}
+.node{width:68px;height:68px;min-height:0;padding:0;border-radius:50%;font-size:28px;display:grid;place-items:center;background:var(--line);color:var(--muted);box-shadow:0 6px 0 rgba(0,0,0,.12);filter:none}
+.node.done{background:linear-gradient(135deg,#4ade80,#16a34a);color:#fff;box-shadow:0 6px 0 #15803d}
+.node.cur{background:linear-gradient(135deg,var(--pri),#0ea5e9);color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.2),0 0 0 6px var(--pri2);animation:glow 1.6s ease-in-out infinite}
+.node.ctl{width:80px;height:80px;font-size:34px}.node.ctl.done{background:linear-gradient(135deg,#fde047,#f59e0b);box-shadow:0 6px 0 #b45309}
+.node:disabled{opacity:.7}
+.fact .ft{font-size:17px;line-height:1.5;margin:10px 0 14px;text-align:left}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pairs>div{display:grid;gap:8px;align-content:start}
+.pb{min-height:52px;height:auto;padding:8px 10px;border-radius:14px;background:var(--solid);color:var(--text);border:2px solid var(--line);box-shadow:none;filter:none;font-weight:700;font-size:14px;line-height:1.25}
+.pb.sel{border-color:var(--pri);background:var(--pri2)}.pb.good2{border-color:#16a34a;background:rgba(34,197,94,.18);opacity:.75}.pb.bad2{border-color:#dc2626;background:rgba(239,68,68,.15);animation:shake .35s}
+.fb{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(536px,calc(100% - 24px));z-index:12;padding:14px;border-radius:22px;box-shadow:0 18px 40px -16px rgba(0,0,0,.45);animation:rise .3s var(--ease)}
+.fb.ok{background:#dcfce7;color:#14532d}.fb.no{background:#fee2e2;color:#7f1d1d}.fb b{font-size:18px}.fb p{margin:4px 0 10px;font-size:14px}
+.hb{font-size:16px;white-space:nowrap}.hb.bump{animation:bump .4s}
+.crtile .te{background:rgba(255,255,255,.25)}
+/* сундук */
+.chest2{font-size:110px;line-height:1.1;width:auto;height:auto;min-height:0;padding:6px 18px;background:none;box-shadow:none;filter:drop-shadow(0 10px 18px rgba(0,0,0,.25));cursor:pointer}
+.chest2.hit{animation:shake .35s}.chest2.open{animation:pop .5s var(--spring)}
+.taps{display:flex;gap:8px;justify-content:center;margin:6px 0}.taps[hidden]{display:none}.taps i{width:12px;height:12px;border-radius:50%;background:var(--line)}.taps i.on{background:var(--pri)}
+.odds{margin-top:14px;text-align:left;padding:12px 14px;border-radius:16px;background:var(--pri2)}.odds .row{gap:8px;margin-top:6px}
+/* лента сворачивается, что нового */
+.feedc.shut .fdb{display:none}
+.wnew{display:flex;gap:12px;align-items:center;width:100%;text-align:left;color:var(--text);border:2px solid var(--pri)}.wnew .te{font-size:30px}.wnew .go{color:var(--pri)}
+.chg{padding:10px 0;border-top:1px solid var(--line)}.chg.first{border-top:0}.chg ul{margin:6px 0 0;padding-left:20px}.chg li{margin:3px 0;font-size:14px}
+/* новые украшения */
+.hero.cv-lavender{background:linear-gradient(135deg,rgba(196,181,253,.7),rgba(233,213,255,.75)),var(--card)}
+.hero.cv-desert{background:linear-gradient(180deg,rgba(253,230,138,.75),rgba(251,191,36,.55) 60%,rgba(217,119,6,.45)),var(--card)}
+.hero.cv-tropics{background:linear-gradient(135deg,rgba(16,185,129,.55),rgba(250,204,21,.5) 55%,rgba(244,114,182,.45)),var(--card)}
+.hero.cv-candy{background:repeating-linear-gradient(135deg,rgba(251,207,232,.85) 0 18px,rgba(255,255,255,.85) 18px 36px),var(--card)}
+.hero.cv-galaxy{background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.5) 0 1px,transparent 2px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.45) 0 1px,transparent 2px),linear-gradient(135deg,#1e1b4b,#4c1d95 50%,#0f172a),var(--card);color:#ede9fe}
+.hero.cv-galaxy .muted{color:rgba(237,233,254,.8)}
+.hero.cv-crystal{background:linear-gradient(135deg,rgba(165,243,252,.8),rgba(196,181,253,.7) 50%,rgba(251,207,232,.75)),var(--card);box-shadow:inset 0 0 26px rgba(255,255,255,.7)}
+.pt-clouds .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40'%3E%3Cpath d='M14 26a7 7 0 0 1 2-13 9 9 0 0 1 17 2 6 6 0 0 1 1 11z' fill='none' stroke='%2314532d' stroke-width='2'/%3E%3C/svg%3E")}.pt-fish .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='40'%3E%3Cpath d='M10 20c6-8 18-8 24 0-6 8-18 8-24 0zm24 0l8-6v12z' fill='%2314532d'/%3E%3Ccircle cx='16' cy='18' r='1.5' fill='white'/%3E%3C/svg%3E")}.pt-mountains .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='40'%3E%3Cpath d='M4 34 20 12l8 10 8-8 18 20z' fill='none' stroke='%2314532d' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.pt-recycle .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cg fill='none' stroke='%2314532d' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M18 14l7-6 7 6M25 8v8M14 30l-5 8h10M38 30l3 8h-9'/%3E%3C/g%3E%3C/svg%3E")}.pt-butterflies .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='48'%3E%3Cg fill='%2314532d'%3E%3Cellipse cx='20' cy='18' rx='7' ry='9' transform='rotate(-20 20 18)'/%3E%3Cellipse cx='32' cy='18' rx='7' ry='9' transform='rotate(20 32 18)'/%3E%3Cellipse cx='22' cy='30' rx='5' ry='6'/%3E%3Cellipse cx='30' cy='30' rx='5' ry='6'/%3E%3C/g%3E%3C/svg%3E")}.pt-gems .pat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M16 10h16l6 8-14 18-14-18z' fill='none' stroke='%2314532d' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M10 18h28M20 10l-2 8 6 18 6-18-2-8' fill='none' stroke='%2314532d' stroke-width='1.5'/%3E%3C/svg%3E")}
+.f-sakura{--fr:conic-gradient(#fbcfe8,#f472b6,#fbcfe8,#f9a8d4,#fbcfe8);box-shadow:0 0 14px -3px #f472b6}
+.f-candy{--fr:repeating-conic-gradient(#f472b6 0 20deg,#fff 20deg 40deg);box-shadow:0 0 12px -4px #ec4899}
+.f-lava{--fr:conic-gradient(#7f1d1d,#ef4444,#f97316,#fde047,#ef4444,#7f1d1d);box-shadow:0 0 16px -2px #f97316}
+.f-aurora{--fr:conic-gradient(#22d3ee,#34d399,#a78bfa,#f0abfc,#22d3ee);box-shadow:0 0 18px -2px #34d399}
+.nm.n-sakura,.nm.n-ice,.nm.n-lava,.nm.n-galaxy{-webkit-background-clip:text;background-clip:text;color:transparent}
+.nm.n-sakura{background-image:linear-gradient(90deg,#db2777,#f9a8d4)}.nm.n-ice{background-image:linear-gradient(90deg,#0284c7,#67e8f9)}
+.nm.n-lava{background-image:linear-gradient(90deg,#b91c1c,#f97316,#eab308)}.nm.n-galaxy{background-image:linear-gradient(90deg,#4c1d95,#7c3aed,#ec4899)}
 .composer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(536px,calc(100% - 24px));z-index:10;display:flex;gap:6px;align-items:flex-end;padding:6px;background:var(--card);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--line);border-radius:26px;box-shadow:0 18px 40px -16px rgba(0,0,0,.4);animation:rise .5s var(--ease)}
 .composer textarea{margin:0;min-height:44px;max-height:140px;resize:none;border-radius:20px;padding:11px 14px;line-height:1.4}
 .composer button{flex:none;width:44px;height:44px;min-height:0;padding:0;border-radius:50%;font-size:18px}
@@ -913,16 +958,20 @@ const fnum=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:2});
 const impText=imp=>IMP.filter(([k])=>imp&&imp[k]).map(([k,e])=>`${e} ≈ ${fnum(imp[k])} ${{water:"л",plastic:"шт.",paper:"кг",co2:"кг CO₂",energy:"кВт·ч"}[k]}`).join(" · ");
 function impactCard(imp,title,empty){if(!imp)return"";const has=IMP.some(([k])=>imp[k]>0);
   return`<div class="card"><b>🌍 ${title}</b> <span class="muted sm">(примерно)</span>${has?`<div class="impg">${IMP.filter(([k])=>imp[k]>0).map(([k,e,t])=>`<div class="imp"><span>${e}</span><b>${fnum(imp[k])}</b><small>${t}</small></div>`).join("")}</div>`:`<p class="muted sm" style="margin:6px 0 0">${empty}</p>`}</div>`}
-function feedCard(ev,title,empty){if(!ev)return"";
-  return`<div class="card"><b>📰 ${title}</b>${ev.length?ev.map(e=>`<div class="item"><div class="evi">${esc(e.emoji)}</div><div class="grow"><div>${esc(e.text)}</div><div class="muted sm">${ago(e.created)}</div></div></div>`).join(""):`<p class="muted sm" style="margin:6px 0 0">${empty}</p>`}</div>`}
+function feedCard(ev,title,empty){if(!ev)return"";const shut=ls.get("feedHide")===1;
+  return`<div class="card feedc ${shut?"shut":""}"><div class="row"><b class="grow">📰 ${title}</b>${ev.length?`<button type="button" class="ghost sm fdt">${shut?"Развернуть":"Свернуть"}</button>`:""}</div><div class="fdb">${ev.length?ev.map(e=>`<div class="item"><div class="evi">${esc(e.emoji)}</div><div class="grow"><div>${esc(e.text)}</div><div class="muted sm">${ago(e.created)}</div></div></div>`).join(""):`<p class="muted sm" style="margin:6px 0 0">${empty}</p>`}</div></div>`}
 function forestCard(title,trees){if(!trees)return"";
   return`<div class="card"><b>🌲 ${esc(title)}</b><p class="muted sm" style="margin:2px 0 0">У каждого своё дерево - оно растёт от опыта. Чем активнее класс, тем гуще лес!</p>
   <div class="forest">${trees.map(t=>`<div class="ft" data-pf="${esc(t.user.username)}">${treeSvg(stageOf(t.xp),t.streak)}<b>${esc(t.user.firstName)}</b><small>${t.teacher?"учитель":STAGES[stageOf(t.xp)][1]}${t.streak?" · 🔥"+t.streak:""}</small></div>`).join("")}</div></div>`}
+// окно с данными: сразу показывается сохранённое, а свежее с сервера подменяет его, когда придёт
+async function mload(k,action,d,render,alive,close){const c=cget(k);if(c)render(c);
+  const r=await api(action,d);if(!alive())return;if(dead(r))return close();
+  if(r.ok){cset(k,r);if(JSON.stringify(r)!==JSON.stringify(c))render(r)}else if(!c)render(r);else toast(r.error,"err")}
 async function forestModal(un){
-  const m=modal(`<div id="fm">${sk(2)}</div>`),r=await api("classForest",{username:un});if(dead(r))return m.close();
+  const m=modal(`<div id="fm">${sk(2)}</div>`);mload("fo:"+un,"classForest",{username:un},r=>{
   const b=m.el.querySelector("#fm");if(!b)return;if(!r.ok){b.innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
   b.innerHTML=forestCard("Лес класса «"+r.name+"»",r.trees)+impactCard(r.impact,"Польза класса","Пока никто в классе не выполнил задания дня.");
-}
+},()=>m.el.isConnected,()=>m.close())}
 
 /* ───────── оформление профиля ───────── */
 const COVERS=[["default","Обычная"],["forest","Лес"],["ocean","Океан"],["sunset","Закат"],["aurora","Аврора"],["meadow","Луг"],["night","Ночь"],["berry","Ягоды"],["dev","Код",1]];
@@ -1270,7 +1319,7 @@ const dayAgo=d=>{if(!d)return"пока без активности";const n=Math
   return n<=0?"активен(на) сегодня":n===1?"был(а) вчера":"был(а) "+plural(n,"день","дня","дней")+" назад"};
 const today0=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 async function statsModal(){
-  const m=modal(`<h2 style="padding-right:40px">📊 Статистика класса</h2><div id="ssb">${sk(3)}</div>`),r=await api("classStats");if(dead(r))return m.close();
+  const m=modal(`<h2 style="padding-right:40px">📊 Статистика класса</h2><div id="ssb">${sk(3)}</div>`);mload("cstats","classStats",{},r=>{
   const b=m.el.querySelector("#ssb");if(!b)return;if(!r.ok){b.innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
   const played=r.topics.filter(x=>x.pct!==null),weak=played.find(x=>x.pct<75);
   b.innerHTML=`<div class="sec" style="margin-top:6px">Темы за 30 дней</div>${weak?`<p class="sm" style="margin:6px 0">Сложнее всего классу даётся <b>«${esc(weak.name)}»</b> - ${weak.pct}% верных ответов. Стоит разобрать эту тему на уроке.</p>`:played.length?`<p class="sm" style="margin:6px 0">Класс хорошо справляется со всеми темами, в которые играл 👍</p>`:`<p class="muted sm">Ученики ещё не играли в мини-игры.</p>`}
@@ -1281,7 +1330,7 @@ async function statsModal(){
     :`<p class="muted sm">В классе пока нет учеников.</p>`}
     <p class="muted sm" style="margin-top:10px">🔥 серия дней · ⭐ опыт · 🎮 игры · ✅ задания · 🎯 верные ответы за 30 дней</p>`;
   loadAv(r.students.map(s=>s.user));
-}
+},()=>m.el.isConnected,()=>m.close())}
 
 /* ───────── панель разработчика ───────── */
 function devV(){
@@ -1430,6 +1479,9 @@ async function prefetch(){
   if(R.chats&&R.chats.ok){CH=R.chats;keep("chats",CH);dots(CH);if(chatsDraw)chatsDraw(CH)}
   if(R.extra&&R.extra.ok){X=R.extra;keep("x",X);if(me&&(AV[me.username]||"")!==(X.avatar||"")){AV[me.username]=X.avatar||"";saveAV();paintAv(me.username)}refreshNav();remindCheck();encCheck()}
   offlineSync();setTimeout(offlinePackLoad,5000);
+  // вторым пакетом, чуть позже, - данные остальных разделов: игры, магазин, курс, мероприятия
+  setTimeout(()=>{if(!me)return;pack([{k:"mist",action:"mistakes"},{k:"duo",action:"duoInfo"},{k:"shop",action:"shop"},{k:"course",action:"courseMap"},{k:"ev",action:"eventList"},{k:"rc",action:"recycleList"}]);
+    setTimeout(prepGames,1500)},1200);
 }
 function go(t){
   stopPoll();chatsDraw=null;openChat=null;document.body.classList.remove("chatting");
@@ -1444,7 +1496,7 @@ function go(t){
 /* ───────── лента ───────── */
 function feedV(){
   const my=++vid;
-  put(`<div class="row"><h1 class="grow">Лента</h1><button class="ghost sm" id="rf" aria-label="Обновить">↻</button></div><p class="muted sm" style="margin-top:-6px">Свежие новости об экологии из внешних источников</p><div id="nw">${sk(3)}</div>`);
+  put(`<div class="row"><h1 class="grow">Лента</h1><button class="ghost sm" id="rf" aria-label="Обновить">↻</button></div><p class="muted sm" style="margin-top:-6px">Свежие новости об экологии из внешних источников</p>${newsBanner()}<div id="nw">${sk(3)}</div>`);
   const draw=r=>{const box=$("#nw");if(!box||my!==vid)return;
     if(!r.ok){box.innerHTML=`<div class="card err">${esc(r.error)}</div>`;return}
     box.innerHTML=r.news.length?r.news.map(n=>`<a class="card news lift" href="${esc(/^https?:\/\//.test(n.url)?n.url:"#")}" target="_blank" rel="noopener noreferrer"><div class="meta"><span class="dotc" style="background:hsl(${hue(n.source)} 70% 50%)"></span>${esc(n.source)}<span>· ${ago(n.published)}</span></div><div class="nt">${esc(n.title)}</div><div class="more">Читать оригинал →</div></a>`).join("")
@@ -1678,8 +1730,8 @@ const optText=o=>((OI[o]||"")+" "+o).trim();
 // Возрастная группа для сложности вопросов - так же, как на сервере.
 const bandOf=g=>{g=+g||0;return!g?"":g<=4?"1-4 класс":g<=8?"5-8 класс":"9-11 класс"};
 function gamesV(){
-  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"},{k:"mist",action:"mistakes"},{k:"duo",action:"duoInfo"},{k:"shop",action:"shop"}]);
-  put(`<h1>Игры и задания</h1>${navigator.onLine?"":`<div class="card notice"><b>📡 Нет интернета</b><p class="sm" style="margin:4px 0 0">Можно играть в сортировку, викторину, «Миф или правда» и «Как поступить?» - серия засчитается, когда интернет появится.</p></div>`}<div id="evb"></div><div id="qd"></div><div id="eco"></div><div id="duo"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
+  const my=++vid;pack([{k:"qotd",action:"qotd"},{k:"tasks",action:"tasks"},{k:"x",action:"extra"},{k:"mist",action:"mistakes"},{k:"duo",action:"duoInfo"},{k:"shop",action:"shop"},{k:"course",action:"courseMap"}]);
+  put(`<h1>Игры и задания</h1>${navigator.onLine?"":`<div class="card notice"><b>📡 Нет интернета</b><p class="sm" style="margin:4px 0 0">Можно играть в сортировку, викторину, «Миф или правда» и «Как поступить?» - серия засчитается, когда интернет появится.</p></div>`}<div id="evb"></div><button class="tile crtile" id="tcr" style="--g:linear-gradient(135deg,#22c55e,#0ea5e9)"><span class="te">📚</span><span class="tt"><b>Эко-курс</b><span id="tcrs">Уроки по темам: мусор, вода, энергия, животные, климат</span><em>корона и сундук за тему</em></span><span class="go">▶</span></button><div id="qd"></div><div id="eco"></div><div id="duo"></div><h2 class="sec">Задания на сегодня</h2><div id="tk">${sk(3)}</div>
   <button class="tile" id="rtg" style="--g:linear-gradient(135deg,#f59e0b,#ef4444)"><span class="te">🏆</span><span class="tt"><b>Рейтинг недели</b><span>Друзья, класс, вся школа и соревнование классов</span></span><span class="go">▶</span></button>
   <h2 class="sec">Полезное</h2>
   <button class="tile" id="tdi" style="--g:linear-gradient(135deg,#22c55e,#0d9488)"><span class="te">📒</span><span class="tt"><b>Дневник вторсырья</b><span>Записывай, что сдал(а) на переработку, и смотри итоги по месяцам</span></span><span class="go">▶</span></button>
@@ -1697,7 +1749,7 @@ function gamesV(){
   if($("#setgr"))$("#setgr").onclick=()=>go("profile");
   prepGames();
   $("#view").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>play(b.dataset.g));$("#emap").onclick=mapV;$("#rtg").onclick=()=>ratingV();
-  $("#tdi").onclick=diaryV;$("#tfp").onclick=footV;$("#tev").onclick=eventsV;$("#tenc").onclick=encV;$("#tcal").onclick=calendarV;$("#tbz").onclick=blitzV;$("#tmk").onclick=mistakesV;
+  $("#tdi").onclick=diaryV;$("#tcr").onclick=courseV;swr("course","courseMap",{},r=>{const e=$("#tcrs");if(e&&r&&r.ok)e.textContent=`Пройдено ${r.doneN} из ${r.total} уроков · ${"❤️".repeat(r.hearts)||"😢"}`;if(r&&r.ok)coursePrefetch(r)},my);$("#tfp").onclick=footV;$("#tev").onclick=eventsV;$("#tenc").onclick=encV;$("#tcal").onclick=calendarV;$("#tbz").onclick=blitzV;$("#tmk").onclick=mistakesV;
   const encT=()=>{const e=$("#tencs");if(e&&X&&X.counters)e.textContent=`Открыто ${encOpen(X)} из ${SPECIES.length} карточек редких видов`};
   ecoCard();encT();loadX().then(()=>{if(my===vid){ecoCard();encT()}});duoBox($("#duo"),my);
   swr("mist","mistakes",{},r=>{const e=$("#tmks");if(e&&r&&r.ok)e.textContent=r.count?`Вопросов с ошибками: ${r.count} - исправь их!`:"Ошибок нет - так держать!"},my);
@@ -1826,6 +1878,94 @@ function playOrder(g,G,r,my){
   step();
 }
 
+/* ───────── эко-курс: путь из тем, сердечки, короны ───────── */
+let CM=null,CPRE=null;
+const heartsH=m=>`<span class="hearts" title="Сердечки">${"❤️".repeat(m.hearts)}<span class="hx">${"❤️".repeat(Math.max(0,m.max-m.hearts))}</span></span>`;
+const mins=ts=>Math.max(1,Math.ceil((ts-Date.now())/60000));
+// следующий урок загружается заранее - открывается без ожидания
+function coursePrefetch(m){const t=m&&m.themes.flatMap(x=>x.lessons).find(l=>l.open&&!l.done);if(!t||m.hearts<=0||(CPRE&&CPRE.id===t.id))return;
+  const id=t.id;CPRE={id,p:api("courseStart",{id})}}
+function courseV(){
+  const my=++vid;put(backBtn("crb","📚 Эко-курс")+`<div id="crv">${sk(3)}</div>`);$("#crb").onclick=()=>go("games");
+  const draw=r=>{const b=$("#crv");if(!b||my!==vid)return;if(!r.ok){b.innerHTML=`<div class="card err">${esc(/Неизвестное действие/.test(r.error)?"Эко-курс заработает после обновления серверной части (Badges.gs, см. README).":r.error)}</div>`;return}
+    CM=r;const cur=r.themes.flatMap(t=>t.lessons).find(l=>l.open&&!l.done);
+    b.innerHTML=`<div class="card crs"><div class="row"><div class="grow"><b>Пройдено ${r.doneN} из ${r.total}</b><div class="muted sm">${r.themes.filter(t=>t.crown).length} ${plural(r.themes.filter(t=>t.crown).length,"корона","короны","корон").replace(/^\d+ /,"")} из ${r.themes.length} · ошибок на повтор: ${r.mist}</div></div>${heartsH(r)}</div>
+      <div class="prog" style="margin-top:8px"><i style="width:${Math.round(r.doneN/r.total*100)}%"></i></div>
+      ${r.hearts<r.max?`<div class="row sm" style="margin-top:8px"><span class="grow muted">Следующее сердечко через ${mins(r.next)} мин</span><button class="ghost sm" id="crf">❤️ Восстановить за ${r.refill} 🪙</button></div>`:""}</div>
+      ${r.themes.map((t,ti)=>`<div class="crt"><div class="crh"><span class="cre">${t.e}</span><b class="grow">${esc(t.n)}</b>${t.crown?`<span class="tag">👑 корона</span>`:""}</div>
+        <div class="path">${t.lessons.map((l,i)=>`<div class="pn" style="--o:${[0,1,0,-1][i%4]}"><button class="node ${l.done?"done":""} ${l.open&&!l.done?"cur":""} ${l.control?"ctl":""}" data-l="${l.id}" ${l.open?"":"disabled"} aria-label="${esc(l.n)}">${l.control?(t.crown?"👑":"🏆"):l.done?"✓":l.open?t.e:"🔒"}</button><small>${esc(l.n)}</small></div>`).join("")}</div></div>`).join("")}
+      <p class="muted sm">Каждая ошибка забирает сердечко. Сердечки восстанавливаются сами - по одному за 30 минут. Контрольный урок в конце темы даёт корону и сундук 🎁.</p>`;
+    b.querySelectorAll("[data-l]").forEach(x=>x.onclick=()=>{if(CM.hearts<=0)return toast("Сердечки закончились 😢 Подожди или восстанови их","err");lessonV(x.dataset.l)});
+    if($("#crf"))$("#crf").onclick=async()=>{const x=await api("courseRefill");if(dead(x))return;if(!x.ok)return toast(x.error,"err");sfx("coin");toast("Сердечки восстановлены ❤️");
+      if(X){X.coins=x.coins;cset("x",X)}FRESH.shop=0;cset("course",x.map);draw(Object.assign({ok:true},x.map))};
+    const c=b.querySelector(".node.cur");if(c&&!RM)setTimeout(()=>c.scrollIntoView({block:"center",behavior:"smooth"}),250);
+    coursePrefetch(r)};
+  swr("course","courseMap",{},draw,my);
+}
+async function lessonV(id){
+  const my=++vid;let r=null;
+  if(CPRE&&CPRE.id===id){r=await CPRE.p;CPRE=null}
+  if(!r||!r.ok){put(`<div class="card wait"><div class="qe">📚</div><div class="spin"></div><p class="muted">Готовим урок…</p></div>`);r=await api("courseStart",{id})}
+  if(my!==vid||dead(r))return;
+  if(!r.ok){put(`<div class="card err">${esc(r.error)}</div><button class="btn-full" id="bk">К курсу</button>`);$("#bk").onclick=courseV;return}
+  const L=r.lesson,key=unk(r.k)||[],meta=(CM?CM.themes.flatMap(t=>t.lessons):[]).find(l=>l.id===id)||{},steps=(L.fact?[{k:"f"}]:[]).concat(L.items.map((it,i)=>Object.assign({n:i},it)));
+  let i=0,hearts=r.hearts,right=0;const ans=[];
+  const head=()=>`<div class="row" style="margin-top:12px"><button class="ghost sm" id="bk" aria-label="Выйти из урока">✕</button><div class="grow prog"><i id="pb" style="width:${i/steps.length*100}%"></i></div><b class="hb">❤️ ${hearts}</b></div>`;
+  const quit=async()=>{if(i>0&&!await ask("Выйти из урока? Прогресс урока не сохранится.","Выйти",1))return;courseV()};
+  // нижняя плашка: верно или нет, пояснение и «Дальше»
+  const feedback=(ok,text)=>{const v=$("#view");v.querySelector(".fb")?.remove();
+    v.insertAdjacentHTML("beforeend",`<div class="fb ${ok?"ok":"no"}"><b>${ok?"Верно! 🎉":"Неверно 😢"}</b>${text?`<p>${esc(text)}</p>`:""}<button class="btn-full" id="nx2">${hearts<=0?"Завершить":"Дальше"}</button></div>`);
+    $("#nx2").onclick=()=>{if(hearts<=0)return finish();i++;step()};sfx(ok?"ok":"bad")};
+  const result=(it,ok,a)=>{ans.push(Object.assign({id:it.id},a));if(ok)right++;else{hearts--;const h=$(".hb");if(h){h.textContent="❤️ "+hearts;h.classList.add("bump")}}};
+  const step=()=>{
+    if(i>=steps.length)return finish();const it=steps[i];
+    if(it.k==="f"){put(head()+`<div class="card qcard fact"><div class="qe">${esc(L.fact.e)}</div><span class="tag">Факт</span><p class="ft">${esc(L.fact.t)}</p><button class="btn-full" id="fx">Понятно →</button></div>`);
+      $("#fx").onclick=()=>{i++;step()};}
+    else if(it.k==="c"){put(head()+`<div class="card qcard">${it.id.split(":")[0]!==id&&!L.control?`<span class="tag">🔁 Повторяем ошибку</span>`:""}<h2>${esc(it.q)}</h2>${it.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCD"[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`);
+      $("#view").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ok=it.ix[k]===0,kk=key[it.n]||{};$("#view").querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(it.ix[+x.dataset.k]===0)x.classList.add("good2")});
+        if(!ok)b.classList.add("bad2");result(it,ok,{a:it.ix[k]});feedback(ok,ok?kk.e:"Правильно: «"+it.o[it.ix.indexOf(0)]+"». "+(kk.e||""))});}
+    else if(it.k==="p"){const kk=key[it.n]||{p:[]},got=[];let sel=null,miss=0;
+      put(head()+`<div class="card qcard"><h2>${esc(it.q)}</h2><div class="pairs"><div>${it.L.map(x=>`<button class="pb" data-s="L" data-v="${esc(x)}">${esc(x)}</button>`).join("")}</div><div>${it.R.map(x=>`<button class="pb" data-s="R" data-v="${esc(x)}">${esc(x)}</button>`).join("")}</div></div></div>`);
+      const v=$("#view");v.querySelectorAll(".pb").forEach(b=>b.onclick=()=>{if(b.disabled)return;
+        if(!sel||sel.dataset.s===b.dataset.s){v.querySelectorAll(".pb.sel").forEach(x=>x.classList.remove("sel"));sel=b;b.classList.add("sel");sfx("tap");return}
+        const l=sel.dataset.s==="L"?sel:b,rr=sel.dataset.s==="L"?b:sel,ok=kk.p.some(p=>p[0]===l.dataset.v&&p[1]===rr.dataset.v);sel.classList.remove("sel");
+        if(ok){[l,rr].forEach(x=>{x.disabled=true;x.classList.add("good2")});got.push([l.dataset.v,rr.dataset.v]);sfx("tap")}
+        else{miss++;[l,rr].forEach(x=>{x.classList.add("bad2");setTimeout(()=>x.classList.remove("bad2"),450)});sfx("bad")}
+        sel=null;if(got.length===it.L.length){const good=miss===0;result(it,good,{pairs:got,miss});feedback(good,good?"Все пары собраны без ошибок!":"Пары собраны, но были ошибки.")}});}
+    else{const kk=key[it.n]||{s:[]},seq=[];
+      put(head()+`<div class="card qcard"><h2>${esc(it.q)}</h2><p class="muted sm" style="margin-top:-8px">Нажимай по порядку. Нажми ещё раз, чтобы убрать.</p>
+        ${it.items.map(x=>`<button class="opt ordb" data-v="${esc(x)}"><b></b><span>${esc(x)}</span></button>`).join("")}<button class="btn-full" id="chk" disabled style="margin-top:8px">Проверить</button></div>`);
+      const v=$("#view"),upd=()=>{v.querySelectorAll(".ordb").forEach(b=>{const n=seq.indexOf(b.dataset.v);b.querySelector("b").textContent=n>=0?n+1:"";b.classList.toggle("picked",n>=0)});$("#chk").disabled=seq.length<it.items.length};
+      v.querySelectorAll(".ordb").forEach(b=>b.onclick=()=>{const n=seq.indexOf(b.dataset.v);if(n>=0)seq.splice(n,1);else seq.push(b.dataset.v);sfx("tap");upd()});
+      $("#chk").onclick=()=>{const ok=kk.s.every((x,j)=>seq[j]===x);v.querySelectorAll(".ordb").forEach(b=>{b.disabled=true;b.classList.add(seq.indexOf(b.dataset.v)===kk.s.indexOf(b.dataset.v)?"good2":"bad2")});$("#chk").remove();
+        result(it,ok,{order:seq.slice()});feedback(ok,ok?"":"Верный порядок: "+kk.s.map((x,j)=>(j+1)+") "+x).join("; "))}}
+    $("#bk").onclick=quit;raf2(()=>{const p=$("#pb");if(p)p.style.width=(i+1)/steps.length*100+"%"});
+  };
+  // итог - сразу; сервер проверяет ответы и начисляет награды в фоне
+  const finish=()=>{const passed=hearts>0,first=passed&&!meta.done,xp=first?10+2*right:0,theme=CM&&CM.themes.find(t=>t.lessons.some(l=>l.id===id)),crown=passed&&L.control&&theme&&!theme.crown;
+    put(`<div class="card center"><div style="font-size:64px">${passed?(crown?"👑":"🎉"):"😢"}</div><h2>${passed?(crown?"Корона темы!":"Урок пройден!"):"Сердечки закончились"}</h2>
+      <p class="muted">${passed?`Верных ответов: ${right} из ${L.items.length}`:"Ничего страшного - ошибки попадут в следующие уроки, чтобы ты их исправил(а)."}</p>
+      <div class="row" style="justify-content:center;gap:8px;flex-wrap:wrap">${xp?`<span class="tag pops" id="lxp">+${xp} опыта</span>`:passed?`<span class="tag">Урок уже был пройден</span>`:""}${crown?`<span class="tag pops">🎁 +1 сундук</span>`:""}</div></div>
+      <div class="row" style="margin-top:6px"><button class="ghost grow" id="bk">К курсу</button>${passed?"":`<button class="grow" id="again">Ещё раз</button>`}</div>`);
+    $("#bk").onclick=courseV;if($("#again"))$("#again").onclick=()=>lessonV(id);
+    if(passed){burst();sfx("win")}addXp(xp);
+    if(CM){const l=CM.themes.flatMap(t=>t.lessons).find(x=>x.id===id);CM.hearts=Math.max(0,hearts);if(passed&&l)l.done=true;cset("course",CM)}
+    api("courseSubmit",{id,answers:ans}).then(s=>{if(dead(s))return;if(!s.ok){addXp(-xp);return toast("Результат не сохранился: "+s.error,"err")}
+      addXp(s.xp-xp);CM=s.map;cset("course",Object.assign({ok:true},s.map));FRESH.course=Date.now();achToast(s.ach);
+      if(s.chest){if(X){X.chests=(X.chests||0)+1;cset("x",X)}toast("🎁 Сундук за корону темы - открой его во вкладке «Игры»")}
+      if(s.streak!==undefined&&X){X.streak=s.streak;X.playedToday=true;cset("x",X)}FRESH.x=0;coursePrefetch(s.map)});
+  };
+  step();
+}
+// учитель: прогресс класса в курсе
+async function courseClassModal(){
+  const m=modal(`<h2 style="padding-right:40px">📚 Эко-курс класса</h2><div id="ccb">${sk(3)}</div>`);mload("ccls","courseClass",{},r=>{
+  const b=m.el.querySelector("#ccb");if(!b)return;if(!r.ok){b.innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
+  b.innerHTML=r.students.length?r.students.map(s=>`<div class="item">${avatar(s.user)}<div class="grow"><b>${nameH(s.user)}</b><div class="muted sm">Сейчас: ${esc(s.now)}</div>
+    <div class="prog" style="margin-top:4px"><i style="width:${Math.round(s.done/r.total*100)}%"></i></div></div><div class="center"><b>${s.done}/${r.total}</b><div class="sm">${r.themes.map(t=>s.crowns.includes(t.id)?"👑":"").join("")||"-"}</div></div></div>`).join("")+
+    `<p class="muted sm" style="margin-top:8px">Число - пройденные уроки из ${r.total}, 👑 - короны тем.</p>`:`<p class="muted">В классе пока нет учеников.</p>`;
+  loadAv(r.students.map(s=>s.user))},()=>m.el.isConnected,()=>m.close())}
+
 /* ───────── класс (учитель и разработчик) ───────── */
 function classV(){
   if(!isStaff(me))return studentClassV();
@@ -1842,7 +1982,7 @@ function classV(){
     <div class="muted sm center" style="margin-top:10px">Код для учеников</div><div class="code" aria-label="Код класса ${esc(C.code)}">${[...C.code].map((ch,i)=>`<span style="animation-delay:${i*70}ms">${esc(ch)}</span>`).join("")}</div>
     <div class="row"><button class="grow" data-c="copy">📋 Скопировать</button><button class="ghost grow" data-c="code">🔄 Новый код</button></div>
     <button class="ghost btn-full" data-c="chat" style="margin-top:8px">💬 Чат класса</button>
-    <div class="row" style="margin-top:8px"><button class="ghost grow" data-c="stats">📊 Статистика</button><button class="ghost grow" data-c="rating">🏆 Рейтинг</button></div>
+    <div class="row" style="margin-top:8px"><button class="ghost grow" data-c="stats">📊 Статистика</button><button class="ghost grow" data-c="rating">🏆 Рейтинг</button></div><button class="ghost btn-full" data-c="course" style="margin-top:8px">📚 Эко-курс класса</button>
     <p class="muted sm" style="margin:10px 0 0">Ученик вводит этот код у себя в профиле - и попадает в ваш класс и его чат.</p></div>`};
   const drawSt=()=>{const s=C.students;
     $("#st").innerHTML=s.length?`<div class="card"><div class="row"><b class="grow">Ученики</b><span class="tag">${s.length}</span></div>${s.map(u=>`<div class="item">${avatar(u)}<div class="grow"><b data-pf="${esc(u.username)}">${nameH(u)}</b>${devTag(u,1)}<div class="muted sm">@${esc(u.username)} · ${rank(level(u.xp).lv)[2]} ур. ${level(u.xp).lv} · 🏅 ${u.badges}</div></div><div class="acts"><button class="sm" data-c="give" data-u="${esc(u.username)}" aria-label="Выдать значок">🏅</button><button class="ghost sm" data-c="more" data-u="${esc(u.username)}" aria-label="Подробнее">⋯</button></div></div>`).join("")}</div>`
@@ -1857,6 +1997,7 @@ function classV(){
     const b=e.target.closest("button[data-c]");if(!b||!C)return;const c=b.dataset.c;
     if(c==="chat")return chatV("c:"+me.username);
     if(c==="stats")return statsModal();
+    if(c==="course")return courseClassModal();
     if(c==="rating")return ratingV({scope:"class",teacher:me.username,back:()=>go("class")});
     if(c==="copy"){try{await navigator.clipboard.writeText(C.code);toast("Код скопирован 📋")}catch{toast("Код: "+C.code)}}
     if(c==="code"){if(!await ask("Сгенерировать новый код? Старый перестанет работать (ученики в классе останутся).","Новый код"))return;
@@ -2068,7 +2209,7 @@ async function profileV(){
 function settingsV(){
   ++vid;
   const TH=[["auto","Авто"],["light","Светлая"],["dark","Тёмная"]],k=Math.max(0,TH.findIndex(x=>x[0]===me.theme));
-  put(`<h1>Настройки</h1>
+  put(`<h1>Настройки</h1><button class="tile" data-wn style="--g:linear-gradient(135deg,#22c55e,#f59e0b)"><span class="te">🆕</span><span class="tt"><b>Что нового</b><span>Исправления и улучшения сайта${hasNews()?" · есть новое":""}</span></span><span class="go">▶</span></button>
   <div class="card"><b>Тема</b><div class="seg" id="th" style="--n:3;--k:${k};margin-top:10px"><i></i>${TH.map(([v,n],j)=>`<button type="button" data-v="${v}" class="${j===k?"on":""}">${n}</button>`).join("")}</div>
     <div class="lbl">Цвет оформления</div><div class="acc" id="acc">${ACCENTS.map(([v,n,c])=>`<button type="button" data-ac="${v}" class="${(localStorage.getItem("accent")||"forest")===v?"on":""}" style="--ac:${c}" aria-label="${n}"><i></i><small>${n}</small></button>`).join("")}</div></div>
   ${isT(me)?"":`<div class="card"><b>🧑‍🏫 Я учитель</b><p class="muted sm" style="margin:4px 0">Введите код учителя, чтобы создать класс и выдавать ученикам значки. Вы выйдете из классов, в которых состоите как ученик.</p>
@@ -2172,14 +2313,43 @@ function ecoCard(){const b=$("#eco");if(!b||!X||X.coins===undefined)return;
   if($("#ge"))$("#ge").onclick=()=>{const g=X.goal;const m=modal(`<h2 style="padding-right:40px">🎯 Изменить цель</h2><div class="row" style="gap:8px"><label class="grow sm">Игр<input id="mg" type="number" min="0" max="35" value="${g.games}"></label><label class="grow sm">Заданий<input id="mt2" type="number" min="0" max="21" value="${g.tasks}"></label></div><button class="btn-full" id="ms2" style="margin-top:10px">Сохранить</button>`);
     m.el.querySelector("#ms2").onclick=()=>{set(+m.el.querySelector("#mg").value,+m.el.querySelector("#mt2").value,m.el.querySelector("#ms2"));m.close()}};
 }
+/* ───────── что нового ───────── */
+const CHANGES=[
+  {v:6,d:"2026-11-13",t:"Эко-курс и сундуки",items:["📚 Эко-курс: 5 тем и 15 уроков с фактами, выбором ответа, парами и цепочками; сердечки, короны тем и сундук за контрольный урок",
+    "🎁 Сундук открывается тремя нажатиями, награда появляется сразу, а шансы наград видны заранее","🛒 В магазине 22 новых украшения, в сундуке - 2 новых редких",
+    "📰 Ленту в профиле можно свернуть","🗑 Учитель может удалять прошедшие мероприятия и закрытые тесты","🏅 Значок эко-праздника больше не выдаётся несколько раз, лишние копии удалены",
+    "🆕 Этот раздел - «Что нового»","⚡ Разделы открываются быстрее: данные загружаются заранее и сохраняются"]},
+  {v:5,d:"2026-11-10",t:"Мгновенные покупки",items:["🛒 Покупка в магазине срабатывает сразу, магазин открывается без ожидания"]},
+  {v:4,d:"2026-11-10",t:"Плавность и опыт",items:["✨ Переливающиеся надписи и полоски на шкалах больше не обрываются","⭐ Опыт за мини-игры, вопрос дня и блиц прибавляется сразу"]},
+  {v:3,d:"2026-11-10",t:"Быстрый чат и новые возможности",items:["💬 Сообщения доходят примерно за секунду","💬 Ответы на сообщения, «печатает…» и «в сети», эко-наклейки, опросы в чате класса",
+    "🐾 Эко-питомец, 🎁 итоги года, 🎨 цвета оформления, ❔ секретные значки","🎮 Игры открываются мгновенно, результат виден сразу"]},
+  {v:2,d:"2026-11-06",t:"Сундук дня и смайлики",items:["🎁 Сундук дня - за все 5 мини-игр за день","🙂 Смайлики показываются картинками на любом устройстве","🗺️ Все фильтры эко-карты видны без прокрутки"]}];
+const newsSeen=()=>Number(ls.get("chgSeen")||0),hasNews=()=>newsSeen()<CHANGES[0].v;
+function whatsNew(){ls.set("chgSeen",CHANGES[0].v);document.querySelectorAll(".wnew").forEach(e=>e.remove());
+  modal(`<h2 style="padding-right:40px">🆕 Что нового</h2><p class="muted sm" style="margin:2px 0 6px">Исправления и улучшения сайта после каждого обновления</p>
+    ${CHANGES.map((c,i)=>`<div class="chg ${i?"":"first"}"><div class="row"><b class="grow">${esc(c.t)}</b><span class="tag">${fdate(c.d+"T12:00:00")}</span></div><ul>${c.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}`)}
+const newsBanner=()=>hasNews()?`<button class="card wnew lift" type="button"><span class="te">🆕</span><span class="grow"><b>Сайт обновился</b><span class="muted sm" style="display:block">${esc(CHANGES[0].t)} - посмотри, что нового</span></span><span class="go">▶</span></button>`:"";
+document.addEventListener("click",e=>{if(e.target.closest(".wnew,[data-wn]"))whatsNew();
+  // свернуть или развернуть ленту в профиле
+  const t=e.target.closest(".fdt");if(t){const c=t.closest(".feedc"),shut=!c.classList.contains("shut");c.classList.toggle("shut",shut);t.textContent=shut?"Развернуть":"Свернуть";ls.set("feedHide",shut?1:0)}});
+
+/* ───────── сундук: три нажатия ───────── */
 function chestModal(){
-  const m=modal(`<div class="center"><div class="chest" id="cht">🎁</div><h2 id="chh">Открываем сундук…</h2><p class="muted" id="chp"></p><button class="btn-full" id="chx" hidden>Отлично!</button></div>`);
+  const odds=(X&&X.odds)||null;let taps=0,res=null,shown=false;
+  const p=api("chestOpen").then(r=>(res=r));   // запрос уходит сразу, пока ученик нажимает на сундук
+  const m=modal(`<div class="center"><p class="muted" id="chp">Нажми на сундук 3 раза, чтобы открыть</p>
+    <button type="button" class="chest2" id="cht" aria-label="Нажми на сундук">🎁</button><div class="taps" id="tps"><i></i><i></i><i></i></div>
+    <h2 id="chh"></h2><button class="btn-full" id="chx" hidden>Отлично!</button>
+    ${odds?`<div class="odds"><b>Шансы награды</b>${odds.map(o=>`<div class="row sm"><span>${o.e}</span><span class="grow">${esc(o.t)}</span><b>${o.p}%</b></div>`).join("")}</div>`:""}</div>`,
+    ()=>{if(!shown&&res&&res.ok)toast("🎁 Из сундука: "+res.reward.text)});
   const q=x=>m.el.querySelector(x);
-  api("chestOpen").then(r=>{if(dead(r))return m.close();if(!r.ok){m.close();return toast(r.error,"err")}
-    setTimeout(()=>{const w=r.reward,ic={coins:"🪙",xp:"⭐",freeze:"🧊",item:"🎨"}[w.type]||"🎁";q("#cht").textContent=ic;q("#cht").classList.add("open");
-      q("#chh").textContent=w.text;q("#chp").textContent=w.type==="item"?"Новое украшение уже в оформлении профиля 🎨":w.type==="freeze"?"Заморозка спасёт серию, если пропустишь день":"Награда уже начислена";
-      q("#chx").hidden=false;burst(innerWidth/2,innerHeight*.4,50);sfx("coin");if(w.type==="xp")addXp(w.amount);
-      if(X){X.coins=r.coins;X.freeze=r.freeze;X.chests=r.chests;cset("x",X)}FRESH.x=0;ecoCard()},1300)});
+  const reveal=r=>{if(dead(r))return m.close();if(!r.ok){m.close();return toast(r.error,"err")}shown=true;
+    const w=r.reward,ic={coins:"🪙",xp:"⭐",freeze:"🧊",item:"🎨"}[w.type]||"🎁",c=q("#cht");c.textContent=ic;c.classList.add("open");c.disabled=true;q("#tps").hidden=true;
+    q("#chh").textContent=w.text;q("#chp").textContent=w.type==="item"?"Новое украшение уже в оформлении профиля 🎨":w.type==="freeze"?"Заморозка спасёт серию, если пропустишь день":"Награда уже начислена";
+    q("#chx").hidden=false;burst(innerWidth/2,innerHeight*.4,50);sfx("coin");if(w.type==="xp")addXp(w.amount);
+    if(X){X.coins=r.coins;X.freeze=r.freeze;X.chests=r.chests;if(r.odds)X.odds=r.odds;cset("x",X)}FRESH.x=0;FRESH.shop=0;ecoCard()};
+  q("#cht").onclick=async()=>{if(taps>=3)return;taps++;const c=q("#cht");c.classList.remove("hit");void c.offsetWidth;c.classList.add("hit");sfx("tap");
+    q("#tps").children[taps-1].classList.add("on");if(taps<3)return;q("#chp").textContent="Открываем…";reveal(res||await p)};
   q("#chx").onclick=()=>m.close();
 }
 const SHOP_KIND=[["cover","Обложки"],["pattern","Узоры"],["frame","Рамки фото"],["nameColor","Цвет имени"]];
@@ -2194,6 +2364,7 @@ async function shopV(){
       <button class="sm" data-buy="freeze" ${r.freeze>=r.freezeMax||r.coins<r.freezePrice?"disabled":""}>🪙 ${r.freezePrice}</button></div></div>
     ${SHOP_KIND.map(([k,t])=>{const its=(r.cosm[k]||[]).filter(i=>i.price||i.chest);return its.length?`<h2 class="sec">${t}</h2><div class="shg">${its.map(i=>`<div class="card shi ${i.open?"own":""}">${prev(k,i)}<b>${esc(i.name)}</b>
       ${i.open?`<span class="tag">✓ есть</span>`:i.chest?`<span class="muted sm">🎁 только из сундука</span>`:`<button class="sm" data-buy="${k}:${i.id}" ${r.coins<i.price?"disabled":""}>🪙 ${i.price}</button>`}</div>`).join("")}</div>`:""}).join("")}
+    ${r.odds?`<div class="card odds"><b>🎁 Что может выпасть из сундука</b>${r.odds.map(o=>`<div class="row sm"><span>${o.e}</span><span class="grow">${esc(o.t)}</span><b>${o.p}%</b></div>`).join("")}<p class="muted sm" style="margin:6px 0 0">Сундуки дают за 7 дней серии, все мини-игры за день и корону темы в эко-курсе.</p></div>`:""}
     <p class="muted sm">Купленные украшения выбираются в профиле: кнопка 🎨.</p>`;
     stag(box);
     // покупка видна сразу: монеты списываются на экране, сервер подтверждает её в фоне
@@ -2292,7 +2463,7 @@ function noticesBox(box,own,teacher){if(!box)return;
 
 /* ───────── мероприятия ───────── */
 function eventsBox(box,own,my){if(!box)return;
-  const draw=r=>{if(!box.isConnected||my!==vid)return;if(!r.ok){box.innerHTML=/Неизвестное действие/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
+  const draw=r=>{if(!box.isConnected||my!==vid)return;if(r.ok&&r.events)r.events=r.events.filter(e=>!GONE.has(e.id));if(!r.ok){box.innerHTML=/Неизвестное действие/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
     const ev=r.events.filter(e=>own?e.own:true);
     box.innerHTML=`<h2 class="sec">📅 Мероприятия</h2>${own?`<button class="btn-full" id="evn" style="margin:10px 0">+ Новое мероприятие</button>`:""}
       ${ev.length?ev.map(e=>`<div class="card evc ${e.past?"past":""}"><div class="row"><div class="evd"><b>${+e.date.slice(8)}</b><small>${MON[+e.date.slice(5,7)-1]}</small></div><div class="grow"><b>${esc(e.title)}</b>
@@ -2300,7 +2471,7 @@ function eventsBox(box,own,my){if(!box)return;
         ${e.description?`<p class="sm" style="margin:8px 0 0">${esc(e.description)}</p>`:""}
         ${e.own?`${e.people.length?`<div class="evp">${e.people.map(p=>`<label class="row sm"><input type="checkbox" value="${esc(p.user.username)}" ${p.attended?"checked disabled":""}${e.date>today0()?" disabled":""}> ${esc(p.user.firstName)} ${esc(p.user.lastName)}${p.attended?" ✓":""}</label>`).join("")}</div>`:`<p class="muted sm" style="margin:8px 0 0">Пока никто не записался.</p>`}
           ${e.people.length&&e.date>today0()?`<p class="muted sm" style="margin:8px 0 0">Отметить, кто пришёл, можно в день мероприятия или после него.</p>`:""}
-          <div class="row" style="margin-top:8px">${e.date<=today0()&&e.people.some(p=>!p.attended)?`<button class="grow sm" data-att="${esc(e.id)}">✅ Отметить участие</button>`:""}${!e.past?`<button class="ghost sm" data-evx="${esc(e.id)}">Отменить</button>`:""}</div>`
+          <div class="row" style="margin-top:8px">${e.date<=today0()&&e.people.some(p=>!p.attended)?`<button class="grow sm" data-att="${esc(e.id)}">✅ Отметить участие</button>`:""}${!e.past?`<button class="ghost sm" data-evx="${esc(e.id)}">Отменить</button>`:`<button class="ghost sm" data-evd="${esc(e.id)}">🗑 Удалить</button>`}</div>`
         :e.attended?`<p class="sm" style="margin:8px 0 0;color:var(--pri);font-weight:800">✅ Участие отмечено - значок уже в профиле</p>`:e.past?"":`<button class="${e.joined?"ghost ":""}btn-full" data-ej="${esc(e.id)}" style="margin-top:8px">${e.joined?"Отменить запись":"Записаться"}</button>`}</div>`).join("")
       :`<div class="card empty"><div class="eb">📅</div><p class="muted">${own?"Создайте субботник, сбор макулатуры или экскурсию. Ученики запишутся, а после вы отметите, кто пришёл - они получат значок, опыт и монеты.":"Пока мероприятий нет."}</p></div>`}`;
     stag(box);
@@ -2309,6 +2480,9 @@ function eventsBox(box,own,my){if(!box)return;
     box.querySelectorAll("[data-ej]").forEach(b=>b.onclick=async()=>{const e=r.events.find(x=>x.id===b.dataset.ej);if(!e)return;const prev=JSON.parse(JSON.stringify(r));
       e.joined=!e.joined;e.count=Math.max(0,(e.count||0)+(e.joined?1:-1));sfx("tap");draw(r);if(e.joined)toast("Вы записались ✅");
       const x=await api("eventJoin",{id:e.id});if(dead(x))return;if(!x.ok){draw(prev);return toast(x.error,"err")}after(x)});
+    // удаление прошедшего мероприятия: карточка исчезает сразу
+    box.querySelectorAll("[data-evd]").forEach(b=>b.onclick=async()=>{if(!await ask("Удалить прошедшее мероприятие? Значки ученикам останутся.","Удалить",1))return;
+      const prev=JSON.parse(JSON.stringify(r));GONE.add(b.dataset.evd);draw(r);const x=await api("eventDelete",{id:b.dataset.evd});if(dead(x))return;if(!x.ok){GONE.delete(b.dataset.evd);draw(prev);return toast(x.error,"err")}after(x)});
     box.querySelectorAll("[data-evx]").forEach(b=>b.onclick=async()=>{if(!await ask("Отменить мероприятие?","Отменить",1))return;after(await api("eventCancel",{id:b.dataset.evx}))});
     box.querySelectorAll("[data-att]").forEach(b=>b.onclick=async()=>{const names=[...b.closest(".evc").querySelectorAll("input:checked:not(:disabled)")].map(i=>i.value);if(!names.length)return toast("Отметьте тех, кто пришёл","err");
       const x=await api("eventAttend",{id:b.dataset.att,usernames:names});if(x&&x.ok)toast(`Отмечено: ${x.marked}. Ученики получили значок 🙌`);after(x)});
@@ -2328,15 +2502,20 @@ function eventModal(done){const td=today0();
 function eventsV(){const my=++vid;put(backBtn("evb2","📅 Мероприятия")+`<div id="evv"></div>`);$("#evb2").onclick=()=>go(tab);eventsBox($("#evv"),isStaff(me),my)}
 
 /* ───────── тесты от учителя ───────── */
+// удалённое учителем не возвращается, даже если старый ответ сервера пришёл позже
+const GONE=new Set();
 function quizBox(box,teacher,own,my){if(!box)return;
-  const draw=r=>{if(!box.isConnected||my!==vid)return;if(!r.ok){box.innerHTML=/Неизвестное действие|не в классе/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
+  const draw=r=>{if(!box.isConnected||my!==vid)return;if(r.ok&&r.quizzes)r.quizzes=r.quizzes.filter(q=>!GONE.has(q.id));if(!r.ok){box.innerHTML=/Неизвестное действие|не в классе/.test(r.error)?"":`<div class="card err">${esc(r.error)}</div>`;return}
     box.innerHTML=`<h2 class="sec">📝 Тесты</h2>${own?`<button class="btn-full" id="qzn" style="margin:10px 0">+ Новый тест</button>`:""}
       ${r.quizzes.length?r.quizzes.map(q=>`<div class="card qzc"><div class="row"><div class="grow"><b>${esc(q.title)}</b><div class="muted sm">${plural(q.count,"вопрос","вопроса","вопросов")}${own?` · ответили: ${q.answers}`:""}${q.status==="closed"?" · закрыт":""}</div></div>
-        ${own?`<button class="ghost sm" data-qr="${esc(q.id)}">Результаты</button>${q.status==="open"?`<button class="ghost sm" data-qe="${esc(q.id)}">Закрыть</button>`:""}`
+        ${own?`<button class="ghost sm" data-qr="${esc(q.id)}">Результаты</button>${q.status==="open"?`<button class="ghost sm" data-qe="${esc(q.id)}">Закрыть</button>`:`<button class="ghost sm" data-qd="${esc(q.id)}" aria-label="Удалить тест">🗑</button>`}`
         :q.done?`<button class="ghost sm" data-qt="${esc(q.id)}">✓ ${q.done.score} из ${q.done.total}</button>`:`<button class="sm" data-qt="${esc(q.id)}">Пройти</button>`}</div></div>`).join("")
       :`<p class="muted sm">${own?"Составьте тест по теме урока - ученики пройдут его, а вы увидите результаты каждого и сложные вопросы.":"Учитель пока не дал тестов."}</p>`}`;
     stag(box);box.querySelectorAll("[data-qt]").forEach(b=>b.onclick=()=>quizTakeV(b.dataset.qt,teacher));box.querySelectorAll("[data-qr]").forEach(b=>b.onclick=()=>quizResultsModal(b.dataset.qr));
     box.querySelectorAll("[data-qe]").forEach(b=>b.onclick=async()=>{if(!await ask("Закрыть тест? Ученики больше не смогут его пройти.","Закрыть",1))return;const x=await api("quizEnd",{id:b.dataset.qe});if(dead(x))return;if(!x.ok)return toast(x.error,"err");load(true)});
+    box.querySelectorAll("[data-qd]").forEach(b=>b.onclick=async()=>{if(!await ask("Удалить тест вместе с результатами учеников?","Удалить",1))return;
+      const prev=JSON.parse(JSON.stringify(r));GONE.add(b.dataset.qd);draw(r);cset("qz:"+teacher,r);
+      const x=await api("quizDelete",{id:b.dataset.qd});if(dead(x))return;if(!x.ok){GONE.delete(b.dataset.qd);draw(prev);cset("qz:"+teacher,prev);return toast(x.error,"err")}toast("Тест удалён")});
     if($("#qzn"))$("#qzn").onclick=()=>quizEditV()};
   const load=f=>swr("qz:"+teacher,"quizList",own?{}:{teacher},draw,my,f);load();
 }
@@ -2376,13 +2555,13 @@ function quizEditV(){
   draw();
 }
 async function quizResultsModal(id){
-  const m=modal(`<h2 style="padding-right:40px">📊 Результаты теста</h2><div id="qrb">${sk(2)}</div>`),r=await api("quizResults",{id});if(dead(r))return m.close();
+  const m=modal(`<h2 style="padding-right:40px">📊 Результаты теста</h2><div id="qrb">${sk(2)}</div>`);mload("qres:"+id,"quizResults",{id},r=>{
   const b=m.el.querySelector("#qrb");if(!b)return;if(!r.ok){b.innerHTML=`<div class="err">${esc(r.error)}</div>`;return}
   b.innerHTML=`<p class="muted sm" style="margin:0">«${esc(r.title)}» · ${plural(r.total,"вопрос","вопроса","вопросов")}</p><div class="sec">Ученики</div>
     ${r.students.length?r.students.map(s=>`<div class="item">${avatar(s.user)}<div class="grow"><b>${nameH(s.user)}</b></div><b>${s.score===null?`<span class="muted">не прошёл</span>`:s.score+" из "+r.total}</b></div>`).join(""):`<p class="muted sm">В классе пока нет учеников.</p>`}
     <div class="sec">Вопросы</div>${r.questions.map((q,i)=>`<div style="margin:10px 0"><div class="row sm"><b class="grow">${i+1}. ${esc(q.q)}</b><span class="muted">${q.pct===null?"нет ответов":q.pct+"% верно"}</span></div>${q.pct===null?"":`<div class="tbar"><i style="width:${q.pct}%"></i></div>`}</div>`).join("")}`;
   loadAv(r.students.map(s=>s.user));
-}
+},()=>m.el.isConnected,()=>m.close())}
 
 /* ───────── страница для родителей ───────── */
 const parentUrl=c=>location.origin+location.pathname+"?parent="+c;
@@ -2495,8 +2674,11 @@ function encV(){const my=++vid,n=encOpen(X),c=(X&&X.counters)||{};
 
 /* ───────── блиц на время ───────── */
 async function blitzV(){
-  const my=++vid;put(`<div class="card wait"><div class="qe">⚡</div><div class="spin"></div><p class="muted">Готовим вопросы…</p></div>`);
-  const r=await api("blitzStart");if(my!==vid||dead(r))return;
+  // вопросы загружаются, пока идёт отсчёт 3-2-1, - блиц начинается без ожидания
+  const my=++vid,rp=api("blitzStart");let c=3;
+  put(`<div class="card center bzc"><p class="muted">Ответь на как можно больше вопросов за 60 секунд!</p><div class="bzn" id="bzn">3</div></div>`);
+  await new Promise(res=>{const cd=setInterval(()=>{if(my!==vid){clearInterval(cd);return res()}c--;if(c>0){$("#bzn").textContent=c;sfx("tap")}else{clearInterval(cd);res()}},800)});
+  if(my!==vid)return;const r=await rp;if(my!==vid||dead(r))return;
   if(!r.ok){put(`<div class="card err">${esc(r.error)}</div><button class="btn-full" id="bk">К играм</button>`);$("#bk").onclick=()=>go("games");return}
   const it=r.items,ans=[],key=unk(r.k),loc=[];let i=0,left=r.seconds,timer=null,over=false;
   const show=(s,wait)=>{const bad=s.results.filter(x=>!x.ok);
@@ -2525,9 +2707,8 @@ async function blitzV(){
       <div class="card qcard"><div class="row"><span class="tag">⚡ ${ans.length}</span><span class="grow"></span><span class="muted sm">рекорд: ${r.best}</span></div><h2>${esc(q.q)}</h2>${q.o.map((o,k)=>`<button class="opt" data-k="${k}"><b>${"ABCD"[k]}</b><span>${esc(optText(o))}</span></button>`).join("")}</div>`);
     $("#bk").onclick=()=>{over=true;clearInterval(timer);go("games")};
     $("#view").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(over)return;sfx("tap");const a=q.ix[+b.dataset.k];ans.push({game:q.game,id:q.id,a});if(key&&key[i])loc.push({game:q.game,id:q.id,a,ok:a===key[i].right,right:key[i].right,e:key[i].e});i++;step()})};
-  let c=3;put(`<div class="card center bzc"><p class="muted">Ответь на как можно больше вопросов за 60 секунд!</p><div class="bzn" id="bzn">3</div></div>`);
-  const cd=setInterval(()=>{if(my!==vid)return clearInterval(cd);c--;if(c>0){$("#bzn").textContent=c;sfx("tap")}else{clearInterval(cd);sfx("ok");step();
-    timer=setInterval(()=>{if(my!==vid||over)return clearInterval(timer);left--;const s=$("#bs"),b=$("#bt");if(s)s.textContent=left;if(b)b.style.width=left/r.seconds*100+"%";if(left<=0)end()},1000)}},800);
+  sfx("ok");step();
+  timer=setInterval(()=>{if(my!==vid||over)return clearInterval(timer);left--;const s=$("#bs"),b=$("#bt");if(s)s.textContent=left;if(b)b.style.width=left/r.seconds*100+"%";if(left<=0)end()},1000);
 }
 
 /* ───────── работа над ошибками ───────── */
