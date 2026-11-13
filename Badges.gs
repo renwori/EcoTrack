@@ -21,8 +21,8 @@ EventSignups:["eventId","userId","created","attended"],ParentLinks:["code","user
 Recycle:["id","userId","date","kind","amount","created"],Footprint:["userId","date","score","parts"],
 Mistakes:["userId","game","qid","created"],Blitz:["userId","best","bestDate","last","lastDate"],Claps:["eventId","userId","created"],
 Invites:["inviterId","inviteeId","created","rewarded"],DuoGoals:["id","aId","bId","week","goal","aGames","bGames","status","created"],
-PollVotes:["msgId","chat","userId","opt"],Pets:["userId","kind","name","created"]});
-function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals","PollVotes","Pets"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
+PollVotes:["msgId","chat","userId","opt"],Pets:["userId","kind","name","created"],Course:["userId","data"]});
+function setupBadges(){["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals","PollVotes","Pets","Course"].forEach(n=>{const s=SS().getSheetByName(n)||SS().insertSheet(n);
  s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
  s.getRange(1,1,1,H[n].length).setValues([H[n]]);s.setFrozenRows(1)})}
 
@@ -59,7 +59,7 @@ const delRows=(n,list)=>{memoDrop(n);const sh=SS().getSheetByName(n);list.map(r=
 
 // Надёжность: недостающие листы создаются сами; новые строки пишутся как текст (Таблица не превращает
 // «2026-10-28» в дату, а «=...» в формулу); даты, которые Таблица всё же переделала, читаются правильно.
-const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals","PollVotes","Pets"];
+const MY=["Avatars","Classes","Members","Badges","Messages","ChatReads","GamesPlayed","DailyTasks","PlayDays","Events","Reactions","Profiles","NewsSources","NewsArchive","GameQueue","XpLog","GameLog","Counters","Qotd","Challenges","Contrib","Bans","MapCache","Owned","Goals","Quizzes","QuizResults","Notices","SchoolEvents","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","Invites","DuoGoals","PollVotes","Pets","Course"];
 const ensured={};
 function ensure(n){if(ensured[n]||MY.indexOf(n)<0)return;
  if(!SS().getSheetByName(n)){const s=SS().insertSheet(n);s.getRange(1,1,s.getMaxRows(),H[n].length).setNumberFormat("@");
@@ -553,7 +553,7 @@ badgeRevoke(d){const t=who(d);needTeacher(t);const b=rows("Badges").find(x=>x.id
 deleteAccount(d){const u=who(d),id=u.id,dev=isDev(u);
  if(typeof verify==="function")verify(u,d.password);else if(hashPw(String(d.password||""),u.salt)!==u.hash)throw"Неверный пароль";
  ["Avatars","Profiles","DailyTasks","PlayDays","GamesPlayed","Events","Counters","XpLog","GameLog","GameQueue","Qotd","Contrib","ChatReads","Reactions",
-  "Owned","Goals","QuizResults","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","PollVotes","Pets"].forEach(n=>delRows(n,rowsRaw(n).filter(r=>r.userId===id)));
+  "Owned","Goals","QuizResults","EventSignups","ParentLinks","Recycle","Footprint","Mistakes","Blitz","Claps","PollVotes","Pets","Course"].forEach(n=>delRows(n,rowsRaw(n).filter(r=>r.userId===id)));
  // тесты, объявления и мероприятия учителя удаляются вместе с ответами и записями учеников
  const qz=rowsRaw("Quizzes").filter(r=>r.teacherId===id),qi=new Set(qz.map(r=>r.id));delRows("QuizResults",rowsRaw("QuizResults").filter(r=>qi.has(r.quizId)));delRows("Quizzes",qz);
  const se=rowsRaw("SchoolEvents").filter(r=>r.teacherId===id),si=new Set(se.map(r=>r.id));delRows("EventSignups",rowsRaw("EventSignups").filter(r=>si.has(r.eventId)));delRows("SchoolEvents",se);
@@ -976,8 +976,12 @@ const coinsOf=(u,c)=>Math.max(0,Math.floor((Number(u.xp)||0)/5)+(c.bonus||0)-(c.
 const FREEZE_MAX=2,FREEZE_PRICE=40;
 // Украшения из магазина и из сундуков (добавляются в общий каталог оформления)
 const SHOP=[["cover","sky","Ясное небо",60],["cover","neon","Неон",150],["pattern","daisies","Ромашки",50],["pattern","bubbles","Пузыри",50],
- ["frame","neon","Неоновая",120],["frame","royal","Королевская",200],["nameColor","mint","Мятный",60],["nameColor","neon","Неоновый",150]];
-const CHEST_ITEMS=[["cover","treasure","Сокровища"],["frame","chest","Сундучная"],["nameColor","emerald","Изумрудный"]];
+ ["frame","neon","Неоновая",120],["frame","royal","Королевская",200],["nameColor","mint","Мятный",60],["nameColor","neon","Неоновый",150],
+ ["cover","lavender","Лаванда",80],["cover","desert","Пустыня",80],["cover","tropics","Тропики",100],["cover","candy","Карамель",120],["cover","galaxy","Галактика",180],
+ ["pattern","clouds","Облака",60],["pattern","fish","Рыбки",70],["pattern","mountains","Горы",70],["pattern","recycle","Переработка",80],["pattern","butterflies","Бабочки",90],
+ ["frame","sakura","Сакура",120],["frame","candy","Карамельная",140],["frame","lava","Лава",180],["frame","aurora","Северное сияние",220],
+ ["nameColor","sakura","Сакура",80],["nameColor","ice","Ледяной",100],["nameColor","lava","Лава",120],["nameColor","galaxy","Галактика",180]];
+const CHEST_ITEMS=[["cover","treasure","Сокровища"],["frame","chest","Сундучная"],["nameColor","emerald","Изумрудный"],["cover","crystal","Кристальная"],["pattern","gems","Самоцветы"]];
 SHOP.forEach(([k,id,name,price])=>COSM[k].push([id,name,x=>x.owned.has(k+":"+id),"в магазине за "+price+" монет",0,price]));
 CHEST_ITEMS.forEach(([k,id,name])=>COSM[k].push([id,name,x=>x.owned.has(k+":"+id),"только из сундука",0,0,1]));
 const ownedOf=uid=>new Set(rowsRaw("Owned").filter(r=>r.userId===uid).map(r=>r.item));
@@ -1000,13 +1004,18 @@ function goalCheck(u){const p=goalProgress(u);if(!p||p.done||p.doneGames<p.games
  upd("Goals",p.row._row,"done","1");const c=counters(u);bumpCounters(u,{bonus:p.reward.coins},c);giveXp(u,p.reward.xp,"goal");
  addEvent(u.id,"goal","🎯","Цель недели выполнена");return Object.assign(goalOut(p),{done:true,justDone:true})}
 // Награда из сундука
-function chestReward(u,c){const r=Math.random(),own=ownedOf(u.id);
- if(r<0.4){const n=15+Math.floor(Math.random()*26);return{type:"coins",amount:n,text:n+" монет",delta:{bonus:n}}}
- if(r<0.65){const n=20+Math.floor(Math.random()*21);giveXp(u,n,"chest");return{type:"xp",amount:n,text:n+" опыта",delta:{}}}
- if(r<0.85&&c.freeze<FREEZE_MAX)return{type:"freeze",amount:1,text:"Заморозка серии",delta:{freeze:1}};
- const left=CHEST_ITEMS.filter(i=>!own.has(i[0]+":"+i[1]));
- if(r>=0.85&&left.length){const it=left[Math.floor(Math.random()*left.length)];addT("Owned",[u.id,it[0]+":"+it[1],now()]);
-  return{type:"item",kind:it[0],id:it[1],text:{cover:"Обложка",frame:"Рамка фото",nameColor:"Цвет имени"}[it[0]]+" «"+it[2]+"»",delta:{}}}
+// Шансы наград из сундука - эта же таблица показывается на сайте
+function chestOdds(u,c,own){own=own||ownedOf(u.id);const left=CHEST_ITEMS.filter(i=>!own.has(i[0]+":"+i[1])).length,fz=c.freeze<FREEZE_MAX;
+ return[{k:"coins",e:"🪙",t:"15-40 монет",p:40},{k:"xp",e:"⭐",t:"20-40 опыта",p:25},
+  fz?{k:"freeze",e:"🧊",t:"Заморозка серии",p:20}:{k:"coins30",e:"🪙",t:"30 монет (заморозок уже 2)",p:20},
+  left?{k:"item",e:"🎨",t:"Редкое украшение из сундука",p:15}:{k:"coins30",e:"🪙",t:"30 монет (все украшения уже есть)",p:15}]}
+function chestReward(u,c){const own=ownedOf(u.id),odds=chestOdds(u,c,own);let r=Math.random()*100,o=odds[odds.length-1];
+ for(const x of odds){if(r<x.p){o=x;break}r-=x.p}
+ if(o.k==="coins"){const n=15+Math.floor(Math.random()*26);return{type:"coins",amount:n,text:n+" монет",delta:{bonus:n}}}
+ if(o.k==="xp"){const n=20+Math.floor(Math.random()*21);giveXp(u,n,"chest");return{type:"xp",amount:n,text:n+" опыта",delta:{}}}
+ if(o.k==="freeze")return{type:"freeze",amount:1,text:"Заморозка серии",delta:{freeze:1}};
+ if(o.k==="item"){const left=CHEST_ITEMS.filter(i=>!own.has(i[0]+":"+i[1])),it=left[Math.floor(Math.random()*left.length)];addT("Owned",[u.id,it[0]+":"+it[1],now()]);
+  return{type:"item",kind:it[0],id:it[1],text:{cover:"Обложка",pattern:"Узор",frame:"Рамка фото",nameColor:"Цвет имени"}[it[0]]+" «"+it[2]+"»",delta:{}}}
  return{type:"coins",amount:30,text:"30 монет",delta:{bonus:30}}}
 
 /* ───── тесты от учителя ───── */
@@ -1042,7 +1051,7 @@ function recycleOut(u){const all=rowsRaw("Recycle"),my=all.filter(r=>r.userId===
 const footOut=u=>rowsRaw("Footprint").filter(r=>r.userId===u.id).sort((a,b)=>a.date<b.date?1:-1).slice(0,5).map(r=>{let p={};try{p=JSON.parse(r.parts)}catch(e){}return{date:r.date,score:Number(r.score),parts:p}});
 
 Object.assign(A,{
-shop(d){const u=who(d),c=counters(u);return{coins:coinsOf(u,c),freeze:c.freeze,freezeMax:FREEZE_MAX,freezePrice:FREEZE_PRICE,chests:c.chests,cosm:cosmOut(cosmStats(u))}},
+shop(d){const u=who(d),c=counters(u);return{coins:coinsOf(u,c),freeze:c.freeze,freezeMax:FREEZE_MAX,freezePrice:FREEZE_PRICE,chests:c.chests,odds:chestOdds(u,c),cosm:cosmOut(cosmStats(u))}},
 shopBuy(d){const u=who(d),c=counters(u),item=String(d.item||""),coins=coinsOf(u,c);
  if(item==="freeze"){if(c.freeze>=FREEZE_MAX)throw"Больше "+FREEZE_MAX+" заморозок держать нельзя";if(coins<FREEZE_PRICE)throw"Не хватает монет";
   const n=bumpCounters(u,{spent:FREEZE_PRICE,freeze:1},c);return{coins:coinsOf(u,n),freeze:n.freeze}}
@@ -1051,7 +1060,7 @@ shopBuy(d){const u=who(d),c=counters(u),item=String(d.item||""),coins=coinsOf(u,
  return{coins:coinsOf(u,n),freeze:n.freeze,cosm:cosmOut(cosmStats(u))}},
 chestOpen(d){const u=who(d),c=counters(u);if(!(c.chests>0))throw"Сундуков пока нет - продлевай серию дней";
  const rw=chestReward(u,c),n=bumpCounters(u,Object.assign({chests:-1},rw.delta),c);delete rw.delta;
- addEvent(u.id,"chest","🎁","Из сундука: "+rw.text);return{reward:rw,coins:coinsOf(u,n),freeze:n.freeze,chests:n.chests}},
+ addEvent(u.id,"chest","🎁","Из сундука: "+rw.text);return{reward:rw,coins:coinsOf(u,n),freeze:n.freeze,chests:n.chests,odds:chestOdds(u,n)}},
 goalSet(d){const u=who(d),g=Math.floor(Number(d.games)),t=Math.floor(Number(d.tasks));
  if(!(g>=0&&g<=35&&t>=0&&t<=21)||g+t<1)throw"Цель: от 0 до 35 игр и от 0 до 21 задания";
  const ws=weekStart(),old=rowsRaw("Goals").find(r=>r.userId===u.id&&r.week===ws);if(old&&old.done==="1")throw"Цель этой недели уже выполнена";
@@ -1079,6 +1088,8 @@ quizResults(d){const t=who(d),{q,data}=quizOf(d.id);if(q.teacherId!==t.id)throw"
  return{title:q.title,status:q.status,total:data.length,questions:per,
   students:members.map(m=>{const v=users.find(x=>x.id===m.studentId),r=res.find(x=>x.userId===m.studentId);return v?{user:mini(v),score:r?Number(r.score):null}:null}).filter(Boolean)
    .sort((a,b)=>(b.score===null?-1:b.score)-(a.score===null?-1:a.score))}},
+quizDelete(d){const t=who(d),{q}=quizOf(d.id);if(q.teacherId!==t.id)throw"Это не ваш тест";
+ delRows("QuizResults",rowsRaw("QuizResults").filter(r=>r.quizId===q.id));delRows("Quizzes",[rowsRaw("Quizzes").find(x=>x.id===q.id)]);return{}},
 quizEnd(d){const t=who(d),{q}=quizOf(d.id);if(q.teacherId!==t.id)throw"Это не ваш тест";upd("Quizzes",q._row,"status","closed");return{}},
 // объявления учителя
 noticeAdd(d){const t=who(d);needTeacher(t);const text=String(d.text||"").trim();if(text.length<2||text.length>500)throw"Объявление: от 2 до 500 символов";
@@ -1098,6 +1109,9 @@ eventAttend(d){const t=who(d),e=rowsRaw("SchoolEvents").find(x=>x.id===String(d.
  rowsRaw("EventSignups").filter(x=>x.eventId===e.id&&x.attended!=="1").forEach(x=>{const v=byId(x.userId);if(!v||!names.has(v.username))return;
   upd("EventSignups",x._row,"attended","1");grant(v.id,"ach_ev_"+e.id+"_"+v.id,"🙌","green","Участник: "+e.title,"Участие в мероприятии «"+e.title+"» "+e.date);
   giveXp(v,20,"event");bumpCounters(v,{bonus:10});n++});return{marked:n,events:eventsFor(t)}},
+eventDelete(d){const t=who(d),e=rowsRaw("SchoolEvents").find(x=>x.id===String(d.id||"")&&x.teacherId===t.id);if(!e)throw"Мероприятие не найдено";
+ if(e.date>=today()&&e.status!=="cancelled")throw"Удалить можно только прошедшее мероприятие - будущее можно отменить";
+ delRows("EventSignups",rowsRaw("EventSignups").filter(x=>x.eventId===e.id));delRows("SchoolEvents",[rowsRaw("SchoolEvents").find(x=>x.id===e.id)]);return{events:eventsFor(t)}},
 eventCancel(d){const t=who(d),e=rowsRaw("SchoolEvents").find(x=>x.id===String(d.id||"")&&x.teacherId===t.id);if(!e)throw"Мероприятие не найдено";upd("SchoolEvents",e._row,"status","cancelled");return{events:eventsFor(t)}},
 // страница для родителей
 parentLink(d){const u=who(d),reset=!!d.reset;let l=rowsRaw("ParentLinks").find(x=>x.userId===u.id);
@@ -1211,7 +1225,7 @@ wrapA("noticeAdd",null,()=>touch(classOfTeacher(REQ_UID)));wrapA("noticeDel",nul
 {const _x=A.extra;A.extra=function(d){const u=who(d),C=CacheService.getScriptCache(),k="xc_"+u.id+"_"+xVer(u.id)+"_"+today();
  C.put("on_"+u.id,String(Date.now()),21600);  // «в сети»
  const c=C.get(k);if(c){try{return JSON.parse(c)}catch(e){}}
- const o=_x(d);try{o.pet=petOf(u)}catch(e){}try{const js=JSON.stringify(o);if(js.length<95000)C.put("xc_"+u.id+"_"+xVer(u.id)+"_"+today(),js,900)}catch(e){}return o}}
+ const o=_x(d);try{o.pet=petOf(u)}catch(e){}try{o.odds=chestOdds(u,counters(u))}catch(e){}try{const js=JSON.stringify(o);if(js.length<95000)C.put("xc_"+u.id+"_"+xVer(u.id)+"_"+today(),js,900)}catch(e){}return o}}
 
 /* ───── блиц, работа над ошибками, лента друзей, приглашения, общая цель, игры без интернета ───── */
 // Вопрос для показа: варианты перемешаны, ix - исходные номера вариантов (ответ проверяет сервер)
@@ -1439,14 +1453,162 @@ yearSummary(d){const u=who(d),y=String(Number(d.year)||Number(today().slice(0,4)
   name:u.firstName,since:String(u.created||"").slice(0,10)}}
 });
 
+/* ───── эко-курс: путь из тем, как в языковых приложениях ───── */
+// Урок: карточка-факт и задания. c - выбор ответа (верный вариант первый, сайт получает их перемешанными),
+// p - соединить пары, s - расставить по порядку (шаги записаны в верном порядке).
+const C_=(q,o,e)=>({k:"c",q,o,e:e||""}),P_=(q,p)=>({k:"p",q,p}),S_=(q,s)=>({k:"s",q,s});
+const COURSE=[
+ {id:"waste",e:"♻️",n:"Мусор и переработка",lessons:[
+  {id:"waste1",n:"Что такое отходы",fact:["🗑️","Отходы - это всё, что мы выбрасываем. Многое из этого можно сдать на переработку и сделать новые вещи: из макулатуры - бумагу, из пластиковых бутылок - волокно для одежды и ковров."],ex:[
+   C_("Что из этого можно сдать в макулатуру?",["Старые газеты","Использованные салфетки","Обёртку от конфеты","Грязную одноразовую тарелку"],"Газеты и картон принимают в макулатуру. Грязная бумага и салфетки не перерабатываются."),
+   C_("Зачем ополаскивать баночку от йогурта перед сдачей?",["Остатки еды портят вторсырьё","Так она станет тяжелее","Так велит закон","Незачем"],"Остатки еды загрязняют другое вторсырьё и мешают переработке."),
+   P_("Соедини предмет и контейнер",[["Газета","Бумага"],["Пластиковая бутылка","Пластик"],["Стеклянная банка","Стекло"],["Жестяная банка","Металл"]]),
+   S_("Расставь путь пластиковой бутылки по порядку",["Сполоснуть и сплющить бутылку","Выбросить в контейнер для пластика","Бутылку везут на сортировку","Из неё делают гранулы","Из гранул делают новые вещи"])]},
+  {id:"waste2",n:"Опасные отходы",fact:["🔋","Батарейки и лампы содержат вещества, опасные для почвы и воды. Их нельзя выбрасывать в обычное ведро - для них есть специальные пункты приёма."],ex:[
+   C_("Куда нести использованную батарейку?",["В пункт приёма батареек","В обычное мусорное ведро","Закопать в землю","В контейнер для стекла"],"Батарейки собирают в специальные боксы, а потом перерабатывают."),
+   C_("Что из этого - опасные отходы?",["Ртутный градусник","Яблочный огрызок","Картонная коробка","Стеклянная бутылка"],"В ртутном градуснике есть ртуть - опасный металл. Если он разбился, нужно сразу позвать взрослых."),
+   P_("Соедини отход и куда его сдать",[["Батарейка","Бокс для батареек"],["Старый телефон","Приём электроники"],["Энергосберегающая лампа","Приём ламп"],["Старая куртка","Приём одежды"]]),
+   S_("Как сдать батарейки - по порядку",["Собрать батарейки в коробку","Найти пункт приёма на эко-карте","Отнести батарейки в бокс","Их отправляют на переработку"])]},
+  {id:"waste3",n:"Меньше мусора",fact:["🛍️","Лучший мусор - тот, которого нет. Правило «трёх R»: сокращай (Reduce), используй повторно (Reuse), перерабатывай (Recycle)."],ex:[
+   C_("Что лучше взять с собой в магазин?",["Свою многоразовую сумку","Новый пакет каждый раз","Два пакета для надёжности","Ничего, купить пакет на кассе"],"Многоразовая сумка служит долго, и пакеты не превращаются в мусор."),
+   C_("Какое действие значит «используй повторно»?",["Наливать воду в свою бутылку","Покупать воду в новой бутылке","Выбросить бутылку в урну","Сжечь мусор на костре"],"Многоразовая бутылка заменяет десятки одноразовых."),
+   P_("Соедини правило и пример",[["Сокращай","Отказаться от лишней упаковки"],["Используй повторно","Банка для хранения круп"],["Перерабатывай","Сдать бутылку в контейнер"],["Ремонтируй","Зашить порванную куртку"]]),
+   C_("Почему нельзя сжигать мусор на костре?",["Выделяется ядовитый дым","Мусор от этого станет чище","Огонь полезен для почвы","Это ничем не вредно"],"При горении пластика и упаковки в воздух попадают вредные вещества.")]}]},
+ {id:"water",e:"💧",n:"Вода",lessons:[
+  {id:"water1",n:"Вода на планете",fact:["🌊","Большая часть воды на Земле - солёная, в морях и океанах. Пресной воды, которую можно пить, совсем немного, поэтому её нужно беречь."],ex:[
+   C_("Какой воды на Земле больше всего?",["Солёной морской","Пресной речной","Подземной","Дождевой"],"Почти вся вода на планете - в морях и океанах, и она солёная."),
+   C_("Как проще всего сберечь воду дома?",["Закрывать кран, пока чистишь зубы","Мыть посуду под открытым краном","Принимать долгий душ","Поливать газон днём в жару"],"Пока кран открыт зря, вода просто утекает."),
+   P_("Соедини водоём и его тип",[["Байкал","Озеро"],["Волга","Река"],["Белое море","Море"],["Тихий","Океан"]]),
+   S_("Расставь круговорот воды по порядку",["Солнце нагревает воду в морях","Вода испаряется и поднимается","Пар собирается в облака","Выпадает дождь или снег","Вода стекает в реки и в море"])]},
+  {id:"water2",n:"Чистая вода",fact:["🚰","Реки загрязняют сточные воды, мусор и химикаты. Даже масло, вылитое в раковину, загрязняет воду и засоряет трубы - жир лучше собрать и выбросить с мусором."],ex:[
+   C_("Как избавиться от масла после жарки?",["Остудить, слить в банку и выбросить","Вылить в раковину","Вылить в унитаз","Вылить в ближайший пруд"],"Масло в канализации загрязняет воду и засоряет трубы."),
+   C_("Что можно бросать в реку?",["Ничего","Только бумагу","Только стекло","Пищевые отходы"],"Любой мусор загрязняет воду и вредит её жителям."),
+   P_("Соедини проблему и решение",[["Капает кран","Починить кран"],["Мусор на берегу","Субботник"],["Лишняя вода в душе","Короткий душ"],["Полив в жару","Поливать вечером"]]),
+   C_("Почему растения лучше поливать вечером?",["Меньше воды испарится","Растения днём спят","Вечером вода дешевле","Так красивее"],"Днём на солнце вода быстро испаряется и не доходит до корней.")]},
+  {id:"water3",n:"Обитатели воды",fact:["🐬","Пластик в воде распадается на крошечные частицы - микропластик. Его находят в морях по всему миру, а рыбы и птицы могут принять пластик за еду."],ex:[
+   C_("Что такое микропластик?",["Крошечные частицы пластика","Маленькие пластиковые игрушки","Новый вид рыбы","Морская водоросль"],"Микропластик образуется, когда пластиковый мусор распадается на мелкие кусочки."),
+   C_("Чем пакет в море опасен для черепахи?",["Она может проглотить его, как медузу","Пакет её согревает","Пакет делает воду солёной","Ничем"],"Плавающий пакет похож на медузу - любимую еду морских черепах."),
+   P_("Соедини животное и где оно живёт",[["Байкальская нерпа","Байкал"],["Белуха","Белое море"],["Бобр","Река"],["Лягушка","Пруд"]]),
+   S_("Как бутылка попадает в океан - по порядку",["Бутылку бросили на берегу реки","Дождь смыл её в воду","Река унесла её в море","Волны разносят её по океану"])]}]},
+ {id:"energy",e:"⚡",n:"Энергия",lessons:[
+  {id:"energy1",n:"Откуда электричество",fact:["⚡","Электричество получают на электростанциях. Многие из них сжигают уголь или газ, и в воздух попадает углекислый газ. Солнце, ветер и реки дают энергию без сжигания топлива."],ex:[
+   C_("Какой источник энергии возобновляемый?",["Солнечный свет","Уголь","Нефть","Природный газ"],"Солнце светит каждый день, а запасы угля, нефти и газа когда-нибудь закончатся."),
+   P_("Соедини электростанцию и источник энергии",[["Солнечная","Солнце"],["Ветровая","Ветер"],["Гидроэлектростанция","Течение реки"],["Тепловая","Уголь или газ"]]),
+   C_("Что выделяется при сжигании угля?",["Углекислый газ","Кислород","Чистая вода","Ничего"],"Углекислый газ - главный парниковый газ, из-за которого теплеет климат."),
+   S_("Расставь путь электричества по порядку",["Электростанция вырабатывает ток","Ток идёт по проводам","Подстанция передаёт его в дома","Включается лампа в комнате"])]},
+  {id:"energy2",n:"Экономия дома",fact:["💡","Светодиодная лампа светит так же ярко, как лампа накаливания, но тратит в несколько раз меньше электричества и служит гораздо дольше."],ex:[
+   C_("Какая лампа экономит больше электричества?",["Светодиодная","Лампа накаливания","Обе одинаково","Ни одна"],"Светодиоды почти всю энергию превращают в свет, а не в тепло."),
+   C_("Что сделать, уходя из комнаты?",["Выключить свет","Оставить свет для уюта","Включить ещё одну лампу","Открыть холодильник"],"Свет в пустой комнате тратит электричество впустую."),
+   P_("Соедини привычку и пользу",[["Выключать зарядку","Не тратить ток зря"],["Закрывать холодильник","Холод не уходит"],["Стирать полной загрузкой","Меньше стирок"],["Сушить бельё на воздухе","Не нужна сушилка"]]),
+   C_("Зачем вынимать зарядку из розетки?",["Она тратит энергию, даже когда не заряжает","Иначе телефон сломается","Так требует розетка","Незачем"],"Многие зарядки понемногу потребляют ток, даже если телефон не подключён.")]},
+  {id:"energy3",n:"Транспорт",fact:["🚲","Машины сжигают бензин и загрязняют воздух. Пешком, на велосипеде или на общественном транспорте можно добраться куда нужно и почти не навредить природе."],ex:[
+   C_("Как экологичнее всего добраться до школы?",["Пешком","На машине одному","На такси","На мотоцикле"],"Прогулка не загрязняет воздух и полезна для здоровья."),
+   C_("Чем автобус лучше, чем много машин?",["Он везёт много людей сразу","Он быстрее самолёта","Он не тратит топливо","Он меньше машины"],"Один автобус заменяет десятки машин на дороге."),
+   P_("Соедини транспорт и что его двигает",[["Велосипед","Сила ног"],["Электробус","Электричество"],["Автомобиль","Бензин"],["Парусная лодка","Ветер"]]),
+   S_("Расставь экологичную поездку по порядку",["Посмотреть расписание автобуса","Дойти пешком до остановки","Проехать на автобусе","Последний отрезок пройти пешком"])]}]},
+ {id:"nature",e:"🐾",n:"Животные и растения",lessons:[
+  {id:"nature1",n:"Красная книга",fact:["📖","В Красную книгу записывают редкие виды животных и растений, которым грозит исчезновение. Их нельзя ловить и срывать, а места, где они живут, охраняют."],ex:[
+   C_("Что такое Красная книга?",["Список редких видов под охраной","Книга сказок о животных","Учебник рисования","Список домашних животных"],"Красная книга помогает узнать, какие виды нужно особенно беречь."),
+   C_("Какое животное занесено в Красную книгу России?",["Амурский тигр","Серая ворона","Домашняя кошка","Воробей"],"Амурский тигр живёт на Дальнем Востоке, и его очень мало."),
+   P_("Соедини животное и где оно живёт",[["Белый медведь","Арктика"],["Амурский тигр","Дальневосточная тайга"],["Снежный барс","Горы"],["Морж","Северные моря"]]),
+   C_("Что нельзя делать в заповеднике?",["Рвать редкие цветы","Наблюдать за птицами","Фотографировать природу","Ходить по тропе"],"В заповеднике природа охраняется - всё должно оставаться на своих местах.")]},
+  {id:"nature2",n:"Лес",fact:["🌳","Деревья выделяют кислород, дают дом птицам и зверям, а их корни удерживают почву. Лесные пожары часто начинаются из-за людей - например, от непотушенного костра."],ex:[
+   C_("Почему опасно оставлять костёр в лесу?",["Может начаться пожар","Костёр замёрзнет","Звери согреются","Ничего не случится"],"Ветер раздувает угли, и огонь перекидывается на траву и деревья."),
+   C_("Что дают нам деревья?",["Кислород и дом для животных","Только тень","Ничего полезного","Пластик"],"Лес - это лёгкие планеты и дом для тысяч видов."),
+   S_("Как потушить костёр - по порядку",["Перестать подкладывать дрова","Залить угли водой","Перемешать золу палкой","Проверить, что ничего не дымится"]),
+   P_("Соедини лесного жителя и его еду",[["Белка","Орехи и шишки"],["Ёж","Насекомые"],["Дятел","Жуки под корой"],["Лось","Ветки и листья"]])]},
+  {id:"nature3",n:"Птицы зимой",fact:["🐦","Зимой птицам трудно найти корм. Кормушка помогает им пережить холод, но кормить нужно правильно: несолёными семечками, а не хлебом."],ex:[
+   C_("Чем лучше кормить синиц зимой?",["Несолёными семечками","Солёными чипсами","Чёрным хлебом","Печеньем"],"Хлеб и солёная еда вредны для птиц."),
+   C_("Почему птицам нельзя солёную еду?",["Соль им вредна","Птицы не любят вкусное","Соль замерзает","Можно"],"Птицы плохо выводят соль из организма."),
+   P_("Соедини птицу и её особенность",[["Дятел","Стучит по деревьям"],["Ласточка","Улетает на юг"],["Снегирь","Красная грудка"],["Сова","Охотится ночью"]]),
+   S_("Как сделать кормушку - по порядку",["Взять пакет из-под сока","Вырезать окошки по бокам","Повесить кормушку на ветку","Насыпать семечек"])]}]},
+ {id:"climate",e:"🌍",n:"Климат",lessons:[
+  {id:"climate1",n:"Парниковый эффект",fact:["☀️","Углекислый газ и другие парниковые газы удерживают тепло у Земли, как стекло в теплице. Когда их становится больше, климат на планете теплеет."],ex:[
+   C_("Какой парниковый газ люди выбрасывают больше всего?",["Углекислый газ","Кислород","Азот","Гелий"],"Он выделяется, когда сжигают уголь, нефть и газ."),
+   C_("Что поглощает углекислый газ из воздуха?",["Деревья и растения","Автомобили","Заводы","Пластик"],"Растения забирают углекислый газ и выделяют кислород."),
+   P_("Соедини причину и следствие",[["Сжигание топлива","Больше углекислого газа"],["Вырубка лесов","Меньше растений забирают CO₂"],["Таяние ледников","Подъём уровня моря"],["Посадка деревьев","Чище воздух"]]),
+   S_("Как работает парниковый эффект - по порядку",["Солнечные лучи нагревают Землю","Земля отдаёт тепло обратно","Парниковые газы задерживают часть тепла","У поверхности становится теплее"])]},
+  {id:"climate2",n:"Что могу я",fact:["🌱","Каждый может помочь климату: экономить электричество, ходить пешком, не выбрасывать еду и сажать деревья. Маленькие дела многих людей складываются в большой результат."],ex:[
+   C_("Что из этого помогает климату?",["Посадить дерево","Оставлять свет включённым","Ехать на машине к соседнему дому","Выбрасывать еду"],"Дерево всю жизнь забирает из воздуха углекислый газ."),
+   C_("Почему важно не выбрасывать еду?",["На неё потрачены вода, энергия и земля","Еда засоряет ведро","Еда тяжёлая","Это неважно"],"Выброшенная еда - это зря потраченные ресурсы."),
+   P_("Соедини дело и чем оно помогает",[["Ходить пешком","Меньше выхлопов"],["Сажать деревья","Больше зелени"],["Экономить свет","Меньше сжигается топлива"],["Сортировать мусор","Меньше свалок"]]),
+   C_("Что выделяется на свалках, где гниёт мусор?",["Метан - парниковый газ","Чистый кислород","Пресная вода","Ничего"],"Метан удерживает тепло ещё сильнее, чем углекислый газ.")]},
+  {id:"climate3",n:"Эко-даты",fact:["📅","В конце марта по всему миру проходит Час Земли: люди на час выключают свет, чтобы напомнить о бережном отношении к планете. А 22 апреля отмечают День Земли."],ex:[
+   C_("Когда отмечают День Земли?",["22 апреля","1 января","8 марта","1 сентября"],"День Земли отмечают каждый год 22 апреля."),
+   C_("Что делают во время Часа Земли?",["Выключают свет на час","Сажают деревья ночью","Не пьют воду","Едят только овощи"],"Выключенный свет - знак заботы о планете."),
+   P_("Соедини праздник и дату",[["День Земли","22 апреля"],["Всемирный день окружающей среды","5 июня"],["Всемирный день воды","22 марта"],["Синичкин день","12 ноября"]]),
+   S_("Как провести субботник - по порядку",["Договориться о месте и времени","Взять перчатки и мешки","Собрать мусор, разделяя его","Отнести мешки к контейнерам"])]}]}];
+const HEARTS=5,HEART_MS=30*60*1000,REFILL_PRICE=30;
+const lessonById=id=>{for(const t of COURSE){const l=t.lessons.find(x=>x.id===id);if(l)return{t,l}}return null};
+const exById=xid=>{const[lid,i]=String(xid).split(":"),f=lessonById(lid);return f&&f.l.ex[Number(i)]?f.l.ex[Number(i)]:null};
+// порядок прохождения: уроки темы, потом её контрольный, потом следующая тема
+const PATH=[];COURSE.forEach(t=>{t.lessons.forEach(l=>PATH.push(l.id));PATH.push(t.id+"_c")});
+function courseOf(u){const r=rowsRaw("Course").find(x=>x.userId===u.id);let c={};try{c=JSON.parse(r?r.data:"{}")||{}}catch(e){}
+ c.done=c.done||{};c.crowns=c.crowns||{};c.mist=c.mist||[];if(c.hearts===undefined){c.hearts=HEARTS;c.ht=Date.now()}
+ // сердечки восстанавливаются: одно за каждые 30 минут
+ if(c.hearts<HEARTS){const n=Math.floor((Date.now()-c.ht)/HEART_MS);if(n>0){c.hearts=Math.min(HEARTS,c.hearts+n);c.ht=c.hearts>=HEARTS?Date.now():c.ht+n*HEART_MS}}else c.ht=Date.now();
+ return{c,row:r}}
+function courseSave(u,c,row){const js=JSON.stringify(c);if(row)upd("Course",row._row,"data",js);else addT("Course",[u.id,js])}
+const unlocked=(c,id)=>{const i=PATH.indexOf(id);return i===0||(i>0&&!!c.done[PATH[i-1]])};
+function courseMapOut(c){return{themes:COURSE.map(t=>({id:t.id,e:t.e,n:t.n,crown:!!c.crowns[t.id],
+  lessons:t.lessons.map(l=>({id:l.id,n:l.n,done:!!c.done[l.id],open:unlocked(c,l.id)})).concat([{id:t.id+"_c",n:"Контрольный урок",control:true,done:!!c.done[t.id+"_c"],open:unlocked(c,t.id+"_c")}])})),
+ hearts:c.hearts,max:HEARTS,next:c.hearts<HEARTS?c.ht+HEART_MS:0,mist:c.mist.length,refill:REFILL_PRICE,total:PATH.length,doneN:PATH.filter(id=>c.done[id]).length}}
+// задание для сайта: варианты перемешаны, ответ - в ключе
+function exOut(x,id){if(x.k==="c"){const ix=shuffle(x.o.map((v,i)=>i));return{item:{id,k:"c",q:x.q,o:ix.map(i=>x.o[i]),ix},key:{r:0,e:x.e}}}
+ if(x.k==="p")return{item:{id,k:"p",q:x.q,L:shuffle(x.p.map(p=>p[0])),R:shuffle(x.p.map(p=>p[1]))},key:{p:x.p}};
+ return{item:{id,k:"s",q:x.q,items:shuffle(x.s.slice())},key:{s:x.s}}}
+function exRight(x,a){if(!x||!a)return false;
+ if(x.k==="c")return Number(a.a)===0;
+ if(x.k==="p")return Number(a.miss)===0&&Array.isArray(a.pairs)&&x.p.every(p=>a.pairs.some(q=>q[0]===p[0]&&q[1]===p[1]));
+ return Array.isArray(a.order)&&a.order.length===x.s.length&&x.s.every((v,i)=>a.order[i]===v)}
+Object.assign(A,{
+courseMap(d){const u=who(d);return courseMapOut(courseOf(u).c)},
+courseStart(d){const u=who(d),id=String(d.id||""),{c}=courseOf(u);if(PATH.indexOf(id)<0)throw"Урок не найден";
+ if(!unlocked(c,id))throw"Сначала пройди предыдущий урок";if(c.hearts<=0)throw"Сердечки закончились - подожди или восстанови их за монеты";
+ let picks;const control=/_c$/.test(id),tid=id.replace(/_c$/,""),f=control?null:lessonById(id);
+ if(control){const t=COURSE.find(x=>x.id===tid);picks=shuffle([].concat(...t.lessons.map(l=>l.ex.map((x,i)=>l.id+":"+i)))).slice(0,6)}
+ else picks=f.l.ex.map((x,i)=>id+":"+i);
+ // ошибки из прошлых уроков возвращаются, пока на них не ответишь верно
+ const rep=c.mist.filter(x=>picks.indexOf(x)<0).slice(0,2);picks=picks.concat(rep);
+ const out=picks.map(x=>exOut(exById(x),x));
+ CacheService.getScriptCache().put("cs_"+u.id,JSON.stringify({id,picks,t:Date.now()}),3600);
+ const t=control?COURSE.find(x=>x.id===tid):f.t;
+ return{lesson:{id,title:control?"Контрольный урок: "+t.n:f.l.n,theme:t.n,control,fact:control?null:{e:f.l.fact[0],t:f.l.fact[1]},items:out.map(o=>o.item),rep:rep.length},
+  hearts:c.hearts,k:enc(out.map(o=>o.key))}},
+courseSubmit(d){const u=who(d),C=CacheService.getScriptCache(),s=JSON.parse(C.get("cs_"+u.id)||"null");if(!s||s.id!==String(d.id||""))throw"Урок устарел - начни заново";C.remove("cs_"+u.id);
+ const {c,row}=courseOf(u),ans=Array.isArray(d.answers)?d.answers:[],h0=c.hearts;let wrong=0;const res=[];
+ for(const xid of s.picks){const ok=exRight(exById(xid),ans.find(a=>a&&a.id===xid));res.push({id:xid,ok});
+  const m=c.mist.indexOf(xid);if(ok&&m>=0)c.mist.splice(m,1);if(!ok){wrong++;if(m<0)c.mist.push(xid);if(wrong>=h0)break}}
+ c.mist=c.mist.slice(-20);c.hearts=Math.max(0,h0-wrong);if(c.hearts<HEARTS&&h0>=HEARTS)c.ht=Date.now();
+ const passed=c.hearts>0&&res.length===s.picks.length,first=passed&&!c.done[s.id],control=/_c$/.test(s.id);let xp=0,chest=false,crown=false,streak;
+ if(passed){c.done[s.id]=Math.max(Number(c.done[s.id])||0,res.filter(r=>r.ok).length)||1;
+  if(first){xp=10+2*res.filter(r=>r.ok).length;giveXp(u,xp,"course")}
+  if(control&&!c.crowns[s.id.replace(/_c$/,"")]){crown=true;chest=true;c.crowns[s.id.replace(/_c$/,"")]=1;
+   const t=COURSE.find(x=>x.id===s.id.replace(/_c$/,""));addEvent(u.id,"course","👑","Корона темы «"+t.n+"» в эко-курсе")}
+  // урок продлевает серию дней, как мини-игра
+  const cn=counters(u),froze=applyFreeze(u,cn),pd=tail("PlayDays",30000),fd=!playedToday(u.id,pd);if(fd)addT("PlayDays",[u.id,today()]);
+  streak=streakOf(u.id,tail("PlayDays",30000));bumpCounters(u,{best:streak,freeze:-froze,chests:chest?1:0},cn)}
+ courseSave(u,c,row);
+ return{passed,results:res,xp,crown,chest,hearts:c.hearts,streak,map:courseMapOut(c),ach:passed?checkAch(u):[]}},
+courseRefill(d){const u=who(d),{c,row}=courseOf(u);if(c.hearts>=HEARTS)throw"Сердечки и так полные";const cn=counters(u);
+ if(coinsOf(u,cn)<REFILL_PRICE)throw"Не хватает монет";bumpCounters(u,{spent:REFILL_PRICE},cn);c.hearts=HEARTS;c.ht=Date.now();courseSave(u,c,row);
+ return{map:courseMapOut(c),coins:coinsOf(u,counters(u))}},
+// учитель видит, как его класс проходит курс
+courseClass(d){const t=who(d);needTeacher(t);const ids=new Set(rows("Members").filter(m=>m.teacherId===t.id).map(m=>m.studentId)),users=rows("Users"),cr=rowsRaw("Course");
+ return{total:PATH.length,themes:COURSE.map(x=>({id:x.id,e:x.e,n:x.n})),students:[...ids].map(id=>{const v=users.find(x=>x.id===id);if(!v)return null;const r=cr.find(x=>x.userId===id);
+  let c={};try{c=JSON.parse(r?r.data:"{}")||{}}catch(e){}const done=c.done||{},cur=PATH.find(p=>!done[p]);
+  return{user:mini(v),done:PATH.filter(p=>done[p]).length,crowns:Object.keys(c.crowns||{}),now:cur?(lessonById(cur)?lessonById(cur).l.n:"Контрольный урок"):"Курс пройден"}}).filter(Boolean)
+  .sort((a,b)=>b.done-a.done)}}
+});
+
 /* ───── ускорение: запросы на чтение не ждут общую очередь ───── */
 // Раньше каждый запрос ждал, пока закончится предыдущий. Теперь очередь только у действий,
 // которые меняют данные; чтения выполняются параллельно и читают каждый лист один раз.
-const BATCH={me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0,challengeList:1,quizList:1,eventList:1,recycleList:1,shop:1,mistakes:1,duoInfo:1,friendsFeed:1};
+const BATCH={courseMap:1,me:1,extra:1,chats:1,friends:1,tasks:1,news:1,qotd:1,classInfo:0,challengeList:1,quizList:1,eventList:1,recycleList:1,shop:1,mistakes:1,duoInfo:1,friendsFeed:1};
 A.batch=d=>{const out={};(Array.isArray(d.calls)?d.calls:[]).slice(0,8).forEach(c=>{const a=c&&c.action;if(!BATCH[a]||!A[a])return;
  try{out[a]=Object.assign({ok:true},A[a](Object.assign({},c,{token:d.token})))}catch(e){out[a]={ok:false,error:typeof e==="string"?e:"Ошибка сервера: "+e}}});
  return{results:out}};
-const FAST={yearSummary:1,mistakes:1,friendsFeed:1,inviteInfo:1,duoInfo:1,offlinePack:1,shop:1,quizList:1,quizGet:1,quizResults:1,eventList:1,parentView:1,recycleList:1,mapPoints:1,qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
+const FAST={courseMap:1,courseClass:1,courseStart:1,yearSummary:1,mistakes:1,friendsFeed:1,inviteInfo:1,duoInfo:1,offlinePack:1,shop:1,quizList:1,quizGet:1,quizResults:1,eventList:1,parentView:1,recycleList:1,mapPoints:1,qotd:1,rating:1,challengeList:1,classStats:1,devStats:1,devUsers:1,devMessages:1,devDeleteMessage:1,batch:1,news:1,me:1,extra:1,avatars:1,friends:1,search:1,chats:1,chatMessages:1,chatSend:1,chatReact:1,chatDelete:1,studentBadges:1,profile:1,classForest:1};
 // Сообщения из Code.gs - русскими словами вместо «юзернейм» и длинного тире
 const RU_ERR={"Неверный юзернейм или пароль":"Неверное имя пользователя или пароль","Этот юзернейм уже занят":"Это имя пользователя уже занято"};
 const ruText=t=>{t=String(t);return(RU_ERR[t]||t).replace(/Юзернейм/g,"Имя пользователя").replace(/юзернейм/g,"имя пользователя").replace(/[\u2013\u2014]/g,"-")};
