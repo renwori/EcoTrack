@@ -724,12 +724,17 @@ function achStats(u){const c=counters(u),xp=Number(u.xp)||0;
 const trackLevel=(t,x)=>t[0]==="year"?x.years:t[4].filter(th=>t[5](x)>=th).length;
 const trackTitle=(t,lv)=>t[0]==="year"?plural(lv,"год","года","лет")+" на платформе":t[3];
 const trackDesc=(t,lv)=>t[0]==="year"?"Столько лет вместе с ЭкоТреком. Значок растёт в каждую годовщину регистрации.":t[6](t[4][Math.min(lv,5)-1]);
-function grant(uid,id,emoji,color,title,desc,level){addT("Badges",[id,"system",uid,emoji,color,title.slice(0,40),desc.slice(0,200),now(),"",level||""]);
+function grant(uid,id,emoji,color,title,desc,level){if(rowsRaw("Badges").some(b=>b.id===id))return false;  // значок уже есть - второй раз не выдаём
+ addT("Badges",[id,"system",uid,emoji,color,title.slice(0,40),desc.slice(0,200),now(),"",level||""]);
  addEvent(uid,"badge",emoji,"Получено достижение «"+title.slice(0,40)+"»")}
-const needAch=(u,mine)=>Object.keys(OLD_ACH).some(k=>mine.some(b=>b.id==="ach_"+k+"_"+u.id))||
+const hasDup=mine=>{const s={};return mine.some(b=>s[b.id]||!(s[b.id]=1))};
+const needAch=(u,mine)=>hasDup(mine)||Object.keys(OLD_ACH).some(k=>mine.some(b=>b.id==="ach_"+k+"_"+u.id))||
  (yearsOf(u)>0&&!mine.some(b=>b.id==="ach_year_"+u.id&&Number(b.level)>=yearsOf(u)));
 // Выдаёт новые значки и повышает уровни. Возвращает подписи для всплывающих сообщений.
-function checkAch(u){const x=achStats(u),mine=rowsRaw("Badges").filter(b=>b.studentId===u.id),by={},got=[],prev={},old=[];
+function checkAch(u){let mine=rowsRaw("Badges").filter(b=>b.studentId===u.id);
+ // повторно выданные значки (одинаковый id) - оставляем только первый
+ {const s={},dup=mine.filter(b=>s[b.id]||!(s[b.id]=1));if(dup.length){delRows("Badges",dup);mine=rowsRaw("Badges").filter(b=>b.studentId===u.id);touch(u.id)}}
+ const x=achStats(u),by={},got=[],prev={},old=[];
  mine.forEach(b=>by[b.id]=b);
  Object.keys(OLD_ACH).forEach(k=>{const b=by["ach_"+k+"_"+u.id];if(b){old.push(b);const o=OLD_ACH[k];prev[o[0]]=Math.max(prev[o[0]]||0,o[1])}});
  TRACKS.forEach(t=>{const lv=Math.max(trackLevel(t,x),prev[t[0]]||0),id="ach_"+t[0]+"_"+u.id,b=by[id],cur=b?Number(b.level)||1:0;if(lv<1||lv<=cur)return;
